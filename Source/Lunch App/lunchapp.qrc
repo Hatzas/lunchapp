@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>View/photosurface.qml</file>
+    </qresource>
+</RCC>
