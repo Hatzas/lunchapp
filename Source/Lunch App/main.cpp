@@ -3,12 +3,15 @@
 #include <QtQuick/QQuickWindow>
 #include <QtCore/QUrl>
 
+#include "View/MainWindow.h"
+
 int main( int argc, char* argv[] )
 {
 	QApplication app( argc, argv );
-
-	QQuickWindow::setDefaultAlphaBuffer( true );
-	QQmlApplicationEngine engine( QUrl("qrc:///View/photosurface.qml") );
+	
+	MainWindow mainWindow;
+	//mainWindow.showFullScreen();
+	mainWindow.show();
 
 	return app.exec();
 }
