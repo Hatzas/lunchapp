@@ -2,13 +2,13 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 
-static const QString kWebApiUrl = "http://localhost:8080/";
 
-RestClient::RestClient( QObject* parent ) : QObject( parent )
+RestClient::RestClient(const QString &apiUrl, QObject* parent) : QObject(parent),
+    webApiUrl(apiUrl)
 {
-	networkManager = new QNetworkAccessManager( this );
+    networkManager = new QNetworkAccessManager(this);
 
-	connect( networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onNetworkReply(QNetworkReply*)) );
+    connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onNetworkReply(QNetworkReply*)));
 }
 
 RestClient::~RestClient()
@@ -16,47 +16,48 @@ RestClient::~RestClient()
 	delete networkManager;
 }
 
-void RestClient::pushRequest( const NetEntity& entity )
+void RestClient::pushRequest(const NetEntity& entity)
 {
-	QUrl url( kWebApiUrl + entity.getMethodUrl() );
+    QUrl url(webApiUrl + entity.getMethodUrl());
 	QNetworkRequest request( url );	
-	QNetworkReply* reply = networkManager->post( request, QByteArray( entity.getRequestBody().toUtf8() ) );
+    QNetworkReply* reply = networkManager->post(request, QByteArray(entity.getRequestBody().toUtf8()));
 
 	listMutex.lock();
-	requestList.insert( reply, entity );
+    requestList.insert(reply, entity);
 	listMutex.unlock();
 }
 
-void RestClient::onNetworkReply( QNetworkReply* reply )
+void RestClient::setWebApiUrl(const QString& apiUrl)
 {
-	if( reply->error() == QNetworkReply::NoError )
+    webApiUrl = apiUrl;
+}
+
+void RestClient::onNetworkReply(QNetworkReply* reply)
+{
+    NetEntity entity;
+    bool found = false;
+    listMutex.lock();
+    MapType::Iterator it = requestList.find(reply);
+
+    if(it != requestList.end())
+    {
+        entity = *it;
+        requestList.erase(it);
+        found = true;
+    }
+    listMutex.unlock();
+
+    if(reply->error() == QNetworkReply::NoError)
 	{
-		NetEntity entity;
-		bool found = false;
-
-		listMutex.lock();
-		
-		MapType::Iterator it = requestList.find( reply );
-		
-		if( it != requestList.end() )
+        if(found)
 		{
-			entity = *it;
-			requestList.erase( it );
-			found = true;
-		}
-		
-		listMutex.unlock();
-
-		if( found )
-		{
-			entity.setResult( reply->readAll() );
-			emit replyFinished( entity );
+            entity.setResult(reply->readAll());
 		}
 	}
-	else
-	{
-		emit replyError( reply->errorString() );
-	}
 
+    if(found)
+    {
+        emit replyFinished(entity);
+    }
 	reply->deleteLater();
 }

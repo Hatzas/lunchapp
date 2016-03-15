@@ -15,21 +15,21 @@ class RestClient : public QObject
 	Q_OBJECT
 
 public:
-				RestClient( QObject* parent = 0 );
+                RestClient(const QString& apiUrl, QObject* parent = 0);
 				~RestClient();
 
-	void		pushRequest( const NetEntity& entity );
+    void		pushRequest(const NetEntity& entity);
+    void        setWebApiUrl(const QString& apiUrl);
 
 signals:
-	void		replyFinished( const NetEntity& entity );
-	void		replyError( const QString& errorMessage );
+    void		replyFinished(const NetEntity& entity);
 
 private slots:
-	void		onNetworkReply( QNetworkReply* reply );
+    void		onNetworkReply(QNetworkReply* reply);
 
 private:
 	QNetworkAccessManager*		networkManager;
-
+    QString                     webApiUrl;
 	QMutex						listMutex;
 	MapType						requestList;
 };

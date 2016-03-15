@@ -1,11 +1,10 @@
 #include "NetEntity.h"
 
-NetEntity::NetEntity( const MethodType method ) :
+NetEntity::NetEntity(const MethodType method) :
 	methodType( method )
 {
 }
 
 NetEntity::~NetEntity()
 {
-
 }

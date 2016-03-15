@@ -2,9 +2,11 @@
 #include "RestClient.h"
 #include <QJson/Parser>
 
+static const QString kWebApiUrl = "http://localhost:8080/";
+
 DataTransfer::DataTransfer(QObject* parent) : QObject(parent)
 {
-    restClient = new RestClient(this);
+    restClient = new RestClient(kWebApiUrl, this);
 
     connect(restClient, SIGNAL(replyFinished(NetEntity)), this, SLOT(onMenuFinished(NetEntity)));
 }
