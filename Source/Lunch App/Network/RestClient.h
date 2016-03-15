@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtNetwork/QNetworkAccessManager>
+#include <QMutex>
 #include "NetEntity.h"
 
 
