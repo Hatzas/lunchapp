@@ -13,14 +13,13 @@ RestClient::RestClient(const QString &apiUrl, QObject* parent) : QObject(parent)
 
 RestClient::~RestClient()
 {
-	delete networkManager;
 }
 
 void RestClient::pushRequest(const NetEntity& entity)
 {
     QUrl url(webApiUrl + entity.getMethodUrl());
 	QNetworkRequest request( url );	
-    QNetworkReply* reply = networkManager->post(request, QByteArray(entity.getRequestBody().toUtf8()));
+    QNetworkReply* reply = networkManager->get(request);
 
 	listMutex.lock();
     requestList.insert(reply, entity);
