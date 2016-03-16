@@ -11,12 +11,17 @@
 #include "Style.h"
 #include "DayView.h"
 
+
+static const float			kClickMovement			= 2;
 static const float			kBriefDetailsOffset		= 30;
 static const QString		kDishDetailsText		= "Quesadilla cu pui \n\n   Ingrediente: tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare";
+
 
 DishView::DishView( QWidget *parent, QPixmap pixmap )
 	: QWidget( parent )
 	, dishPixmap( pixmap )
+	, mousePressed( false )
+	, dishSelected( false )
 {
 	init();
 }
@@ -35,6 +40,8 @@ void DishView::init()
 	/* Create objects */
 	imageLabel = new QLabel( this );
 	imageLabel->setPixmap( dishPixmap );
+	imageLabel->setMinimumSize( widgetSize );
+	imageLabel->setMaximumSize( widgetSize );
 	imageLabel->adjustSize();
 
 	detailsLabel = new QLabel( this );
@@ -52,10 +59,14 @@ void DishView::init()
 	detailsAnimation = new QPropertyAnimation( detailsLabel, "pos" );
 	detailsAnimation->setEasingCurve( QEasingCurve::OutCirc );
 
+	/* Effects */
+	selectedEffect = new SelectedEffect( imageLabel );
+	imageLabel->setGraphicsEffect( selectedEffect );
+
 	/* Move objects */
 	detailsLabel->move( 0, widgetSize.height() );
 
-	// Properties
+	/* Properties */
 	this->setMouseTracking( true );
 	imageLabel->setMouseTracking( true );
 	detailsLabel->setMouseTracking( true );
@@ -86,6 +97,13 @@ void DishView::enterEvent( QEvent* event )
 
 void DishView::leaveEvent( QEvent* event )
 {
+	if( mousePressed )
+	{
+		mousePressed = false;
+
+		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
+	}
+
 	if( detailsAnimation->state() == QAbstractAnimation::Running )
 		detailsAnimation->stop();
 
@@ -106,5 +124,42 @@ void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 		
 		detailsAnimation->setDuration( kFullDishDetailsAnimationTime );
 		detailsAnimation->start();
+	}
+}
+
+void DishView::mousePressEvent( QMouseEvent* mouseEvent )
+{
+	mousePressed = true;
+
+	this->move( this->pos() + QPoint( kClickMovement, kClickMovement ) );
+}
+
+void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
+{
+	if( mousePressed )
+	{
+		mousePressed = false;
+
+		dishSelected = !dishSelected;
+
+		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
+	}
+
+	if( dishSelected )
+	{
+		selectedEffect->enable();
+
+		// Drop shadow is computation intensive and reduces performance
+		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
+		dropShadow->setOffset( 0.0f );
+		dropShadow->setBlurRadius( kSelectedShadowSize );
+		dropShadow->setColor( kSelectedGlowColor );
+		this->setGraphicsEffect( dropShadow );
+	}
+	else
+	{
+		selectedEffect->disable();
+
+		this->setGraphicsEffect( NULL );
 	}
 }
