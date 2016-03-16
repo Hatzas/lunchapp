@@ -42,15 +42,6 @@
     <Filter Include="Source Files\Controller">
       <UniqueIdentifier>{a68208f0-7db3-4d48-9b70-bf4be6841ed2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\View\Forms">
-      <UniqueIdentifier>{8ec82476-9d71-4f80-a230-779b1d7b743e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Network">
-      <UniqueIdentifier>{98dff213-b032-42c3-b153-5f79f046686c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Network">
-      <UniqueIdentifier>{9d6b7a9f-7771-474b-9410-7ed5c087f078}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -60,111 +51,29 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="Model\Course.cpp">
-      <Filter>Source Files\Model</Filter>
+      <Filter>Source Files\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Model\Day.cpp">
-      <Filter>Source Files\Model</Filter>
+      <Filter>Source Files\Controller</Filter>
     </ClCompile>
     <ClCompile Include="Model\Dish.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="View\DishView.cpp">
-      <Filter>Source Files\View</Filter>
-    </ClCompile>
-    <ClCompile Include="View\MetroView.cpp">
-      <Filter>Source Files\View</Filter>
-    </ClCompile>
-    <ClCompile Include="View\WeekView.cpp">
-      <Filter>Source Files\View</Filter>
-    </ClCompile>
-    <ClCompile Include="View\DayView.cpp">
-      <Filter>Source Files\View</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_DayView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_DayView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_DishView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_DishView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MetroView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MetroView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_WeekView.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_WeekView.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="View\MainWindow.cpp">
-      <Filter>Source Files\View</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MainWindow.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Network\RestClient.cpp">
-      <Filter>Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="Network\NetEntity.cpp">
-      <Filter>Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_RestClient.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_RestClient.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Network\DataTransfer.cpp">
-      <Filter>Source Files\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_DataTransfer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_DataTransfer.cpp">
-      <Filter>Generated Files\Release</Filter>
+      <Filter>Source Files\Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Lunch App.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\folder.png">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="View\photosurface.qml">
+      <Filter>Source Files\View</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <CustomBuild Include="lunchapp.qrc">
       <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="View\DayView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="View\DishView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="View\MetroView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="View\WeekView.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="View\Froms\MainWindow.ui">
-      <Filter>Source Files\View\Forms</Filter>
-    </CustomBuild>
-    <CustomBuild Include="View\MainWindow.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Network\RestClient.h">
-      <Filter>Header Files\Network</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Network\DataTransfer.h">
-      <Filter>Header Files\Network</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -182,15 +91,6 @@
     </ClInclude>
     <ClInclude Include="Model\Week.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="View\Style.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_MainWindow.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Network\NetEntity.h">
-      <Filter>Header Files\Network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

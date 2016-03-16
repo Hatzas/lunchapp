@@ -19,19 +19,19 @@ void WeekView::init()
 {
 	/* Create objects */
 	mondayView = new DayView( this, "Luni" );
-	mondayView->move( kDaySpacing, 0 );
+	mondayView->move( 0, 0 );
 
 	tuesdayView = new DayView( this, "Marti" );
-	tuesdayView->move( mondayView->pos().x() + mondayView->width() + kDaySpacing, 0 );
+	tuesdayView->move( mondayView->pos().x() + mondayView->width() - kDishSpacing, 0 );	// "- kDishSpacing" is a temporary patch to fix double spacing between days
 
 	wednesdayView = new DayView( this, "Miercuri" );
-	wednesdayView->move( tuesdayView->pos().x() + tuesdayView->width() + kDaySpacing, 0 );
+	wednesdayView->move( tuesdayView->pos().x() + tuesdayView->width() - kDishSpacing, 0 );
 
 	thursdayView = new DayView( this, "Joi" );
-	thursdayView->move( wednesdayView->pos().x() + wednesdayView->width() + kDaySpacing, 0 );
+	thursdayView->move( wednesdayView->pos().x() + wednesdayView->width() - kDishSpacing, 0 );
 
 	fridayView = new DayView( this, "Vineri" );
-	fridayView->move( thursdayView->pos().x() + thursdayView->width() + kDaySpacing, 0 );
+	fridayView->move( thursdayView->pos().x() + thursdayView->width() - kDishSpacing, 0 );
 
 	this->adjustSize();
 }

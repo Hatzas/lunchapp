@@ -6,6 +6,7 @@
 #include <QLabel>
 
 #include "WeekView.h"
+#include "InfiniteBackground.h"
 
 
 class MetroView : public QGraphicsView
@@ -18,13 +19,18 @@ public:
 
 	virtual void	wheelEvent( QWheelEvent* event );
 
+protected:
+	virtual void	resizeEvent( QResizeEvent * event );
+
 private:
 	QGraphicsScene*				scene;
 
+	InfiniteBackground*			background;
 	QLabel*						weekLabel;
 	WeekView*					currentWeekView;
 
 	QPropertyAnimation*			weekAnimation;
+	QPropertyAnimation*			backgroundAnimation;
 
 	QSequentialAnimationGroup*	weekAnimationsQueue;
 	QParallelAnimationGroup*	animations;

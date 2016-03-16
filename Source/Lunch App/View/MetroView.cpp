@@ -11,8 +11,10 @@
 #include <QGraphicsOpacityEffect>
 #include <QSequentialAnimationGroup>
 #include <QBoxLayout>
+#include <QScroller>
 
 #include "Style.h"
+#include "InfiniteBackground.h"
 
 
 MetroView::MetroView(QWidget *parent)
@@ -54,6 +56,8 @@ void MetroView::init()
 void MetroView::addSceneItems()
 {
 	/* Create objects */
+	background = new InfiniteBackground( QPixmap( "Resources\\background5.bmp" ), this );
+
 	QLabel* textLabel = new QLabel( this );
 	textLabel->setText( "Saptamana: 1 - 6 Martie" );
 	textLabel->setFont( QFont( kFontName, 10 ) );
@@ -68,6 +72,7 @@ void MetroView::addSceneItems()
 	currentWeekView->move( 0, kWeekOffsetY );
 
 	/* Add to scene */
+	scene->addWidget( background );
 	scene->addWidget( textLabel );
 	scene->addWidget( currentWeekView );
 
@@ -91,7 +96,11 @@ void MetroView::addSceneItems()
 	weekAnimation = new QPropertyAnimation( currentWeekView, "pos" );
 	weekAnimation->setEasingCurve( QEasingCurve::OutCirc );
 
+	backgroundAnimation = new QPropertyAnimation( background, "offset" );
+	backgroundAnimation->setEasingCurve( QEasingCurve::OutCirc );
+
 	animations = new QParallelAnimationGroup();
+	animations->addAnimation( backgroundAnimation );
 	//animations->addAnimation( textAnimations );
 	animations->addAnimation( weekAnimation );
 
@@ -99,6 +108,20 @@ void MetroView::addSceneItems()
 	this->setMinimumHeight( this->height() );
 
 	this->adjustSize();
+
+	// Scrolling image background
+	background->setMinimumSize( this->size() );
+	background->setMaximumSize( this->size() );
+	background->adjustSize();
+
+	// Gradient background
+// 	QLinearGradient linearGrad(	QPointF( this->width() / 4.f, 0 ), QPointF( this->width() / 2.f, this->height() ) );
+// 	linearGrad.setColorAt( 1, QColor( 135, 206, 255 ) );
+// 	linearGrad.setColorAt( 0, QColor( 30, 144, 255 ) );
+// 	this->setBackgroundBrush( QBrush( linearGrad ) );
+
+	// Image background
+//	this->setBackgroundBrush( QBrush( QPixmap( "Resources\\background1.jpg" ) ) );
 }
 
 void MetroView::wheelEvent( QWheelEvent* wheelEvent )
@@ -108,8 +131,12 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 		if( weekAnimation->state() != QAbstractAnimation::Running )
 		{
 			weekAnimation->setStartValue( currentWeekView->pos() );
-			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() + /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
+			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() + kDayWidth, currentWeekView->pos().y() ) );
 			weekAnimation->setDuration( kWeekAnimationTime );
+
+			backgroundAnimation->setStartValue( background->getOffset() );
+			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() + kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setDuration( kWeekAnimationTime );
 
 			animations->start();
 		}
@@ -118,10 +145,14 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 			animations->stop();
 
 			weekAnimation->setStartValue( weekAnimation->currentValue().toPointF() );
-			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() + /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
+			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() + kDayWidth, currentWeekView->pos().y() ) );
 
 			int numDays = (int)((weekAnimation->endValue().toPointF().x() - weekAnimation->startValue().toPointF().x()) / kDayWidth);
 			weekAnimation->setDuration( kWeekAnimationTime * numDays/2 );
+
+			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
+			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() + kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			animations->start();
 		}
@@ -131,8 +162,12 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 		if( weekAnimation->state() != QAbstractAnimation::Running )
 		{
 			weekAnimation->setStartValue( currentWeekView->pos() );
-			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() - /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
+			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() - kDayWidth, currentWeekView->pos().y() ) );
 			weekAnimation->setDuration( kWeekAnimationTime );
+
+			backgroundAnimation->setStartValue( background->getOffset() );
+			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() - kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setDuration( kWeekAnimationTime );
 
 			animations->start();
 		}
@@ -141,12 +176,25 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 			animations->stop();
 
 			weekAnimation->setStartValue( weekAnimation->currentValue().toPointF() );
-			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() - /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
+			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() - kDayWidth, currentWeekView->pos().y() ) );
 
 			int numDays = (int)((weekAnimation->startValue().toPointF().x() - weekAnimation->endValue().toPointF().x()) / kDayWidth);
 			weekAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
+			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
+			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() - kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
+
 			animations->start();
 		}
 	}
+}
+
+void MetroView::resizeEvent( QResizeEvent * event )
+{
+	QGraphicsView::resizeEvent( event );
+	
+	background->setMinimumSize( this->size() );
+	background->setMaximumSize( this->size() );
+	background->adjustSize();
 }
