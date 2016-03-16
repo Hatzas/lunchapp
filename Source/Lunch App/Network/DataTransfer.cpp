@@ -1,8 +1,8 @@
 #include "DataTransfer.h"
 #include "RestClient.h"
-#include <QJson/Parser>
+#include <QJsonDocument>
 
-static const QString kWebApiUrl = "http://localhost:8080/";
+static const QString kWebApiUrl = "http://www.google.ro/";
 
 DataTransfer::DataTransfer(QObject* parent) : QObject(parent)
 {
@@ -19,7 +19,7 @@ void DataTransfer::getMenu()
 {
 	NetEntity entity;
     entity.setMethodType(ePostMethod);
-    entity.setMethodUrl("menu/get");
+    entity.setMethodUrl("search?q=qt");
     entity.setRequestBody("");
 
 	restClient->pushRequest( entity );
@@ -27,8 +27,8 @@ void DataTransfer::getMenu()
 
 void DataTransfer::onMenuFinished(const NetEntity& entity)
 {
-    QJson::Parser json;
-    json.parse(QByteArray(entity.getResult().toUtf8()));
+	bool ok;
+	QJsonDocument json = QJsonDocument::fromJson(entity.getResult().toUtf8());
 
 	emit userMenu();
 }
