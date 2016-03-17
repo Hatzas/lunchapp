@@ -1,32 +1,22 @@
 #pragma once
 
+#include <vector>
 #include "Day.h"
-#include <QList>
 
 class Week
 {
-	
-private:
-	Day	mondayMeal;
-	Day	tuesdayMeal;
-	Day	wednesdayMeal;
-	Day	thursdayMeal;
-	Day fridayMeal;
-
 public:
-	Day		getMondayMeal() { return mondayMeal; }
-	void	setMondayMeal() { this->mondayMeal = mondayMeal; }
+							Week( QString startEndDate, const std::vector<Day>& daysVect );
 
-	Day		getTuesdayMeal() { return tuesdayMeal; }
-	void	setTuesdayMeal() { this->tuesdayMeal = tuesdayMeal; }
+	QString					getStartEndDate() const								{ return startEndDate; }
+	void					setStartEndDate( QString startEndDate )				{ this->startEndDate = startEndDate; }
 
-	Day		getWednesdayMeal() { return wednesdayMeal; }
-	void	setWednesdayMeal() { this->wednesdayMeal = wednesdayMeal; }
+	std::vector<Day>&		getDays()											{ return daysVect; }
+	void					setDays( const std::vector<Day>& daysVect )			{ this->daysVect = daysVect; }
 
-	Day		getThursdayMeal() { return thursdayMeal; }
-	void	setThursdayMeal() { this->thursdayMeal = thursdayMeal; }
+private:
+	QString				startEndDate;
+	std::vector<Day>	daysVect;
 
-	Day		getFridayMeal() { return fridayMeal; }
-	void	setFridayMeal() { this->fridayMeal = fridayMeal; }
-
+							Week();
 };

@@ -53,9 +53,6 @@
     <ClCompile Include="GeneratedFiles\qrc_lunchapp.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="Model\Course.cpp">
-      <Filter>Source Files\Model</Filter>
-    </ClCompile>
     <ClCompile Include="Model\Day.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
@@ -125,6 +122,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_InfiniteBackground.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="Model\Week.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LunchApp.rc" />
@@ -159,9 +159,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Model\Course.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Model\Day.h">
       <Filter>Header Files</Filter>
     </ClInclude>

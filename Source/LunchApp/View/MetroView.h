@@ -19,6 +19,9 @@ public:
 
 	virtual void	wheelEvent( QWheelEvent* event );
 
+public slots:
+			void	weekArrived( const Week& week );
+
 protected:
 	virtual void	resizeEvent( QResizeEvent * event );
 
@@ -28,6 +31,7 @@ private:
 	InfiniteBackground*			background;
 	QLabel*						weekLabel;
 	WeekView*					currentWeekView;
+	std::vector<WeekView*>		weekViewsVect;
 
 	QPropertyAnimation*			weekAnimation;
 	QPropertyAnimation*			backgroundAnimation;

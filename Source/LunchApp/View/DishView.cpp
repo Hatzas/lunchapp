@@ -14,14 +14,12 @@
 
 static const float			kClickMovement			= 2;
 static const float			kBriefDetailsOffset		= 30;
-static const QString		kDishDetailsText		= "Quesadilla cu pui \n\n   Ingrediente: tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare";
 
 
-DishView::DishView( QWidget *parent, QPixmap pixmap )
+DishView::DishView( QWidget *parent, const Dish& dish  )
 	: QWidget( parent )
-	, dishPixmap( pixmap )
+	, dish( dish )
 	, mousePressed( false )
-	, dishSelected( false )
 {
 	init();
 }
@@ -34,25 +32,30 @@ DishView::~DishView()
 void DishView::init()
 {
 	// Compute scale based on image size and desired dish width
-	float scale = kDishWidth / dishPixmap.width();
-	QSize widgetSize = dishPixmap.size() * scale;
+	float scale = kDishWidth / dish.getPixmap().width();
+	QSize widgetSize = dish.getPixmap().size() * scale;
 
 	/* Create objects */
 	imageLabel = new QLabel( this );
-	imageLabel->setPixmap( dishPixmap );
+	imageLabel->setPixmap( dish.getPixmap() );
 	imageLabel->setMinimumSize( widgetSize );
 	imageLabel->setMaximumSize( widgetSize );
 	imageLabel->adjustSize();
 
+	ribbonLabel = new QLabel( this );
+	ribbonLabel->setPixmap( GetRibbonByCourse( dish.getCourseNum() ) );
+	ribbonLabel->adjustSize();
+
 	detailsLabel = new QLabel( this );
-	detailsLabel->setText( kDishDetailsText );
+	QString text = dish.getName() + " \n\n   Ingrediente: " + dish.getIngredients();	// Separate ingredients with 2 spaces
+	detailsLabel->setText( text );
 	detailsLabel->setWordWrap( true );
 	detailsLabel->setFont( QFont( kFontName, 10 ) );
 	detailsLabel->setAutoFillBackground( true );
 	detailsLabel->setMinimumSize( widgetSize );
 	detailsLabel->setMaximumSize( widgetSize );
 	detailsLabel->setAlignment( Qt::AlignTop );
-	detailsLabel->setStyleSheet( "background-color: rgba(255,255,255,80%)" );
+	detailsLabel->setStyleSheet( kDetailsOverlayStyleSheet );
 	detailsLabel->adjustSize();
 
 	/* Animations */
@@ -75,6 +78,16 @@ void DishView::init()
 	this->setMaximumSize( widgetSize );
 	
 	this->adjustSize();
+}
+
+QPixmap DishView::GetRibbonByCourse( int courseNum )
+{
+	if( courseNum == 1 )
+		return QPixmap( "Resources//ribbon1.png" );
+	else if( courseNum == 2 )
+		return QPixmap( "Resources//ribbon2.png" );
+
+	return QPixmap( "Resources//ribbon3.png" );
 }
 
 void DishView::wheelEvent( QWheelEvent* wheelEvent )
@@ -140,12 +153,12 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 	{
 		mousePressed = false;
 
-		dishSelected = !dishSelected;
+		dish.setSelected( !dish.isSelected() );
 
 		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 	}
 
-	if( dishSelected )
+	if( dish.isSelected() )
 	{
 		selectedEffect->enable();
 

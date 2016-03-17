@@ -1,8 +1,9 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#pragma once
 
 #include <QWidget>
+
 #include "ui_MainWindow.h"
+#include "MetroView.h"
 
 class MainWindow : public QWidget
 {
@@ -10,9 +11,11 @@ class MainWindow : public QWidget
 
 public:
 				MainWindow( QWidget *parent = 0 );
+
 				~MainWindow();
 private:
 	Ui::MainWindow	ui;
-};
+	MetroView*		metroView;
 
-#endif // MAINWINDOW_H
+	void		SendWeek();
+};

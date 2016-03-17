@@ -126,9 +126,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Model\Course.cpp" />
     <ClCompile Include="Model\Day.cpp" />
     <ClCompile Include="Model\Dish.cpp" />
+    <ClCompile Include="Model\Week.cpp" />
     <ClCompile Include="View\DayView.cpp" />
     <ClCompile Include="View\DishView.cpp" />
     <ClCompile Include="View\InfiniteBackground.cpp" />
@@ -155,7 +155,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h" />
-    <ClInclude Include="Model\Course.h" />
     <ClInclude Include="Model\Day.h" />
     <ClInclude Include="Model\Dish.h" />
     <ClInclude Include="Model\User.h" />
