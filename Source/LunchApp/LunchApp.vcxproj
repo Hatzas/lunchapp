@@ -153,7 +153,7 @@
     <ClCompile Include="View\WeekView.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Lunch App.rc" />
+    <ResourceCompile Include="LunchApp.rc" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="lunchapp.qrc">
