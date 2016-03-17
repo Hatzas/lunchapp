@@ -2,6 +2,7 @@
 
 #include <QWidget>
 
+#include "Model/Week.h"
 #include "DayView.h"
 
 
@@ -10,17 +11,17 @@ class WeekView : public QWidget
 	Q_OBJECT
 
 public:
-					WeekView( QWidget *parent );
+					WeekView( QWidget *parent, const Week& week );
 					~WeekView();
 
 	virtual void	wheelEvent( QWheelEvent* event );
 
 private:
-	DayView*	mondayView;
-	DayView*	tuesdayView;
-	DayView*	wednesdayView;
-	DayView*	thursdayView;
-	DayView*	fridayView;
+	Week					week;
+	std::vector<DayView*>	dayViewsVect;
 
 	void			init();
+
+	void			AddDays();
+
 };

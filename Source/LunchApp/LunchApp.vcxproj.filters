@@ -45,11 +45,11 @@
     <Filter Include="Source Files\View\Forms">
       <UniqueIdentifier>{8ec82476-9d71-4f80-a230-779b1d7b743e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Network">
-      <UniqueIdentifier>{13dddfb1-4ae9-460e-8021-604becb6cd07}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Network">
-      <UniqueIdentifier>{69f29c97-9000-4450-b4ae-5047de8a2755}</UniqueIdentifier>
+      <UniqueIdentifier>{fa88e54d-7873-469d-b368-19e7d59b8cc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{beb04cbf-953c-4301-a271-4c22f661adb7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -58,9 +58,6 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_lunchapp.cpp">
       <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Model\Course.cpp">
-      <Filter>Source Files\Model</Filter>
     </ClCompile>
     <ClCompile Include="Model\Day.cpp">
       <Filter>Source Files\Model</Filter>
@@ -131,6 +128,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_InfiniteBackground.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="Model\Week.cpp">
+      <Filter>Source Files\Model</Filter>
+    </ClCompile>
     <ClCompile Include="Network\DataTransfer.cpp">
       <Filter>Source Files\Network</Filter>
     </ClCompile>
@@ -192,9 +192,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Model\Course.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Model\Day.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -1,11 +1,17 @@
 #include "Dish.h"
 
-void Dish::addDishType( QString dishType )
+Dish::Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum )
+	: name( name )
+	, ingredients( ingredients )
+	, pixmap( pixmap )
+	, courseNum( courseNum )
+	, selected( false )
+	, userPreference( 1 )
 {
-	dishTypes.append( dishType );
+
 }
 
-QString Dish::getDishType()
+void Dish::addDishType( QString dishType )
 {
-	return dishTypes.at( typeIndex );
+	courseNames.append( dishType );
 }

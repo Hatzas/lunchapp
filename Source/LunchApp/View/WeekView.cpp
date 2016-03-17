@@ -4,8 +4,9 @@
 #include "MetroView.h"
 
 
-WeekView::WeekView( QWidget *parent )
+WeekView::WeekView( QWidget *parent, const Week& week  )
 	: QWidget(parent)
+	, week( week )
 {
 	init();
 }
@@ -18,20 +19,7 @@ WeekView::~WeekView()
 void WeekView::init()
 {
 	/* Create objects */
-	mondayView = new DayView( this, "Luni" );
-	mondayView->move( 0, 0 );
-
-	tuesdayView = new DayView( this, "Marti" );
-	tuesdayView->move( mondayView->pos().x() + mondayView->width() - kDishSpacing, 0 );	// "- kDishSpacing" is a temporary patch to fix double spacing between days
-
-	wednesdayView = new DayView( this, "Miercuri" );
-	wednesdayView->move( tuesdayView->pos().x() + tuesdayView->width() - kDishSpacing, 0 );
-
-	thursdayView = new DayView( this, "Joi" );
-	thursdayView->move( wednesdayView->pos().x() + wednesdayView->width() - kDishSpacing, 0 );
-
-	fridayView = new DayView( this, "Vineri" );
-	fridayView->move( thursdayView->pos().x() + thursdayView->width() - kDishSpacing, 0 );
+	AddDays();
 
 	this->adjustSize();
 }
@@ -39,4 +27,18 @@ void WeekView::init()
 void WeekView::wheelEvent( QWheelEvent* wheelEvent )
 {
 	return ((MetroView*)this->parent())->wheelEvent( wheelEvent );
+}
+
+void WeekView::AddDays()
+{
+	std::vector<Day>& daysVect = week.getDays();
+	for( size_t i = 0 ; i < daysVect.size() ; i++ )
+	{
+		DayView* dayView = new DayView( this, daysVect[i] );
+
+		if( i > 0 )
+			dayView->move( dayViewsVect[i-1]->pos().x() + dayViewsVect[i-1]->width() - kDishSpacing, 0 );		// "- kDishSpacing" is a temporary patch to fix double spacing between days
+
+		dayViewsVect.push_back( dayView );
+	}
 }
