@@ -1,0 +1,7 @@
+build-Debug-mingw
+build-LunchApp-Desktop-Debug
+build-Release-mingw
+ipch
+LunchApp/Debug
+LunchApp/GeneratedFiles
+LunchApp.sdf
