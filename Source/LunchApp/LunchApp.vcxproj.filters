@@ -45,6 +45,12 @@
     <Filter Include="Source Files\View\Forms">
       <UniqueIdentifier>{8ec82476-9d71-4f80-a230-779b1d7b743e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Network">
+      <UniqueIdentifier>{fa88e54d-7873-469d-b368-19e7d59b8cc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{beb04cbf-953c-4301-a271-4c22f661adb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -125,6 +131,27 @@
     <ClCompile Include="Model\Week.cpp">
       <Filter>Source Files\Model</Filter>
     </ClCompile>
+    <ClCompile Include="Network\DataTransfer.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DataTransfer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DataTransfer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\NetEntity.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Network\RestClient.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_RestClient.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_RestClient.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LunchApp.rc" />
@@ -157,6 +184,12 @@
     <CustomBuild Include="View\InfiniteBackground.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="Network\DataTransfer.h">
+      <Filter>Header Files\Network</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Network\RestClient.h">
+      <Filter>Header Files\Network</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Model\Day.h">
@@ -176,6 +209,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Network\NetEntity.h">
+      <Filter>Header Files\Network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
