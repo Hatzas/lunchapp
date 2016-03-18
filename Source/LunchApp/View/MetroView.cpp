@@ -163,6 +163,7 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 		}
 		else
 		{
+			return;		// Disable as it went too fast
 			animations->stop();
 
 			weekAnimation->setStartValue( weekAnimation->currentValue().toPointF() );
@@ -194,6 +195,8 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 		}
 		else
 		{
+			return;		// Disable as it went too fast
+
 			animations->stop();
 
 			weekAnimation->setStartValue( weekAnimation->currentValue().toPointF() );
