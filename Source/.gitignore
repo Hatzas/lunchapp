@@ -3,5 +3,6 @@ build-LunchApp-Desktop-Debug
 build-Release-mingw
 ipch
 LunchApp/Debug
+LunchApp/Release
 LunchApp/GeneratedFiles
 LunchApp.sdf
