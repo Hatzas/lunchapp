@@ -4,13 +4,9 @@
 
 #include "ui_MainWindow.h"
 #include "MetroView.h"
-<<<<<<< HEAD:Source/LunchApp/View/MainWindow.h
-#include <QSystemTrayIcon>
-=======
 #include "Controller/Controller.h"
+#include <QSystemTrayIcon>
 
-class QSystemTrayIcon;
->>>>>>> GUI:Source/LunchApp/MainWindow.h
 
 class MainWindow : public QWidget
 {
@@ -24,7 +20,7 @@ public:
 
 private slots:
 	void		onTrayActivation(QSystemTrayIcon::ActivationReason reason);
-
+	virtual void	closeEvent(QCloseEvent* event);
 signals:
 	void		SelectionChangedOn( const Dish& dish );
 
@@ -33,7 +29,7 @@ private:
 
 	MetroView*			metroView;
 	Controller*			controller;
-
+	
 	QSystemTrayIcon*	trayIcon;
 	QMenu*				trayIconMenu;
 

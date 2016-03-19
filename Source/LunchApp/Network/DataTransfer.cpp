@@ -8,36 +8,54 @@ DataTransfer::DataTransfer(QObject* parent) : QObject(parent)
 {
     restClient = new RestClient(kWebApiUrl, this);
 
-    connect(restClient, SIGNAL(replyFinished(NetEntity)), this, SLOT(onMenuFinished(NetEntity)));
+    connect(restClient, SIGNAL(replyFinished(NetEntity)), this, SLOT(onRequestFinished(NetEntity)));
 }
 
 DataTransfer::~DataTransfer()
 {
 }
 
-void DataTransfer::getMenu()
+void DataTransfer::getMenu(const QDateTime& startDate, const QDateTime& endDate)
 {
 	NetEntity entity;
     entity.setMethodType(eGetMethod);
     entity.setMethodUrl("menu");
-    entity.addRequestParam("StartDate", "2016-03-01");
-	entity.addRequestParam("EndDate", "2016-03-05");
+	entity.addRequestParam("StartDate","2016-03-21");
+	entity.addRequestParam("EndDate", "2016-03-25");
 
 	restClient->pushRequest(entity);
 }
 
-void DataTransfer::getUserMenu()
+void DataTransfer::getUserMenu(const QDateTime& startDate, const QDateTime& endDate)
 {
 	NetEntity entity;
-	entity.setMethodType(ePostMethod);
+	entity.setMethodType(eGetMethod);
 	entity.setMethodUrl("usermenu");
-	entity.addRequestParam("StartDate", "2016-03-01");
-	entity.addRequestParam("EndDate", "2016-03-05");
+	entity.addRequestParam("StartDate", "2016-03-21");
+	entity.addRequestParam("EndDate", "2016-03-25");
 
 	restClient->pushRequest(entity);
 }
 
-void DataTransfer::onMenuFinished(const NetEntity& entity)
+void DataTransfer::getDish()
+{
+	NetEntity entity;
+	entity.setMethodType(eGetMethod);
+	entity.setMethodUrl("dish");
+
+	restClient->pushRequest(entity);
+}
+
+void DataTransfer::getDishCategory()
+{
+	NetEntity entity;
+	entity.setMethodType(eGetMethod);
+	entity.setMethodUrl("dishcategory");
+
+	restClient->pushRequest(entity);
+}
+
+void DataTransfer::onRequestFinished(const NetEntity& entity)
 {
 	bool ok;
 	QJsonDocument json = QJsonDocument::fromJson(entity.getResult().toUtf8());

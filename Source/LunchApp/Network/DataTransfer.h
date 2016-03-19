@@ -13,15 +13,17 @@ public:
                 DataTransfer(QObject* parent = 0);
 				~DataTransfer();
 
-	void		getMenu();
-	void		getUserMenu();
+	void		getMenu(const QDateTime& startDate, const QDateTime& endDate);
+	void		getUserMenu(const QDateTime& startDate, const QDateTime& endDate);
+	void		getDish();
+	void		getDishCategory();
 	
 signals:
 	void		menuFinished();
     void        userMenuFinished();
 
 private slots:
-    void		onMenuFinished(const NetEntity& entity);
+    void		onRequestFinished(const NetEntity& entity);
 
 private:
 	RestClient*	restClient;

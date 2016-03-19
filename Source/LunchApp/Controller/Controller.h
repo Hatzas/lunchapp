@@ -7,6 +7,8 @@
 #include "../Model/Week.h"
 
 
+class DataTransfer;
+
 class Controller : public QObject
 {
 	Q_OBJECT
@@ -26,4 +28,7 @@ public slots:
 
 private:
 	void		requestWeek( QDateTime startDate, QDateTime endDate );
+
+private:
+	DataTransfer*	dataTransfer;
 };

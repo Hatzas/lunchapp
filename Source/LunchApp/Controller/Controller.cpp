@@ -1,12 +1,13 @@
 #include "Controller.h"
 
 #include <windows.h>
-
+#include "Network/DataTransfer.h"
 
 Controller::Controller(QObject *parent)
 	: QObject(parent)
 {
-
+	dataTransfer = new DataTransfer(this);
+	dataTransfer->getMenu(QDateTime(), QDateTime());
 }
 
 Controller::~Controller()
@@ -42,6 +43,7 @@ void Controller::selectionChangedOn( const Dish& dish )
 
 void Controller::requestWeek( QDateTime startDate, QDateTime endDate )
 {
+	dataTransfer->getMenu(startDate, endDate);
 	// Make request to database
 	// TO DO
 

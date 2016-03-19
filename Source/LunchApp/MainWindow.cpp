@@ -1,9 +1,8 @@
 #include "MainWindow.h"
 
 #include <algorithm>
-#include "Network/DataTransfer.h"
 #include <QMenu>
-
+#include <QCloseEvent>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QWidget(parent)
@@ -13,27 +12,15 @@ MainWindow::MainWindow(QWidget *parent)
 	metroView = new MetroView( parent );
 	ui.verticalLayout->addWidget( metroView );
 
-<<<<<<< HEAD:Source/LunchApp/View/MainWindow.cpp
-	
-
-	//setupTray();
-	//showTrayMessage( "Baga meniul" );
-
-	SendWeek();
-
-	DataTransfer* dt = new DataTransfer(this);
-	dt->getMenu();
-=======
 	// Tray
 	setupTray();
 	showTrayMessage( "Baga meniul" );
 
 	// Controller and connections
 	setupController();
-
+	
 	// Dummy data
 	sendWeek();
->>>>>>> GUI:Source/LunchApp/MainWindow.cpp
 }
 
 MainWindow::~MainWindow()
@@ -42,19 +29,26 @@ MainWindow::~MainWindow()
 
 void MainWindow::showTrayMessage( const QString& msg )
 {
-	trayIcon->showMessage( tr("Lunch App"), msg, QSystemTrayIcon::Information, 20000 );
+	trayIcon->showMessage(tr("Lunch App"), msg, QSystemTrayIcon::Information);
 }
 
-<<<<<<< HEAD:Source/LunchApp/View/MainWindow.cpp
 void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
 {
-	
+	if(reason == QSystemTrayIcon::Context)
+		return;
+
+	show();
 }
 
-void MainWindow::SendWeek()
-=======
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+	hide();
+	event->ignore();
+
+	showTrayMessage(tr("Aplicatia nu e moarta, se transforma (in tray)"));
+}
+
 void MainWindow::sendWeek()
->>>>>>> GUI:Source/LunchApp/MainWindow.cpp
 {
 	// Dummy data
 	std::vector<Dish> dishesVect;
@@ -92,7 +86,6 @@ void MainWindow::sendWeek()
 
 void MainWindow::setupTray()
 {
-<<<<<<< HEAD:Source/LunchApp/View/MainWindow.cpp
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setIcon(QIcon("Resources/like.png"));
 	trayIcon->setToolTip(tr("Lunch App\nApasa-l"));
@@ -100,12 +93,12 @@ void MainWindow::setupTray()
 	connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayActivation(QSystemTrayIcon::ActivationReason)));
 
 	trayIconMenu = new QMenu(this);
+	
+	QAction* quitAction = new QAction(tr("Inchide de tot"), trayIconMenu);
+	connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+	trayIconMenu->addAction(quitAction);
+	
 	trayIcon->setContextMenu(trayIconMenu);
-=======
-	trayIcon = new QSystemTrayIcon( this );
-	trayIcon->setIcon( QIcon("Resources/like.png") );
-	trayIcon->setToolTip( tr("Lunch App\nApasa-l") );
->>>>>>> GUI:Source/LunchApp/MainWindow.cpp
 	trayIcon->show();
 }
 
