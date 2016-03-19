@@ -4,7 +4,8 @@
 #include <QPixmap>
 #include <QLabel>
 #include <QPropertyAnimation>
-
+#include <QGraphicsBlurEffect>
+#include <QGraphicsColorizeEffect>
 
 #include "SelectedEffect.h"
 #include "../Model/Dish.h"
@@ -18,6 +19,8 @@ public:
 						DishView( QWidget *parent, const Dish& dish );
 						~DishView();
 
+			void		setDisabled( bool disabled );
+			bool		getDisabled()						{ return disabled; }
 protected:
 	virtual void		wheelEvent( QWheelEvent* event );
 	
@@ -29,16 +32,18 @@ protected:
 	virtual void		mouseReleaseEvent( QMouseEvent* event );
 
 private:
-			Dish					dish;
+			Dish						dish;
+			bool						disabled;			// true when a user selection excludes other dishes (like from the same course)
 
-			QLabel*					imageLabel;
-			QLabel*					ribbonLabel;
-			QLabel*					detailsLabel;
+			QLabel*						imageLabel;
+			QLabel*						ribbonLabel;
+			QLabel*						detailsLabel;
 
-			QPropertyAnimation*		detailsAnimation;
-			SelectedEffect*			selectedEffect;
+			QPropertyAnimation*			detailsAnimation;
 
-			bool					mousePressed;
+			SelectedEffect*				selectedEffect;
+
+			bool						mousePressed;
 
 			void		init();
 			QPixmap		GetRibbonByCourse( int courseNum );

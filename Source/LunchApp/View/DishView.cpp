@@ -19,6 +19,7 @@ static const float			kBriefDetailsOffset		= 30;
 DishView::DishView( QWidget *parent, const Dish& dish  )
 	: QWidget( parent )
 	, dish( dish )
+	, disabled( false )
 	, mousePressed( false )
 {
 	init();
@@ -97,6 +98,9 @@ void DishView::wheelEvent( QWheelEvent* wheelEvent )
 
 void DishView::enterEvent( QEvent* event )
 {
+	if( disabled )
+		return;
+
 	if( detailsAnimation->state() == QAbstractAnimation::Running )
 		detailsAnimation->stop();
 
@@ -110,6 +114,9 @@ void DishView::enterEvent( QEvent* event )
 
 void DishView::leaveEvent( QEvent* event )
 {
+	if( disabled )
+		return;
+
 	if( mousePressed )
 	{
 		mousePressed = false;
@@ -129,6 +136,9 @@ void DishView::leaveEvent( QEvent* event )
 
 void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 {
+	if( disabled )
+		return;
+
 	// Show full details if mouse over them
 	if( ( this->childAt( mouseEvent->pos() ) == detailsLabel ) && ( detailsAnimation->state() != QAbstractAnimation::Running ) )
 	{
@@ -142,6 +152,9 @@ void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 
 void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 {
+	if( disabled )
+		return;
+
 	mousePressed = true;
 
 	this->move( this->pos() + QPoint( kClickMovement, kClickMovement ) );
@@ -149,11 +162,15 @@ void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 
 void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 {
+	if( disabled )
+		return;
+
 	if( mousePressed )
 	{
 		mousePressed = false;
 
 		dish.setSelected( !dish.isSelected() );
+		((DayView*)parent())->SelectionChangedOn( dish );
 
 		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 	}
@@ -166,13 +183,33 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
 		dropShadow->setOffset( 0.0f );
 		dropShadow->setBlurRadius( kSelectedShadowSize );
-		dropShadow->setColor( kSelectedGlowColor );
-		this->setGraphicsEffect( dropShadow );
+		//dropShadow->setColor( kSelectedGlowColor );
+		//this->setGraphicsEffect( dropShadow );
 	}
 	else
 	{
 		selectedEffect->disable();
 
+		this->setGraphicsEffect( NULL );
+	}
+}
+
+void DishView::setDisabled( bool disabled )
+{
+	this->disabled = disabled;
+
+	if( disabled )
+	{
+		// Show disabled effect
+// 		QGraphicsBlurEffect* blurEffect = new QGraphicsBlurEffect( this );
+// 		this->setGraphicsEffect( blurEffect );
+
+		QGraphicsColorizeEffect* colorizeEffect = new QGraphicsColorizeEffect( this );
+		colorizeEffect->setColor( kDisabledColor );
+		this->setGraphicsEffect( colorizeEffect );
+	}
+	else
+	{
 		this->setGraphicsEffect( NULL );
 	}
 }

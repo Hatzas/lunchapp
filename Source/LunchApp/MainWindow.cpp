@@ -4,14 +4,16 @@
 #include "Network/DataTransfer.h"
 #include <QMenu>
 
+
 MainWindow::MainWindow(QWidget *parent)
 	: QWidget(parent)
 {
+	// UI
 	ui.setupUi(this);
-
 	metroView = new MetroView( parent );
 	ui.verticalLayout->addWidget( metroView );
 
+<<<<<<< HEAD:Source/LunchApp/View/MainWindow.cpp
 	
 
 	//setupTray();
@@ -21,6 +23,17 @@ MainWindow::MainWindow(QWidget *parent)
 
 	DataTransfer* dt = new DataTransfer(this);
 	dt->getMenu();
+=======
+	// Tray
+	setupTray();
+	showTrayMessage( "Baga meniul" );
+
+	// Controller and connections
+	setupController();
+
+	// Dummy data
+	sendWeek();
+>>>>>>> GUI:Source/LunchApp/MainWindow.cpp
 }
 
 MainWindow::~MainWindow()
@@ -32,12 +45,16 @@ void MainWindow::showTrayMessage( const QString& msg )
 	trayIcon->showMessage( tr("Lunch App"), msg, QSystemTrayIcon::Information, 20000 );
 }
 
+<<<<<<< HEAD:Source/LunchApp/View/MainWindow.cpp
 void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
 {
 	
 }
 
 void MainWindow::SendWeek()
+=======
+void MainWindow::sendWeek()
+>>>>>>> GUI:Source/LunchApp/MainWindow.cpp
 {
 	// Dummy data
 	std::vector<Dish> dishesVect;
@@ -75,6 +92,7 @@ void MainWindow::SendWeek()
 
 void MainWindow::setupTray()
 {
+<<<<<<< HEAD:Source/LunchApp/View/MainWindow.cpp
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setIcon(QIcon("Resources/like.png"));
 	trayIcon->setToolTip(tr("Lunch App\nApasa-l"));
@@ -83,5 +101,21 @@ void MainWindow::setupTray()
 
 	trayIconMenu = new QMenu(this);
 	trayIcon->setContextMenu(trayIconMenu);
+=======
+	trayIcon = new QSystemTrayIcon( this );
+	trayIcon->setIcon( QIcon("Resources/like.png") );
+	trayIcon->setToolTip( tr("Lunch App\nApasa-l") );
+>>>>>>> GUI:Source/LunchApp/MainWindow.cpp
 	trayIcon->show();
+}
+
+void MainWindow::setupController()
+{
+	controller = new Controller( this );
+
+	connect( controller, SIGNAL( weekArrived( const Week& ) ), metroView, SLOT( weekArrived( const Week& ) )/*, Qt::QueuedConnection*/ );
+	
+	connect( metroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) )/*, Qt::QueuedConnection*/ );
+	connect( metroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) )/*, Qt::QueuedConnection*/ );
+	connect( metroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) )/*, Qt::QueuedConnection*/ );
 }

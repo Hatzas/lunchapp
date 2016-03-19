@@ -18,6 +18,8 @@ public:
 
 	virtual void	wheelEvent( QWheelEvent* event );
 
+			void	SelectionChangedOn( const Dish& dish );		
+
 private:
 	Day						day;
 

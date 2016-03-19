@@ -5,7 +5,7 @@
 #include <QParallelAnimationGroup>
 #include <QLabel>
 
-#include "WeekView.h"
+#include "AllWeeksView.h"
 #include "InfiniteBackground.h"
 
 
@@ -19,6 +19,12 @@ public:
 
 	virtual void	wheelEvent( QWheelEvent* event );
 
+signals:
+		void		requestWeekBefore( const Week& week );
+		void		requestWeekAfter( const Week& week );
+
+		void		selectionChangedOn( const Dish& dish );
+
 public slots:
 			void	weekArrived( const Week& week );
 
@@ -30,10 +36,9 @@ private:
 
 	InfiniteBackground*			background;
 	QLabel*						weekLabel;
-	WeekView*					currentWeekView;
-	std::vector<WeekView*>		weekViewsVect;
+	AllWeeksView*				weeksView;
 
-	QPropertyAnimation*			weekAnimation;
+	QPropertyAnimation*			weekMoveAnimation;
 	QPropertyAnimation*			backgroundAnimation;
 
 	QSequentialAnimationGroup*	weekAnimationsQueue;

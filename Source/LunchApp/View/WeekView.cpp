@@ -1,7 +1,7 @@
 #include "WeekView.h"
 
 #include "Style.h"
-#include "MetroView.h"
+#include "AllWeeksView.h"
 
 
 WeekView::WeekView( QWidget *parent, const Week& week  )
@@ -26,7 +26,7 @@ void WeekView::init()
 
 void WeekView::wheelEvent( QWheelEvent* wheelEvent )
 {
-	return ((MetroView*)this->parent())->wheelEvent( wheelEvent );
+	return ((AllWeeksView*)this->parent())->wheelEvent( wheelEvent );
 }
 
 void WeekView::AddDays()

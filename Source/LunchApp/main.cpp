@@ -3,7 +3,7 @@
 #include <QtQuick/QQuickWindow>
 #include <QtCore/QUrl>
 
-#include "View/MainWindow.h"
+#include "MainWindow.h"
 
 int main( int argc, char* argv[] )
 {
