@@ -16,6 +16,8 @@ public:
 
 	virtual void	wheelEvent( QWheelEvent* event );
 
+	const Week&		getWeek()							{ return week; }	
+
 private:
 	Week					week;
 	std::vector<DayView*>	dayViewsVect;

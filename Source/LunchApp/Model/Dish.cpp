@@ -10,8 +10,3 @@ Dish::Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum )
 {
 
 }
-
-void Dish::addDishType( QString dishType )
-{
-	courseNames.append( dishType );
-}

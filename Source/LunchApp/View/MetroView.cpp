@@ -22,7 +22,6 @@ static const QString kWeekTextPrefix		= "Saptamana: ";
 
 MetroView::MetroView(QWidget *parent)
 	: QGraphicsView(parent)
-	, currentWeekView( NULL )
 {
 	init();
 }
@@ -68,15 +67,19 @@ void MetroView::addSceneItems()
 	weekLabel->adjustSize();
 	weekLabel->move( 40, 30 );
 
-	QGraphicsOpacityEffect *opacity = new QGraphicsOpacityEffect();
-	opacity->setOpacity( 1.0f );
-	weekLabel->setGraphicsEffect( opacity );
+	weeksView = new AllWeeksView( this );
+	weeksView->move( 0, kWeekOffsetY );
 
 	/* Add to scene */
 	scene->addWidget( background );
 	scene->addWidget( weekLabel );
 
-	/* Create animations */
+	/* Effects */
+	QGraphicsOpacityEffect *opacity = new QGraphicsOpacityEffect();
+	opacity->setOpacity( 1.0f );
+	weekLabel->setGraphicsEffect( opacity );
+
+	/* Animations */
 	QPropertyAnimation* weekTextAnimationOut = new QPropertyAnimation( opacity, "opacity" );
 	weekTextAnimationOut->setDuration( kWeekAnimationTime / 2.f );
 	weekTextAnimationOut->setStartValue( 1.0f );
@@ -93,8 +96,8 @@ void MetroView::addSceneItems()
 	textAnimations->addAnimation( weekTextAnimationOut );
 	textAnimations->addAnimation( weekTextAnimationIn );
 
-	weekAnimation = new QPropertyAnimation( NULL, "pos" );
-	weekAnimation->setEasingCurve( QEasingCurve::OutCirc );
+	weekMoveAnimation = new QPropertyAnimation( weeksView, "pos" );
+	weekMoveAnimation->setEasingCurve( QEasingCurve::OutCirc );
 
 	backgroundAnimation = new QPropertyAnimation( background, "offset" );
 	backgroundAnimation->setEasingCurve( QEasingCurve::OutCirc );
@@ -102,7 +105,7 @@ void MetroView::addSceneItems()
 	animations = new QParallelAnimationGroup();
 	animations->addAnimation( backgroundAnimation );
 	//animations->addAnimation( textAnimations );
-	animations->addAnimation( weekAnimation );
+	animations->addAnimation( weekMoveAnimation );
 
 	this->setMinimumWidth( 5 * kDayWidth + kDishSpacing );
 	this->setMinimumHeight( this->height() );
@@ -125,54 +128,40 @@ void MetroView::addSceneItems()
 
 void MetroView::weekArrived( const Week& week )
 {
-	weekLabel->setText( kWeekTextPrefix + week.getStartEndDate() );
-	weekLabel->adjustSize();
-
-	WeekView* weekView = new WeekView( this, week );
-
-	// Insert sorted based on date
-	// TO DO
-	weekViewsVect.push_back( weekView );
-
-	if( currentWeekView == NULL )
-	{
-		weekView->move( 0, kWeekOffsetY );
-		currentWeekView = weekView;
-	}
-
-	weekAnimation->setTargetObject( currentWeekView );
-
-	scene->addWidget( weekView );
+	weeksView->addWeek( week );
 }
 
 void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 {
+	int scrollDist = this->width() /*kDayWidth*/;	// Scroll one column or the whole week
 	if( wheelEvent->delta() > 0 )
 	{
-		if( weekAnimation->state() != QAbstractAnimation::Running )
+		if( weekMoveAnimation->state() != QAbstractAnimation::Running )
 		{
-			weekAnimation->setStartValue( currentWeekView->pos() );
-			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() + /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
-			weekAnimation->setDuration( kWeekAnimationTime );
+			weekMoveAnimation->setStartValue( weeksView->pos() );
+			weekMoveAnimation->setEndValue( QPointF( weeksView->pos().x() + scrollDist, weeksView->pos().y() ) );
+			weekMoveAnimation->setDuration( kWeekAnimationTime );
 
 			backgroundAnimation->setStartValue( background->getOffset() );
-			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() + /*this->width()*/ kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() + scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime );
 
 			animations->start();
 		}
 		else
 		{
+			return;
+
 			animations->stop();
 
-			weekAnimation->setStartValue( weekAnimation->currentValue().toPointF() );
-			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() + /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
+			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
+			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() + scrollDist, weeksView->pos().y() ) );
 
-			int numDays = (int)((weekAnimation->endValue().toPointF().x() - weekAnimation->startValue().toPointF().x()) / kDayWidth);
-			weekAnimation->setDuration( kWeekAnimationTime * numDays/2 );
+			int numDays = (int)((weekMoveAnimation->endValue().toPointF().x() - weekMoveAnimation->startValue().toPointF().x()) / kDayWidth);
+			weekMoveAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
-			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() + /*this->width()*/ kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() + scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			animations->start();
@@ -180,30 +169,32 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 	} 
 	else if( wheelEvent->delta() < 0 )
 	{
-		if( weekAnimation->state() != QAbstractAnimation::Running )
+		if( weekMoveAnimation->state() != QAbstractAnimation::Running )
 		{
-			weekAnimation->setStartValue( currentWeekView->pos() );
-			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() - /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
-			weekAnimation->setDuration( kWeekAnimationTime );
+			weekMoveAnimation->setStartValue( weeksView->pos() );
+			weekMoveAnimation->setEndValue( QPointF( weeksView->pos().x() - scrollDist, weeksView->pos().y() ) );
+			weekMoveAnimation->setDuration( kWeekAnimationTime );
 
 			backgroundAnimation->setStartValue( background->getOffset() );
-			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() - /*this->width()*/ kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() - scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime );
 
 			animations->start();
 		}
 		else
 		{
+			return;
+
 			animations->stop();
 
-			weekAnimation->setStartValue( weekAnimation->currentValue().toPointF() );
-			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() - /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
+			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
+			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() - scrollDist, weeksView->pos().y() ) );
 
-			int numDays = (int)((weekAnimation->startValue().toPointF().x() - weekAnimation->endValue().toPointF().x()) / kDayWidth);
-			weekAnimation->setDuration( kWeekAnimationTime * numDays/2 );
+			int numDays = (int)((weekMoveAnimation->startValue().toPointF().x() - weekMoveAnimation->endValue().toPointF().x()) / kDayWidth);
+			weekMoveAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
-			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() - /*this->width()*/ kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() - scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			animations->start();

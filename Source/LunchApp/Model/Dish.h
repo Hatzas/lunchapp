@@ -8,8 +8,6 @@ class Dish
 public:
 					Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum );
 
-	void			addDishType( QString dishType );
-
 	QString			getName() const								{ return name; }
 	void			setName( QString name )						{ this->name = name; }
 
@@ -22,6 +20,9 @@ public:
 	int				getCourseNum() const						{ return courseNum; }
 	void			setCourseNum( int courseNum )				{ this->courseNum = courseNum; }
 
+	QString			getType()									{ return type; }
+	void			setType( QString dish )						{ this->type = type; }
+
 	bool			isSelected() const							{ return selected; };
 	void			setSelected( bool selected )				{ this->selected = selected; }
 
@@ -33,11 +34,10 @@ private:
 	QString			ingredients;
 	QPixmap			pixmap;
 	int				courseNum;			// 1 == Course 1, 2 == Course 2, etc.
+	QString			type;
 
 	bool			selected;
 	int				userPreference;		// 0 = Best, the more the lower
-
-	QStringList		courseNames;
 
 					Dish();
 };

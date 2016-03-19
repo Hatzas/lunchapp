@@ -80,5 +80,9 @@ void MainWindow::setupController()
 {
 	controller = new Controller( this );
 
-	//connect( metroView, SIGNAL( SelectionChangedOn( const Dish& ) ), controller, SLOT( SelectionChangedOn( const Dish& ) ) );
+	connect( controller, SIGNAL( weekArrived( const Week& ) ), metroView, SLOT( weekArrived( const Week& ) )/*, Qt::QueuedConnection*/ );
+	
+	connect( metroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) )/*, Qt::QueuedConnection*/ );
+	connect( metroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) )/*, Qt::QueuedConnection*/ );
+	connect( metroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) )/*, Qt::QueuedConnection*/ );
 }
