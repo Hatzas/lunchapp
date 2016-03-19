@@ -1,6 +1,7 @@
 #include "RestClient.h"
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
+#include <QUrlQuery>
 
 
 RestClient::RestClient(const QString &apiUrl, QObject* parent) : QObject(parent),
@@ -17,9 +18,31 @@ RestClient::~RestClient()
 
 void RestClient::pushRequest(const NetEntity& entity)
 {
-    QUrl url(webApiUrl + entity.getMethodUrl());
-	QNetworkRequest request( url );	
-    QNetworkReply* reply = networkManager->get(request);
+	QUrl url(webApiUrl + entity.getMethodUrl());
+    QNetworkReply* reply = 0;
+
+	switch(entity.getMethodType())
+	{
+	case eGetMethod:
+		{
+			QUrlQuery queryUrl;
+			foreach(const QueryPair& queryPair, entity.getRequestParams())
+			{
+				queryUrl.addQueryItem(queryPair.key, queryPair.value);
+			}
+
+			url.setQuery(queryUrl);
+			QNetworkRequest request(url);
+			reply = networkManager->get(request);
+			break;
+		}
+	case ePostMethod:
+		{
+			QNetworkRequest request(url);
+			reply = networkManager->post(request, entity.getJsonRequest().toUtf8());
+			break;
+		}
+	}
 
 	listMutex.lock();
     requestList.insert(reply, entity);
@@ -46,17 +69,19 @@ void RestClient::onNetworkReply(QNetworkReply* reply)
     }
     listMutex.unlock();
 
-    if(reply->error() == QNetworkReply::NoError)
+	if(found)
 	{
-        if(found)
+		if(reply->error() == QNetworkReply::NoError)
 		{
-            entity.setResult(reply->readAll());
+			entity.setResult(reply->readAll());
 		}
+		else
+		{
+			entity.setError(reply->errorString());
+		}
+		
+		emit replyFinished(entity);
 	}
 
-    if(found)
-    {
-        emit replyFinished(entity);
-    }
 	reply->deleteLater();
 }

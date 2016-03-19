@@ -1,7 +1,8 @@
 #include "MainWindow.h"
 
 #include <algorithm>
-#include <QSystemTrayIcon>
+#include "Network/DataTransfer.h"
+#include <QMenu>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QWidget(parent)
@@ -11,12 +12,15 @@ MainWindow::MainWindow(QWidget *parent)
 	metroView = new MetroView( parent );
 	ui.verticalLayout->addWidget( metroView );
 
-	trayIcon = new QSystemTrayIcon( this );
+	
 
-	setupTray();
-	showTrayMessage( "Baga meniul" );
+	//setupTray();
+	//showTrayMessage( "Baga meniul" );
 
 	SendWeek();
+
+	DataTransfer* dt = new DataTransfer(this);
+	dt->getMenu();
 }
 
 MainWindow::~MainWindow()
@@ -26,6 +30,11 @@ MainWindow::~MainWindow()
 void MainWindow::showTrayMessage( const QString& msg )
 {
 	trayIcon->showMessage( tr("Lunch App"), msg, QSystemTrayIcon::Information, 20000 );
+}
+
+void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
+{
+	
 }
 
 void MainWindow::SendWeek()
@@ -66,7 +75,13 @@ void MainWindow::SendWeek()
 
 void MainWindow::setupTray()
 {
-	trayIcon->setIcon( QIcon("Resources/like.png") );
-	trayIcon->setToolTip( tr("Lunch App\nApasa-l") );
+	trayIcon = new QSystemTrayIcon(this);
+	trayIcon->setIcon(QIcon("Resources/like.png"));
+	trayIcon->setToolTip(tr("Lunch App\nApasa-l"));
+
+	connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayActivation(QSystemTrayIcon::ActivationReason)));
+
+	trayIconMenu = new QMenu(this);
+	trayIcon->setContextMenu(trayIconMenu);
 	trayIcon->show();
 }

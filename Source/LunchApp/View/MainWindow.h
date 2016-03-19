@@ -4,8 +4,7 @@
 
 #include "ui_MainWindow.h"
 #include "MetroView.h"
-
-class QSystemTrayIcon;
+#include <QSystemTrayIcon>
 
 class MainWindow : public QWidget
 {
@@ -16,12 +15,16 @@ public:
 
 				~MainWindow();
 	
-	void		showTrayMessage( const QString& msg );
+	void		showTrayMessage(const QString& msg);
+
+private slots:
+	void		onTrayActivation(QSystemTrayIcon::ActivationReason reason);
 
 private:
 	Ui::MainWindow		ui;
 	MetroView*			metroView;
 	QSystemTrayIcon*	trayIcon;
+	QMenu*				trayIconMenu;
 
 	void				SendWeek();
 	void				setupTray();

@@ -14,9 +14,11 @@ public:
 				~DataTransfer();
 
 	void		getMenu();
-
+	void		getUserMenu();
+	
 signals:
-    void        userMenu();
+	void		menuFinished();
+    void        userMenuFinished();
 
 private slots:
     void		onMenuFinished(const NetEntity& entity);
