@@ -46,6 +46,23 @@ void DayView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((WeekView*)this->parent())->wheelEvent( wheelEvent );
 }
 
+void DayView::SelectionChangedOn( const Dish& dish )
+{
+	// Disable other dishes from same course
+	std::vector<Dish>& dishesVect = day.getDishes();
+	for( size_t i = 0 ; i < dishesVect.size() ; i++ )
+	{
+		if( dish.getName() != dishesVect[i].getName()
+			&& dishesVect[i].getCourseNum() == dish.getCourseNum() )
+		{
+			disheViewsVect[i]->setDisabled( dish.isSelected() );
+		}
+	}
+
+	// Update View
+	update();
+}
+
 void DayView::AddDishes()
 {
 	std::vector<Dish>& dishesVect = day.getDishes();

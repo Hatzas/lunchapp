@@ -3,20 +3,24 @@
 #include <algorithm>
 #include <QSystemTrayIcon>
 
+
 MainWindow::MainWindow(QWidget *parent)
 	: QWidget(parent)
 {
+	// UI
 	ui.setupUi(this);
-
 	metroView = new MetroView( parent );
 	ui.verticalLayout->addWidget( metroView );
 
-	trayIcon = new QSystemTrayIcon( this );
-
+	// Tray
 	setupTray();
 	showTrayMessage( "Baga meniul" );
 
-	SendWeek();
+	// Controller and connections
+	setupController();
+
+	// Dummy data
+	sendWeek();
 }
 
 MainWindow::~MainWindow()
@@ -28,7 +32,7 @@ void MainWindow::showTrayMessage( const QString& msg )
 	trayIcon->showMessage( tr("Lunch App"), msg, QSystemTrayIcon::Information, 20000 );
 }
 
-void MainWindow::SendWeek()
+void MainWindow::sendWeek()
 {
 	// Dummy data
 	std::vector<Dish> dishesVect;
@@ -66,7 +70,15 @@ void MainWindow::SendWeek()
 
 void MainWindow::setupTray()
 {
+	trayIcon = new QSystemTrayIcon( this );
 	trayIcon->setIcon( QIcon("Resources/like.png") );
 	trayIcon->setToolTip( tr("Lunch App\nApasa-l") );
 	trayIcon->show();
+}
+
+void MainWindow::setupController()
+{
+	controller = new Controller( this );
+
+	//connect( metroView, SIGNAL( SelectionChangedOn( const Dish& ) ), controller, SLOT( SelectionChangedOn( const Dish& ) ) );
 }

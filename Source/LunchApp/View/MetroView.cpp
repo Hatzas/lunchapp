@@ -152,28 +152,27 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 		if( weekAnimation->state() != QAbstractAnimation::Running )
 		{
 			weekAnimation->setStartValue( currentWeekView->pos() );
-			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() + this->width() /*kDayWidth*/, currentWeekView->pos().y() ) );
+			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() + /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
 			weekAnimation->setDuration( kWeekAnimationTime );
 
 			backgroundAnimation->setStartValue( background->getOffset() );
-			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() + this->width() /*kDayWidth*/ * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() + /*this->width()*/ kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime );
 
 			animations->start();
 		}
 		else
 		{
-			return;		// Disable as it went too fast
 			animations->stop();
 
 			weekAnimation->setStartValue( weekAnimation->currentValue().toPointF() );
-			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() + this->width() /*kDayWidth*/, currentWeekView->pos().y() ) );
+			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() + /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
 
 			int numDays = (int)((weekAnimation->endValue().toPointF().x() - weekAnimation->startValue().toPointF().x()) / kDayWidth);
 			weekAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
-			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() + this->width() /*kDayWidth*/ * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() + /*this->width()*/ kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			animations->start();
@@ -184,29 +183,27 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 		if( weekAnimation->state() != QAbstractAnimation::Running )
 		{
 			weekAnimation->setStartValue( currentWeekView->pos() );
-			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() - this->width() /*kDayWidth*/, currentWeekView->pos().y() ) );
+			weekAnimation->setEndValue( QPointF( currentWeekView->pos().x() - /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
 			weekAnimation->setDuration( kWeekAnimationTime );
 
 			backgroundAnimation->setStartValue( background->getOffset() );
-			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() - this->width() /*kDayWidth*/ * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() - /*this->width()*/ kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime );
 
 			animations->start();
 		}
 		else
 		{
-			return;		// Disable as it went too fast
-
 			animations->stop();
 
 			weekAnimation->setStartValue( weekAnimation->currentValue().toPointF() );
-			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() - this->width() /*kDayWidth*/, currentWeekView->pos().y() ) );
+			weekAnimation->setEndValue( QPointF( weekAnimation->endValue().toPointF().x() - /*this->width()*/ kDayWidth, currentWeekView->pos().y() ) );
 
 			int numDays = (int)((weekAnimation->startValue().toPointF().x() - weekAnimation->endValue().toPointF().x()) / kDayWidth);
 			weekAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
-			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() - this->width() /*kDayWidth*/ * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() - /*this->width()*/ kDayWidth * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			animations->start();
