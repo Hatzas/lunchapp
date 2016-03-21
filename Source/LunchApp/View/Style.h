@@ -18,6 +18,7 @@ static const float		kSelectedGlowSize				= 2.0f;
 static const float		kSelectedShadowSize				= 20.0f;
 static const QColor		kSelectedGlowColor				= QColor( 255, 102, 0 );
 static const QColor		kDisabledColor					= QColor( 32, 32, 32 );
+static const QString	kSelectedStyleSheet				= "border: 2px solid rgb(255, 102, 0)";
 
 static const float		kDishWidth						= 300;		// pixels
 static const float		kDishSpacing					= 20;		// pixels

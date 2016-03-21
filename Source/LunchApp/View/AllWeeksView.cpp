@@ -10,7 +10,6 @@ AllWeeksView::AllWeeksView(QWidget *parent)
 	: QWidget(parent)
 	, requestSent( false )
 {
-
 }
 
 AllWeeksView::~AllWeeksView()
@@ -25,6 +24,8 @@ void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
 
 void AllWeeksView::addWeek( const Week& week )
 {
+	QSize initialSize = this->size();
+
 	WeekView* weekView = new WeekView( this, week );
 
 	// Position according to date
@@ -33,7 +34,9 @@ void AllWeeksView::addWeek( const Week& week )
 		// TO DO
 		int x1 = weekViewsVect[0]->pos().x();
 		int x2 = weekView->width();
-		weekView->move( weekViewsVect[0]->pos().x() - weekView->width(), 0 );
+		weekView->move( weekViewsVect[0]->pos().x() + weekViewsVect[0]->width(), 0 );
+
+		this->setMinimumWidth( this->width() + weekView->width() );
 	}
 
 	// Insert sorted based on date
@@ -41,6 +44,8 @@ void AllWeeksView::addWeek( const Week& week )
 	weekViewsVect.push_back( weekView );
 
 	this->adjustSize();
+
+	QSize afterSize = this->size();
 }
 
 void AllWeeksView::moveEvent( QMoveEvent* event )
