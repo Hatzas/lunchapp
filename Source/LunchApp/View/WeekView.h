@@ -16,6 +16,8 @@ public:
 
 	virtual void	wheelEvent( QWheelEvent* event );
 
+			void	selectionChangedOn( const Dish& dish );		
+
 	const Week&		getWeek()							{ return week; }	
 
 private:

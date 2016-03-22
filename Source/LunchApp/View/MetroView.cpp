@@ -58,9 +58,19 @@ void MetroView::init()
 
 void MetroView::addSceneItems()
 {
-	/* Create objects */
+	/* Background */
+	// Gradient background
+	// 	QLinearGradient linearGrad(	QPointF( this->width() / 4.f, 0 ), QPointF( this->width() / 2.f, this->height() ) );
+	// 	linearGrad.setColorAt( 1, QColor( 135, 206, 255 ) );
+	// 	linearGrad.setColorAt( 0, QColor( 30, 144, 255 ) );
+	// 	this->setBackgroundBrush( QBrush( linearGrad ) );
+
+	// Image background
+	//	this->setBackgroundBrush( QBrush( QPixmap( "Resources\\background1.jpg" ) ) );
+
 	background = new InfiniteBackground( QPixmap( "Resources\\background3.bmp" ), this );
 
+	/* Create objects */
 	weekLabel = new QLabel( this );
 	weekLabel->setText( kWeekTextPrefix );
 	weekLabel->setFont( QFont( kFontName, 10 ) );
@@ -107,7 +117,7 @@ void MetroView::addSceneItems()
 	//animations->addAnimation( textAnimations );
 	animations->addAnimation( weekMoveAnimation );
 
-	this->setMinimumWidth( 5 * kDayWidth + kDishSpacing );
+	this->setMinimumWidth( kWeekWidth );
 	this->setMinimumHeight( this->height() );
 	this->adjustSize();
 
@@ -115,15 +125,6 @@ void MetroView::addSceneItems()
 	background->setMinimumSize( this->size() );
 	background->setMaximumSize( this->size() );
 	background->adjustSize();
-
-	// Gradient background
-// 	QLinearGradient linearGrad(	QPointF( this->width() / 4.f, 0 ), QPointF( this->width() / 2.f, this->height() ) );
-// 	linearGrad.setColorAt( 1, QColor( 135, 206, 255 ) );
-// 	linearGrad.setColorAt( 0, QColor( 30, 144, 255 ) );
-// 	this->setBackgroundBrush( QBrush( linearGrad ) );
-
-	// Image background
-//	this->setBackgroundBrush( QBrush( QPixmap( "Resources\\background1.jpg" ) ) );
 }
 
 void MetroView::weekArrived( const Week& week )
@@ -138,6 +139,12 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 	{
 		if( weekMoveAnimation->state() != QAbstractAnimation::Running )
 		{
+			// Notify week of scroll and check if not already loading
+			bool canScroll = weeksView->scrollStarted( AllWeeksView::eToLeftDirection );
+			if( !canScroll )
+				return;
+
+			// Update animations
 			weekMoveAnimation->setStartValue( weeksView->pos() );
 			weekMoveAnimation->setEndValue( QPointF( weeksView->pos().x() + scrollDist, weeksView->pos().y() ) );
 			weekMoveAnimation->setDuration( kWeekAnimationTime );
@@ -171,6 +178,12 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 	{
 		if( weekMoveAnimation->state() != QAbstractAnimation::Running )
 		{
+			// Notify week of scroll and check if not already loading
+			bool canScroll = weeksView->scrollStarted( AllWeeksView::eToRightDirection );
+			if( !canScroll )
+				return;
+
+			// Update animations
 			weekMoveAnimation->setStartValue( weeksView->pos() );
 			weekMoveAnimation->setEndValue( QPointF( weeksView->pos().x() - scrollDist, weeksView->pos().y() ) );
 			weekMoveAnimation->setDuration( kWeekAnimationTime );

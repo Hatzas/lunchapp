@@ -42,7 +42,11 @@ void InfiniteBackground::setOffset( QPoint offset )
 void InfiniteBackground::paintEvent( QPaintEvent * event )
 {
 	QPainter painter( this );
-	QRect sourceRect = QRect( 0, 0, this->width(), this->height() );
+
+	QRect destRect = QRect( 0, 0, this->width(), this->height() );
+
+	float scale = this->width() / pixmap.width();
+	QRect sourceRect = QRect( 0, 0, this->width(), pixmap.height() * scale );
 
 	painter.save();
 	if( internalOffset.x() > 0 )
@@ -52,7 +56,7 @@ void InfiniteBackground::paintEvent( QPaintEvent * event )
 		transform.scale( -1, 1 );
 		painter.setTransform( transform );
 
-		painter.drawPixmap( sourceRect, pixmap, sourceRect );
+		painter.drawPixmap( destRect, pixmap, sourceRect );
 	}
 	else if( internalOffset.x() < 0 )
 	{
@@ -61,7 +65,7 @@ void InfiniteBackground::paintEvent( QPaintEvent * event )
 		transform.scale( -1, 1 );
 		painter.setTransform( transform );
 
-		painter.drawPixmap( sourceRect, pixmap, sourceRect );
+		painter.drawPixmap( destRect, pixmap, sourceRect );
 	}
 	painter.restore();
 

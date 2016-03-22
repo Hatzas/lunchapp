@@ -183,7 +183,7 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 		mousePressed = false;
 
 		dish.setSelected( !dish.isSelected() );
-		((DayView*)parent())->SelectionChangedOn( dish );
+		((DayView*)parent())->selectionChangedOn( dish );
 
 		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 	}
@@ -194,18 +194,18 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 		imageLabel->setStyleSheet( kSelectedStyleSheet );
 
 		// Drop shadow is computation intensive and reduces performance
-		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
-		dropShadow->setOffset( 0.0f );
-		dropShadow->setBlurRadius( kSelectedShadowSize );
-		dropShadow->setColor( kSelectedGlowColor );
-		this->setGraphicsEffect( dropShadow );
+// 		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
+// 		dropShadow->setOffset( 0.0f );
+// 		dropShadow->setBlurRadius( kSelectedShadowSize );
+// 		dropShadow->setColor( kSelectedGlowColor );
+// 		this->setGraphicsEffect( dropShadow );
 	}
 	else
 	{
 		//selectedEffect->disable();
 		imageLabel->setStyleSheet("");
 
-		this->setGraphicsEffect( NULL );
+//		this->setGraphicsEffect( NULL );
 	}
 }
 

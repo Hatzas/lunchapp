@@ -15,7 +15,7 @@ DataTransfer::~DataTransfer()
 {
 }
 
-void DataTransfer::getMenu(const QDateTime& startDate, const QDateTime& endDate)
+void DataTransfer::getMenu(const QDate& startDate, const QDate& endDate)
 {
 	NetEntity entity;
     entity.setMethodType(eGetMethod);
@@ -26,7 +26,7 @@ void DataTransfer::getMenu(const QDateTime& startDate, const QDateTime& endDate)
 	restClient->pushRequest(entity);
 }
 
-void DataTransfer::getUserMenu(const QDateTime& startDate, const QDateTime& endDate)
+void DataTransfer::getUserMenu(const QDate& startDate, const QDate& endDate)
 {
 	NetEntity entity;
 	entity.setMethodType(eGetMethod);

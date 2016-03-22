@@ -5,6 +5,7 @@
 class Day
 {
 public:
+							Day();
 							Day( QString name, const std::vector<Dish>& dishesVect );
 
 	void					setName( QString name )								{ this->name = name; }
@@ -16,6 +17,6 @@ public:
 private:
 	QString					name;
 	std::vector<Dish>		dishesVect;
-
-							Day();
 };
+
+Q_DECLARE_METATYPE( Day );

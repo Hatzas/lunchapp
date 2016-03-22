@@ -2,6 +2,7 @@
 
 #include <QString>
 #include <QColor>
+#include <QSize>
 
 
 static const float		kWeekOffsetY					= 100;		// pixels ( spacing from top of view )
@@ -21,7 +22,12 @@ static const QColor		kDisabledColor					= QColor( 32, 32, 32 );
 static const QString	kSelectedStyleSheet				= "border: 2px solid rgb(255, 102, 0)";
 
 static const float		kDishWidth						= 300;		// pixels
-static const float		kDishSpacing					= 20;		// pixels
+static const float		kDishSpacing					= 10;		// pixels
+static const float		kDaySpacing						= 30;		// pixels
 static const float		kDayWidth						= kDishWidth + kDishSpacing;	// pixels
+static const float		kWeekWidth						= 5 * kDayWidth + 4 * kDaySpacing + kDishSpacing;
 
 static const float		kBackgroundScrollRatio			= 0.2f;		// pixels
+
+static const QSize		kLoadingAnimSize				= QSize( 24, 24 );
+static const int		kLoadingAnimOffset				= 200;

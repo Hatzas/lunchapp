@@ -1,15 +1,16 @@
 #pragma once
 
 #include <vector>
-#include <QDateTime>
+#include <QDate>
 
 #include "Day.h"
 
 class Week
 {
 public:
+							Week();
 							Week( QString startEndDate, const std::vector<Day>& daysVect );		// This is used just for debug purposes
-							Week( QDateTime startDate, QDateTime endDate, const std::vector<Day>& daysVect );
+							Week( QDate startDate, QDate endDate, const std::vector<Day>& daysVect );
 
 	std::vector<Day>&		getDays()											{ return daysVect; }
 	void					setDays( const std::vector<Day>& daysVect )			{ this->daysVect = daysVect; }
@@ -17,17 +18,37 @@ public:
 	QString					getStartEndDate() const								{ return startEndDate; }
 	void					setStartEndDate( QString startEndDate )				{ this->startEndDate = startEndDate; }
 
-	QDateTime				getStartDate()										{ return startDate; }
-	void					setStartDate( QDateTime startDate )					{ this->startDate = startDate; }
+	QDate					getStartDate() const								{ return startDate; }
+	void					setStartDate( QDate startDate )						{ this->startDate = startDate; }
 
-	QDateTime				getEndDate()										{ return endDate; }
-	void					setEndDate( QDateTime endDate )						{ this->endDate = endDate; }
+	QDate					getEndDate() const									{ return endDate; }
+	void					setEndDate( QDate endDate )							{ this->endDate = endDate; }
 
 private:
-	QDateTime			startDate;
-	QDateTime			endDate;
+	QDate				startDate;
+	QDate				endDate;
 	std::vector<Day>	daysVect;
 
 	QString				startEndDate;		// Formatted date string
-							Week();
 };
+
+Q_DECLARE_METATYPE( Week );
+
+/************************************************************************/
+/*							Operators		                           */
+/************************************************************************/
+inline bool operator>( const Week& first, const Week& second )
+{
+	if( first.getStartDate() > second.getEndDate() )
+		return true;
+	else
+		return false;
+}
+
+inline bool operator<( const Week& first, const Week& second )
+{
+	if( first.getEndDate() < second.getStartDate() )
+		return true;
+	else
+		return false;
+}
