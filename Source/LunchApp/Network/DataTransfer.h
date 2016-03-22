@@ -2,7 +2,7 @@
 
 #include <QObject>
 #include "NetEntity.h"
-
+#include "Model/Week.h"
 
 class RestClient;
 
@@ -19,11 +19,14 @@ public:
 	void		getDishCategory();
 	
 signals:
-	void		menuFinished();
+	void		menuFinished(const Week& week);
     void        userMenuFinished();
 
 private slots:
     void		onRequestFinished(const NetEntity& entity);
+
+private:
+	void		extractDays(const QJsonArray& json, std::vector<Day>& days);
 
 private:
 	RestClient*	restClient;

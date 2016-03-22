@@ -29,6 +29,9 @@ public slots:
 private:
 	void		requestWeek( QDateTime startDate, QDateTime endDate );
 
+private slots:
+	void		dataFinished(const Week& week);
+
 private:
 	DataTransfer*	dataTransfer;
 };

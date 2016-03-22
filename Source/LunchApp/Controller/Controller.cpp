@@ -8,6 +8,7 @@ Controller::Controller(QObject *parent)
 {
 	dataTransfer = new DataTransfer(this);
 	dataTransfer->getMenu(QDateTime(), QDateTime());
+	connect(dataTransfer, SIGNAL(menuFinished(const Week&)), this, SLOT(dataFinished(const Week&)));
 }
 
 Controller::~Controller()
@@ -46,7 +47,7 @@ void Controller::requestWeek( QDateTime startDate, QDateTime endDate )
 	dataTransfer->getMenu(startDate, endDate);
 	// Make request to database
 	// TO DO
-
+	/*
 	// Dummy data
 	Sleep( 1000 );
 
@@ -79,6 +80,12 @@ void Controller::requestWeek( QDateTime startDate, QDateTime endDate )
 	daysVect.push_back( Day( "Vineri", dishesVect ) );
 
 	Week week( "1 - 6 Martie", daysVect );
+	*/
+	
+	//emit weekArrived( week );
+}
 
-	emit weekArrived( week );
+void Controller::dataFinished(const Week& week)
+{
+	emit weekArrived(week);
 }
