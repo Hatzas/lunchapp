@@ -32,6 +32,17 @@ void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((MetroView*)this->parent())->wheelEvent( wheelEvent );
 }
 
+void AllWeeksView::resizeEvent( QResizeEvent* event )
+{
+	// Increase or decrease spacing between weeks so they can be centered on the screen
+	// TO DO
+
+	for( int i = 0 ; i < weekViewsVect.size() ; i++ )
+	{
+		weekViewsVect[i]->resizeEvent( event );
+	}
+}
+
 void AllWeeksView::selectionChangedOn( const Dish& dish )
 {
 	emit ((MetroView*)this->parent())->selectionChangedOn( dish );
@@ -101,10 +112,6 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 	}
 
 	return true;
-}
-
-void AllWeeksView::moveEvent( QMoveEvent* event )
-{
 }
 
 void AllWeeksView::increaseSize( EDirection direction )

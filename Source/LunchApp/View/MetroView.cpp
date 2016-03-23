@@ -12,6 +12,7 @@
 #include <QSequentialAnimationGroup>
 #include <QBoxLayout>
 #include <QScroller>
+#include <QScroller>
 
 #include "Style.h"
 #include "InfiniteBackground.h"
@@ -43,6 +44,8 @@ void MetroView::init()
 
 	this->setViewport( openGLWidget );
 #endif
+
+	//QScroller::grabGesture( this, QScroller::LeftMouseButtonGesture );
 
 	this->setRenderHint( QPainter::Antialiasing );
 	this->setRenderHint( QPainter::SmoothPixmapTransform );
@@ -217,9 +220,14 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 
 void MetroView::resizeEvent( QResizeEvent * event )
 {
-	QGraphicsView::resizeEvent( event );
-	
 	background->setMinimumSize( this->size() );
 	background->setMaximumSize( this->size() );
 	background->adjustSize();
+
+	// Center week on screen
+	// TO DO
+
+	weeksView->resizeEvent( event );
+
+	QGraphicsView::resizeEvent( event );
 }

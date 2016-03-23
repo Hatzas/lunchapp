@@ -22,15 +22,13 @@ public:
 			void			init();
 
 	virtual void			wheelEvent( QWheelEvent* event );
+	virtual void			resizeEvent( QResizeEvent* event );
 
 			void			selectionChangedOn( const Dish& dish );
 
 			void			addWeek( const Week& week );
 
 			bool			scrollStarted( EDirection direction );		// Returns true if there are items to show after scroll
-
-protected:		
-	virtual void			moveEvent( QMoveEvent* event );
 
 private:
 	std::vector<WeekView*>		weekViewsVect;

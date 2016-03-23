@@ -5,7 +5,7 @@
 #include <QLabel>
 
 #include "Model/Day.h"
-#include "DishView.h"
+#include "DayDishesView.h"
 
 
 class DayView : public QWidget
@@ -13,22 +13,19 @@ class DayView : public QWidget
 	Q_OBJECT
 
 public:
-					DayView( QWidget *parent, const Day& day );
-					~DayView();
+						DayView( QWidget *parent, const Day& day );
+						~DayView();
 
-	virtual void	wheelEvent( QWheelEvent* event );
+	virtual void		wheelEvent( QWheelEvent* event );
+	virtual void		resizeEvent( QResizeEvent* event );
 
-			void	selectionChangedOn( const Dish& dish );		
+			void		selectionChangedOn( const Dish& dish );		
 
 private:
 	Day						day;
-
 	QLabel*					dayNameLabel;
-	std::vector<DishView*>	disheViewsVect;
+	DayDishesView*			dishesView;
 
-	void			init();
-
-	void			AddDishes();
-	void			StackDishViews();
+	void				init();
 
 };

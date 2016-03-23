@@ -29,6 +29,14 @@ void WeekView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((AllWeeksView*)this->parent())->wheelEvent( wheelEvent );
 }
 
+void WeekView::resizeEvent( QResizeEvent* event )
+{
+	for( int i = 0 ; i < dayViewsVect.size() ; i++ )
+	{
+		dayViewsVect[i]->resizeEvent( event );
+	}
+}
+
 void WeekView::selectionChangedOn( const Dish& dish )
 {
 	((AllWeeksView*)this->parent())->selectionChangedOn( dish );
