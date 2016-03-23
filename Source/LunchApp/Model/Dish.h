@@ -6,6 +6,7 @@
 class Dish
 {
 public:
+					Dish();
 					Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum );
 
 	QString			getName() const								{ return name; }
@@ -38,6 +39,6 @@ private:
 
 	bool			selected;
 	int				userPreference;		// 0 = Best, the more the lower
-
-					Dish();
 };
+
+Q_DECLARE_METATYPE( Dish );

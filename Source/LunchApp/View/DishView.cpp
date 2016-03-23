@@ -36,6 +36,19 @@ void DishView::init()
 	float scale = kDishWidth / dish.getPixmap().width();
 	QSize widgetSize = dish.getPixmap().size() * scale;
 
+	// Create B&W image
+	QImage blackAndWhiteImg = dish.getPixmap().toImage();//new QImage( widgetSize, QImage::Format_Grayscale8 );
+	for( int x = 0 ; x < blackAndWhiteImg.width() ; x++ )
+	{
+		for( int y = 0 ; y < blackAndWhiteImg.height() ; y++ )
+		{
+			int grayColor = qGray( blackAndWhiteImg.pixel( x, y ) );
+			blackAndWhiteImg.setPixel( x, y, qRgb( grayColor, grayColor, grayColor ) );
+		}
+	}
+
+	monochromePixmap = QPixmap::fromImage( blackAndWhiteImg );
+
 	/* Create objects */
 	imageLabel = new QLabel( this );
 	imageLabel->setPixmap( dish.getPixmap() );
@@ -170,27 +183,29 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 		mousePressed = false;
 
 		dish.setSelected( !dish.isSelected() );
-		((DayView*)parent())->SelectionChangedOn( dish );
+		((DayView*)parent())->selectionChangedOn( dish );
 
 		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 	}
 
 	if( dish.isSelected() )
 	{
-		selectedEffect->enable();
+		//selectedEffect->enable();
+		imageLabel->setStyleSheet( kSelectedStyleSheet );
 
 		// Drop shadow is computation intensive and reduces performance
-		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
-		dropShadow->setOffset( 0.0f );
-		dropShadow->setBlurRadius( kSelectedShadowSize );
-		//dropShadow->setColor( kSelectedGlowColor );
-		//this->setGraphicsEffect( dropShadow );
+// 		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
+// 		dropShadow->setOffset( 0.0f );
+// 		dropShadow->setBlurRadius( kSelectedShadowSize );
+// 		dropShadow->setColor( kSelectedGlowColor );
+// 		this->setGraphicsEffect( dropShadow );
 	}
 	else
 	{
-		selectedEffect->disable();
+		//selectedEffect->disable();
+		imageLabel->setStyleSheet("");
 
-		this->setGraphicsEffect( NULL );
+//		this->setGraphicsEffect( NULL );
 	}
 }
 
@@ -204,12 +219,16 @@ void DishView::setDisabled( bool disabled )
 // 		QGraphicsBlurEffect* blurEffect = new QGraphicsBlurEffect( this );
 // 		this->setGraphicsEffect( blurEffect );
 
-		QGraphicsColorizeEffect* colorizeEffect = new QGraphicsColorizeEffect( this );
-		colorizeEffect->setColor( kDisabledColor );
-		this->setGraphicsEffect( colorizeEffect );
+// 		QGraphicsColorizeEffect* colorizeEffect = new QGraphicsColorizeEffect( this );
+// 		colorizeEffect->setColor( kDisabledColor );
+// 		imageLabel->setGraphicsEffect( colorizeEffect );
+
+		imageLabel->setPixmap( monochromePixmap );
 	}
 	else
 	{
-		this->setGraphicsEffect( NULL );
+//		this->setGraphicsEffect( NULL );
+
+		imageLabel->setPixmap( dish.getPixmap() );
 	}
 }

@@ -1,5 +1,10 @@
 #include "Dish.h"
 
+Dish::Dish()
+{
+
+}
+
 Dish::Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum )
 	: name( name )
 	, ingredients( ingredients )

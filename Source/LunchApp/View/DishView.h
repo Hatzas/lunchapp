@@ -42,6 +42,7 @@ private:
 			QPropertyAnimation*			detailsAnimation;
 
 			SelectedEffect*				selectedEffect;
+			QPixmap						monochromePixmap;
 
 			bool						mousePressed;
 

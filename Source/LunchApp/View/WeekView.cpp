@@ -29,6 +29,11 @@ void WeekView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((AllWeeksView*)this->parent())->wheelEvent( wheelEvent );
 }
 
+void WeekView::selectionChangedOn( const Dish& dish )
+{
+	((AllWeeksView*)this->parent())->selectionChangedOn( dish );
+}
+
 void WeekView::AddDays()
 {
 	std::vector<Day>& daysVect = week.getDays();
@@ -37,7 +42,7 @@ void WeekView::AddDays()
 		DayView* dayView = new DayView( this, daysVect[i] );
 
 		if( i > 0 )
-			dayView->move( dayViewsVect[i-1]->pos().x() + dayViewsVect[i-1]->width() - kDishSpacing, 0 );		// "- kDishSpacing" is a temporary patch to fix double spacing between days
+			dayView->move( dayViewsVect[i-1]->pos().x() + dayViewsVect[i-1]->width() - kDishSpacing + kDaySpacing, 0 );		// "- kDishSpacing" is a temporary patch to fix double spacing between days
 
 		dayViewsVect.push_back( dayView );
 	}

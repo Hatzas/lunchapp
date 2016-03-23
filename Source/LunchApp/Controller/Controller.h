@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QObject>
-#include <QDateTime>
+#include <QThread>
+#include <QDate>
 
 #include "../Model/Dish.h"
 #include "../Model/Week.h"
@@ -9,12 +9,12 @@
 
 class DataTransfer;
 
-class Controller : public QObject
+class Controller : public QThread
 {
 	Q_OBJECT
 
 public:
-				Controller(QObject *parent);
+				Controller( QObject *parent = 0 );
 				~Controller();
 
 signals:
@@ -26,8 +26,11 @@ public slots:
 
 	void		selectionChangedOn( const Dish& dish );
 
+protected:
+	void		run();
+
 private:
-	void		requestWeek( QDateTime startDate, QDateTime endDate );
+	void		requestWeek( QDate startDate, QDate endDate );
 
 private slots:
 	void		dataFinished(const Week& week);

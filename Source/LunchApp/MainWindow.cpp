@@ -79,7 +79,13 @@ void MainWindow::sendWeek()
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
 	daysVect.push_back( Day( "Vineri", dishesVect ) );
 
-	Week week( "1 - 6 Martie", daysVect );
+	QDate monday = QDate::currentDate();
+	QDate friday = monday.addDays( 4 );
+
+	int startDay = monday.day();
+	int endDay = friday.day();
+
+	Week week( monday, friday, daysVect );
 
 	metroView->weekArrived( week );
 }
@@ -104,11 +110,14 @@ void MainWindow::setupTray()
 
 void MainWindow::setupController()
 {
-	controller = new Controller( this );
+	controller = new Controller();
 
-	connect( controller, SIGNAL( weekArrived( const Week& ) ), metroView, SLOT( weekArrived( const Week& ) )/*, Qt::QueuedConnection*/ );
+	connect( controller, SIGNAL( weekArrived( const Week& ) ), metroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
 	
-	connect( metroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) )/*, Qt::QueuedConnection*/ );
-	connect( metroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) )/*, Qt::QueuedConnection*/ );
-	connect( metroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) )/*, Qt::QueuedConnection*/ );
+	connect( metroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
+	connect( metroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) ), Qt::QueuedConnection );
+	connect( metroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
+
+	controller->moveToThread( controller );
+	controller->start();
 }

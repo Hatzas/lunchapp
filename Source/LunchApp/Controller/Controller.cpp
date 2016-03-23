@@ -4,10 +4,10 @@
 #include "Network/DataTransfer.h"
 
 Controller::Controller(QObject *parent)
-	: QObject(parent)
+	: QThread(parent)
 {
 	dataTransfer = new DataTransfer(this);
-	dataTransfer->getMenu(QDateTime(), QDateTime());
+	dataTransfer->getMenu(QDate(), QDate());
 	connect(dataTransfer, SIGNAL(menuFinished(const Week&)), this, SLOT(dataFinished(const Week&)));
 }
 
@@ -19,9 +19,11 @@ Controller::~Controller()
 void Controller::requestWeekAfter( const Week& week )
 {
 	// Compute DateTime after week endDate
-	QDateTime startDate;
-	QDateTime endDate;
-	// TO DO
+	QDate startDate = week.getStartDate().addDays( 7 );					// ! This will not work is the week does not start with Monday !
+	QDate endDate = startDate.addDays( 4 );								// ! Use dayOfWeek() to rectify !/
+
+	int startDay = startDate.day();
+	int endDay = endDate.day();
 
 	requestWeek( startDate, endDate );
 }
@@ -29,9 +31,11 @@ void Controller::requestWeekAfter( const Week& week )
 void Controller::requestWeekBefore( const Week& week )
 {
 	// Compute DateTime before week startDate
-	QDateTime startDate;
-	QDateTime endDate;
-	// TO DO
+	QDate startDate = week.getStartDate().addDays( -7 );				// ! This will not work is the week does not start with Monday !
+	QDate endDate = startDate.addDays( 4 );								// ! Use dayOfWeek() to rectify !/
+
+	int startDay = startDate.day();
+	int endDay = endDate.day();
 
 	requestWeek( startDate, endDate );
 }
@@ -42,7 +46,14 @@ void Controller::selectionChangedOn( const Dish& dish )
 	// TO DO
 }
 
-void Controller::requestWeek( QDateTime startDate, QDateTime endDate )
+void Controller::run()
+{
+	// Could check for notifications here
+
+	exec();		// This executes the pending signals
+}
+
+void Controller::requestWeek( QDate startDate, QDate endDate )
 {
 	dataTransfer->getMenu(startDate, endDate);
 }
