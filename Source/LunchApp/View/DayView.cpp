@@ -3,6 +3,7 @@
 #include <QGraphicsScene>
 #include <QWheelEvent>
 #include <QOpenGLWidget>
+#include <QScroller>
 
 #include "Style.h"
 #include "WeekView.h"
@@ -23,6 +24,8 @@ DayView::~DayView()
 
 void DayView::init()
 {
+	QScroller::grabGesture( this, QScroller::LeftMouseButtonGesture );
+
 	/* Create objects */
 	dayNameLabel = new QLabel( this );
 	dayNameLabel->setText( day.getName() );
@@ -30,12 +33,13 @@ void DayView::init()
 	dayNameLabel->setStyleSheet( "background-color: rgba(255, 255, 255, 0);" );
 	dayNameLabel->adjustSize();
 
-	AddDishes();
+	dishesView = new DayDishesView( this, day.getDishes() );
 
 	// Move objects
+	dishesView->move( kDishSpacing, dayNameLabel->height() + 2 * kDishSpacing );
+
 	this->adjustSize();
 	dayNameLabel->move( kDishSpacing + ( this->width() - dayNameLabel->width() ) / 2.0f , 0 );
-	StackDishViews();
 
 	this->setMinimumSize( this->size() + QSize( 0, kDishSpacing ) );	// add bottom spacing so the shadow is rendered completely
 	this->adjustSize();
@@ -46,53 +50,12 @@ void DayView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((WeekView*)this->parent())->wheelEvent( wheelEvent );
 }
 
+void DayView::resizeEvent( QResizeEvent* event )
+{
+	dishesView->resizeEvent( event );
+}
+
 void DayView::selectionChangedOn( const Dish& dish )
 {
-	// Disable other dishes from same course
-	std::vector<Dish>& dishesVect = day.getDishes();
-	for( size_t i = 0 ; i < dishesVect.size() ; i++ )
-	{
-		if( dish.getName() != dishesVect[i].getName()
-			&& dishesVect[i].getCourseNum() == dish.getCourseNum() )
-		{
-			disheViewsVect[i]->setDisabled( dish.isSelected() );
-		}
-	}
-
 	((WeekView*)this->parent())->selectionChangedOn( dish );
-
-	// Update View
-	update();
-}
-
-void DayView::AddDishes()
-{
-	std::vector<Dish>& dishesVect = day.getDishes();
-	for( size_t i = 0 ; i < dishesVect.size() ; i++ )
-	{
-		disheViewsVect.push_back( new DishView( this, dishesVect[i] ) );
-	}
-}
-
-void DayView::StackDishViews()
-{
-	if( disheViewsVect.size() == 0 )
-		return;
-
-	// First image placed below the day name
-	disheViewsVect[0]->move( kDishSpacing, dayNameLabel->height() + 2 * kDishSpacing );
-
-	// The rest, place below one another (for now)
-	for( size_t i = 1 ; i < disheViewsVect.size() ; i++ )
-	{
-		disheViewsVect[i]->move( kDishSpacing, disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );
-	}
-
-	// Stack images
-
-	// Sort by size
-	// TO DO
-
-	// Stack
-	// TO DO
 }
