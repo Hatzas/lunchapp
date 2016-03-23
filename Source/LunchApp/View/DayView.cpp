@@ -36,7 +36,7 @@ void DayView::init()
 	dishesView = new DayDishesView( this, day.getDishes() );
 
 	// Move objects
-	dishesView->move( kDishSpacing, dayNameLabel->height() + 2 * kDishSpacing );
+	dishesView->move( 0, dayNameLabel->height() +  kDishSpacing );
 
 	this->adjustSize();
 	dayNameLabel->move( kDishSpacing + ( this->width() - dayNameLabel->width() ) / 2.0f , 0 );
@@ -50,9 +50,9 @@ void DayView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((WeekView*)this->parent())->wheelEvent( wheelEvent );
 }
 
-void DayView::resizeEvent( QResizeEvent* event )
+void DayView::mainWindowResized( QResizeEvent* event )
 {
-	dishesView->resizeEvent( event );
+	dishesView->mainWindowResized( event );
 }
 
 void DayView::selectionChangedOn( const Dish& dish )

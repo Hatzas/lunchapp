@@ -22,11 +22,13 @@ DayDishesView::~DayDishesView()
 
 void DayDishesView::init()
 {
-	QScroller::grabGesture( this, QScroller::LeftMouseButtonGesture );
+	QScroller::grabGesture( this, QScroller::MiddleMouseButtonGesture );
 
 	AddDishes();
 
 	StackDishViews();
+
+	this->setMinimumSize( this->size() + QSize( kDishSpacing, 0 ) );	// add bottom spacing so the shadow is rendered completely
 
 	this->adjustSize();
 }
@@ -57,6 +59,7 @@ bool DayDishesView::event( QEvent* event )
 			{
 				disheViewsVect[i]->move( disheViewsVect[i]->x(), disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );
 			}
+
 			return true;
 		}
 	default:
@@ -66,7 +69,12 @@ bool DayDishesView::event( QEvent* event )
 	return QWidget::event( event );
 }
 
-void DayDishesView::resizeEvent( QResizeEvent * event )
+void DayDishesView::wheelEvent( QWheelEvent* event )
+{
+	return ((DayView*)this->parent())->wheelEvent( event );
+}
+
+void DayDishesView::mainWindowResized( QResizeEvent * event )
 {
 	// Reposition dishes if they fit in the view
 	QRect visibleRect = this->visibleRegion().boundingRect();
@@ -74,10 +82,10 @@ void DayDishesView::resizeEvent( QResizeEvent * event )
 
 	if( visibleRect.height() >= size.height() );
 	{
-		disheViewsVect[0]->move( 0, 0 );
+		disheViewsVect[0]->move( kDishSpacing, kDishSpacing );
 		for( int i = 1 ; i < disheViewsVect.size() ; i++ )
 		{
-			disheViewsVect[i]->move( 0, disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );
+			disheViewsVect[i]->move( kDishSpacing, disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );
 		}
 	}
 }
@@ -113,10 +121,10 @@ void DayDishesView::StackDishViews()
 	if( disheViewsVect.size() == 0 )
 		return;
 
-	// The rest, place below one another (for now)
+	disheViewsVect[0]->move( kDishSpacing, kDishSpacing );
 	for( size_t i = 1 ; i < disheViewsVect.size() ; i++ )
 	{
-		disheViewsVect[i]->move( 0, disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );
+		disheViewsVect[i]->move( kDishSpacing, disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );
 	}
 
 	// Stack images

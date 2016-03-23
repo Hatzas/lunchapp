@@ -22,7 +22,7 @@ public:
 			void			init();
 
 	virtual void			wheelEvent( QWheelEvent* event );
-	virtual void			resizeEvent( QResizeEvent* event );
+			void			mainWindowResized( QResizeEvent* event );
 
 			void			selectionChangedOn( const Dish& dish );
 
@@ -34,7 +34,10 @@ private:
 	std::vector<WeekView*>		weekViewsVect;
 	QLabel*						loadingLabel;
 
+	int							screenWidth;
+
 			void			increaseSize( EDirection direction );
+			void			centerWeekViews();
 
 			void			showLoadingAnim( bool show, EDirection direction = eToRightDirection );
 

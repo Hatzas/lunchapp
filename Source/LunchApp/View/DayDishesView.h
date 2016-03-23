@@ -16,7 +16,8 @@ public:
 			void		init();
 
 	virtual bool		event( QEvent* event );
-	virtual void		resizeEvent( QResizeEvent* event );
+	virtual void		wheelEvent( QWheelEvent* event );
+			void		mainWindowResized( QResizeEvent* event );
 
 	void				selectionChangedOn( const Dish& dish );
 

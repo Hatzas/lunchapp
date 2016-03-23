@@ -227,7 +227,7 @@ void MetroView::resizeEvent( QResizeEvent * event )
 	// Center week on screen
 	// TO DO
 
-	weeksView->resizeEvent( event );
+	weeksView->mainWindowResized( event );
 
 	QGraphicsView::resizeEvent( event );
 }

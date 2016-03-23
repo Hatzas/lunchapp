@@ -9,6 +9,7 @@
 
 AllWeeksView::AllWeeksView(QWidget *parent)
 	: QWidget(parent)
+	, screenWidth( kWeekWidth )
 {
 	init();
 }
@@ -32,14 +33,15 @@ void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((MetroView*)this->parent())->wheelEvent( wheelEvent );
 }
 
-void AllWeeksView::resizeEvent( QResizeEvent* event )
+void AllWeeksView::mainWindowResized( QResizeEvent* event )
 {
-	// Increase or decrease spacing between weeks so they can be centered on the screen
-	// TO DO
+	screenWidth = qMax( (int)kWeekWidth, event->size().width() );
+
+	centerWeekViews();
 
 	for( int i = 0 ; i < weekViewsVect.size() ; i++ )
 	{
-		weekViewsVect[i]->resizeEvent( event );
+		weekViewsVect[i]->mainWindowResized( event );
 	}
 }
 
@@ -58,6 +60,7 @@ void AllWeeksView::addWeek( const Week& week )
 	int endDay = week.getEndDate().day();
 
 	// Position according to date
+	int centerX = ( screenWidth - weekView->width() ) / 2;
 	if( weekViewsVect.size() == 0 )
 	{
 		weekViewsVect.push_back( weekView );
@@ -65,14 +68,14 @@ void AllWeeksView::addWeek( const Week& week )
 	else if( week < weekViewsVect[0]->getWeek() )
 	{
 		// Insert before first
-		weekView->move( weekViewsVect[0]->pos().x() - weekView->width(), 0 );
+		weekView->move( centerX, 0 );
 
 		weekViewsVect.insert( weekViewsVect.begin(), weekView );
 	}
 	else if( week > weekViewsVect[ weekViewsVect.size() - 1 ]->getWeek() )
 	{
 		// Insert after last
-		weekView->move( weekViewsVect[ weekViewsVect.size() - 1 ]->pos().x() + weekViewsVect[ weekViewsVect.size() - 1 ]->width(), 0 );
+		weekView->move( weekViewsVect.size() * screenWidth + centerX, 0 );
 
 		weekViewsVect.push_back( weekView );
 	}
@@ -91,8 +94,10 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 	if( loadingLabel->isVisible() )
 		return false;
 
-	int x = this->x();
-	if( direction == eToLeftDirection && this->x() == 0 )
+	WeekView* firstWeek = weekViewsVect[ 0 ];
+	WeekView* lastWeek = weekViewsVect[ weekViewsVect.size()-1 ];
+
+	if( direction == eToLeftDirection && firstWeek->visibleRegion().boundingRect().width() == firstWeek->width() )
 	{
 		// Increase view size and reposition to accommodate new view
 		increaseSize( direction );
@@ -101,7 +106,7 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 		// Request week before the first
 		emit ((MetroView*)this->parent())->requestWeekBefore( weekViewsVect[0]->getWeek() );
 	}
-	else if(  direction == eToRightDirection && ( this->x() + this->width() - weekViewsVect[ weekViewsVect.size()-1 ]->width() == 0 ) )
+	else if( direction == eToRightDirection && lastWeek->visibleRegion().boundingRect().width() == lastWeek->width() )
 	{
 		// Increase view size and reposition to accommodate new view
 		increaseSize( direction );
@@ -111,25 +116,54 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 		emit ((MetroView*)this->parent())->requestWeekAfter( weekViewsVect[ weekViewsVect.size()-1 ]->getWeek() );
 	}
 
+	QRect visibleRect = weekViewsVect[ weekViewsVect.size()-1 ]->visibleRegion().boundingRect();
+
 	return true;
 }
 
 void AllWeeksView::increaseSize( EDirection direction )
 {
-	this->setMinimumWidth( this->width() + kWeekWidth );				// "kWeekWidth" should be replaced with a more dynamic approach
-																		// as the views could be centered on a larger window
+	this->setMinimumWidth( this->width() + screenWidth );
+
 	if( direction == eToLeftDirection )
 	{
-		this->move( this->x() - kWeekWidth, this->y() );
+		this->move( this->x() - screenWidth, this->y() );
 
 		// Reposition all weeks so visually they remain the same
 		for( int i = 0 ; i < weekViewsVect.size() ; i++ )
 		{
-			weekViewsVect[i]->move( weekViewsVect[i]->x() + kWeekWidth, weekViewsVect[i]->y() );
+			weekViewsVect[i]->move( weekViewsVect[i]->x() + screenWidth, weekViewsVect[i]->y() );
 		}
 	}
 
 	this->adjustSize();
+}
+
+void AllWeeksView::centerWeekViews()
+{
+	// Get visible week
+	int visibleWeekIdx = 0;
+	for( int i = 1 ; i < weekViewsVect.size() ; i++ )
+	{
+		if( weekViewsVect[i]->visibleRegion().boundingRect().width() == weekViewsVect[i]->width() )
+		{
+			visibleWeekIdx = i;
+		}
+	}
+
+	// Increase size
+	this->setMinimumWidth( weekViewsVect.size() * screenWidth );
+	this->adjustSize();
+
+	// Re-position weeks taking into account new spacing
+	for( int i = 0 ; i < weekViewsVect.size() ; i++ )
+	{
+		int centerX = ( screenWidth - weekViewsVect[i]->width() ) / 2;
+		weekViewsVect[i]->move( screenWidth * i + centerX, 0 );
+	}
+
+	// Move so same week remains visible
+	this->move( visibleWeekIdx * -screenWidth, this->y() );
 }
 
 void AllWeeksView::showLoadingAnim( bool show, EDirection direction )
@@ -144,13 +178,13 @@ void AllWeeksView::showLoadingAnim( bool show, EDirection direction )
 
 	if( direction == eToRightDirection )
 	{
-		loadingLabel->move( this->width() - kWeekWidth / 2 - loadingLabel->width() / 2, this->y() + kLoadingAnimOffset );
+		loadingLabel->move( this->width() - screenWidth / 2 - loadingLabel->width() / 2, this->y() + kLoadingAnimOffset );
 		loadingLabel->show();
 		loadingLabel->movie()->start();
 	}
 	else if( direction == eToLeftDirection )
 	{
-		loadingLabel->move( kWeekWidth / 2 - loadingLabel->width() / 2, this->y() + kLoadingAnimOffset );
+		loadingLabel->move( screenWidth / 2 - loadingLabel->width() / 2, this->y() + kLoadingAnimOffset );
 		loadingLabel->show();
 		loadingLabel->movie()->start();
 	}

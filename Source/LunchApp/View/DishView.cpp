@@ -9,10 +9,10 @@
 #include <QPainter>
 
 #include "Style.h"
-#include "DayView.h"
+#include "DayDishesView.h"
 
 
-static const float			kClickMovement			= 2;
+static const float			kClickMovement			= 5;
 static const float			kBriefDetailsOffset		= 30;
 
 
@@ -106,7 +106,7 @@ QPixmap DishView::GetRibbonByCourse( int courseNum )
 
 void DishView::wheelEvent( QWheelEvent* wheelEvent )
 {
-	return ((DayView*)this->parent())->wheelEvent( wheelEvent );
+	return ((DayDishesView*)this->parent())->wheelEvent( wheelEvent );
 }
 
 void DishView::enterEvent( QEvent* event )
@@ -165,7 +165,7 @@ void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 
 void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 {
-	if( disabled )
+	if( disabled || mouseEvent->button() != Qt::LeftButton )
 		return;
 
 	mousePressed = true;
@@ -175,18 +175,18 @@ void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 
 void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 {
-	if( disabled )
+	if( disabled || mouseEvent->button() != Qt::LeftButton )
 		return;
 
-	if( mousePressed )
-	{
-		mousePressed = false;
+	if( !mousePressed )
+		return;
 
-		dish.setSelected( !dish.isSelected() );
-		((DayView*)parent())->selectionChangedOn( dish );
+	mousePressed = false;
 
-		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
-	}
+	dish.setSelected( !dish.isSelected() );
+	((DayDishesView*)parent())->selectionChangedOn( dish );
+
+	this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 
 	if( dish.isSelected() )
 	{
