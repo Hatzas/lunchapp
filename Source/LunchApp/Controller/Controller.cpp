@@ -147,3 +147,8 @@ void Controller::requestWeek( QDate startDate, QDate endDate )
 
 	emit weekArrived( week );
 }
+
+void Controller::dataFinished(const Week& week)
+{
+	emit weekArrived( week );
+}
