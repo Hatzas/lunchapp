@@ -32,6 +32,9 @@ protected:
 private:
 	void		requestWeek( QDate startDate, QDate endDate );
 
+private slots:
+	void		dataFinished(const Week& week);
+
 private:
 	DataTransfer*	dataTransfer;
 };
