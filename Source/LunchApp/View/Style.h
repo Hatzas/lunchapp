@@ -20,7 +20,7 @@ static const QString	kRatingButtonsStyleSheet		=  "QPushButton:hover{\
 															\
 															QPushButton {\
 															border: none;\
-															background-color: rgba(64,64,64,10%);\
+															background-color: rgba(255,255,255,80%);\
 															}\
 															\
 															QPushButton:pressed {\
