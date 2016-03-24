@@ -15,17 +15,21 @@ public:
 							DishRatingView( QWidget *parent, const Dish& dish );
 							~DishRatingView();
 public slots:
-	virtual void			likeToggled( bool checked = false );
-	virtual void			dislikeToggled( bool checked = false );
+	virtual void			wowToggled( bool checked = false );
+	virtual void			yuckToggled( bool checked = false );
 
 private:
 	Dish			dish;
 
-	QPushButton*	likeButton;
-	QPushButton*	dislikeButton;
+	QPushButton*	wowButton;
+	QPushButton*	happyButton;
+	QPushButton*	meahButton;
+	QPushButton*	yuckButton;
 
-	QLabel*			numLikesLabel;
-	QLabel*			numDislikesLabel;
+	QLabel*			numWowsLabel;
+	QLabel*			numHappiesLabel;
+	QLabel*			numMeahsLabel;
+	QLabel*			numYucksLabel;
 
 
 			void			init();

@@ -61,7 +61,7 @@ void MainWindow::sendWeek()
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/mancare3.png"), 2 ) );
-	dishesVect.push_back( Dish( "Salata din gradina ursului",
+	dishesVect.push_back( Dish( "Salata din gradina bunicii",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/salata3.png"), 3 ) );
 	dishesVect.push_back( Dish( "Salata din gradina ursului",

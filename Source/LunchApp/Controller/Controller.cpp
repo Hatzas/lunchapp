@@ -74,7 +74,7 @@ void Controller::requestWeek( QDate startDate, QDate endDate )
 	dishesVect.push_back( Dish( "Salata din gradina ursului",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/salata1.png"), 3 ) );
-	dishesVect.push_back( Dish( "Salata din gradina ursului",
+	dishesVect.push_back( Dish( "Salata din gradina bunicii",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/salata2.png"), 3 ) );
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
