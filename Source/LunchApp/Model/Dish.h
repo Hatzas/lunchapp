@@ -6,6 +6,13 @@
 class Dish
 {
 public:
+	enum EDishRating
+	{
+		eNotRated,
+		eLiked,
+		eDisliked
+	};
+
 					Dish();
 					Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum );
 
@@ -24,11 +31,20 @@ public:
 	QString			getType()									{ return type; }
 	void			setType( QString dish )						{ this->type = type; }
 
-	bool			isSelected() const							{ return selected; };
-	void			setSelected( bool selected )				{ this->selected = selected; }
+	bool			getUserSelected() const						{ return userSelected; };
+	void			setUserSelected( bool selected )			{ this->userSelected = selected; }
 
 	int				getUserPreference() const					{ return userPreference; };
 	void			setUserPreference( int userPreference )		{ this->userPreference = userPreference; }
+
+	int				getNumLikes()								{ return numLikes; }
+	void			setNumLikes( int numLikes )					{ this->numLikes = numLikes; }
+
+	int				getNumDislikes()							{ return numDislikes; }
+	void			setNumDislikes( int numDislikes )			{ this->numDislikes = numDislikes; }
+
+	EDishRating		getUserRating()								{ return userRating; }
+	void			setNumDislikes( EDishRating userRating )	{ this->userRating = userRating; }
 
 private:
 	QString			name;
@@ -37,8 +53,13 @@ private:
 	int				courseNum;			// 1 == Course 1, 2 == Course 2, etc.
 	QString			type;
 
-	bool			selected;
-	int				userPreference;		// 0 = Best, the more the lower
+	bool			userSelected;
+	int				userPreference;		// 0 = Best, the more, the lower
+
+	int				numLikes;
+	int				numDislikes;
+
+	EDishRating		userRating;
 };
 
 Q_DECLARE_METATYPE( Dish );

@@ -13,7 +13,7 @@
 #include "DishRatingView.h"
 
 
-static const float			kClickMovement			= 5;
+static const float			kClickMovement			= 2;
 static const float			kBriefDetailsOffset		= 30;
 
 
@@ -187,12 +187,12 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 
 	mousePressed = false;
 
-	dish.setSelected( !dish.isSelected() );
+	dish.setUserSelected( !dish.getUserSelected() );
 	((DayDishesView*)parent())->selectionChangedOn( dish );
 
 	this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 
-	if( dish.isSelected() )
+	if( dish.getUserSelected() )
 	{
 		//selectedEffect->enable();
 		imageLabel->setStyleSheet( kSelectedStyleSheet );

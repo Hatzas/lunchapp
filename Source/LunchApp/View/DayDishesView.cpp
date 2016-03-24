@@ -98,7 +98,7 @@ void DayDishesView::selectionChangedOn( const Dish& dish )
 		if( dish.getName() != dishesVect[i].getName()
 			&& dishesVect[i].getCourseNum() == dish.getCourseNum() )
 		{
-			disheViewsVect[i]->setDisabled( dish.isSelected() );
+			disheViewsVect[i]->setDisabled( dish.getUserSelected() );
 		}
 	}
 

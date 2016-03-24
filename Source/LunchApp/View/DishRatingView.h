@@ -18,13 +18,19 @@ public:
 			void			init();
 
 public slots:
-	virtual void			likeClicked( bool checked = false );
-	virtual void			dislikeClicked( bool checked = false );
+	virtual void			likeToggled( bool checked = false );
+	virtual void			dislikeToggled( bool checked = false );
 
 private:
+	Dish			dish;
+
 	QPushButton*	likeButton;
 	QPushButton*	dislikeButton;
 
+	QLabel*			numLikesLabel;
+	QLabel*			numDislikesLabel;
+
 
 			void			connectSignals();
+			void			updateCounterLabels();
 };
