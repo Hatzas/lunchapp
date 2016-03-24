@@ -10,6 +10,7 @@
 
 #include "Style.h"
 #include "DayDishesView.h"
+#include "DishRatingView.h"
 
 
 static const float			kClickMovement			= 5;
@@ -72,6 +73,8 @@ void DishView::init()
 	detailsLabel->setStyleSheet( kDetailsOverlayStyleSheet );
 	detailsLabel->adjustSize();
 
+	DishRatingView* ratingView = new DishRatingView( this, dish );
+
 	/* Animations */
 	detailsAnimation = new QPropertyAnimation( detailsLabel, "pos" );
 	detailsAnimation->setEasingCurve( QEasingCurve::OutCirc );
@@ -81,6 +84,7 @@ void DishView::init()
 	imageLabel->setGraphicsEffect( selectedEffect );
 
 	/* Move objects */
+	ratingView->move( widgetSize.width() - ratingView->width(), widgetSize.height() - kBriefDetailsOffset - ratingView->height() - 2 );
 	detailsLabel->move( 0, widgetSize.height() );
 
 	/* Properties */

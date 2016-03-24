@@ -82,7 +82,7 @@ void DayDishesView::mainWindowResized( QResizeEvent * event )
 
 	if( visibleRect.height() >= size.height() );
 	{
-		disheViewsVect[0]->move( kDishSpacing, kDishSpacing );
+		disheViewsVect[0]->move( kDishSpacing, 0 );
 		for( int i = 1 ; i < disheViewsVect.size() ; i++ )
 		{
 			disheViewsVect[i]->move( kDishSpacing, disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );

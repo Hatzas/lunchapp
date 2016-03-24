@@ -185,6 +185,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_DayDishesView.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DishRatingView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DishRatingView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="View\DishRatingView.cpp">
+      <Filter>Source Files\View</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LunchApp.rc" />
@@ -230,6 +239,9 @@
       <Filter>Header Files\View</Filter>
     </CustomBuild>
     <CustomBuild Include="View\DayDishesView.h">
+      <Filter>Header Files\View</Filter>
+    </CustomBuild>
+    <CustomBuild Include="View\DishRatingView.h">
       <Filter>Header Files\View</Filter>
     </CustomBuild>
   </ItemGroup>

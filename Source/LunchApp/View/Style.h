@@ -12,6 +12,22 @@ static const int		kBirefDishDetailsAnimationTime	= 300;		// milliseconds
 static const int		kFullDishDetailsAnimationTime	= 500;		// milliseconds
 
 static const QString	kDetailsOverlayStyleSheet		= "background-color: rgba(255,255,255,80%)";
+static const QString	kRatingButtonsStyleSheet		=  "QPushButton:hover{\
+															background-color: rgba(255,127,80,80%);\
+															}\
+															\
+															QPushButton {\
+															border: none;\
+															background-color: rgba(64,64,64,80%);\
+															}\
+															\
+															QPushButton:pressed {\
+															background-color: rgba(255,0,0,80%);\
+															}\
+															\
+															QPushButton:checked {\
+															background-color: rgba(255,0,0,80%);\
+															}";
 
 static const QString	kFontName						= "Segoe UI";
 
