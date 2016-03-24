@@ -12,21 +12,23 @@ static const int		kBirefDishDetailsAnimationTime	= 300;		// milliseconds
 static const int		kFullDishDetailsAnimationTime	= 500;		// milliseconds
 
 static const QString	kDetailsOverlayStyleSheet		= "background-color: rgba(255,255,255,80%)";
+
+static const QString	kRatingBackgroundStyleSheet		= "background-color: rgba(64,64,64,10%)";			// Should have same opacity as Buttons
 static const QString	kRatingButtonsStyleSheet		=  "QPushButton:hover{\
-															background-color: rgba(255,127,80,80%);\
+															background-color: rgba(255,127,80,70%);\
 															}\
 															\
 															QPushButton {\
 															border: none;\
-															background-color: rgba(64,64,64,80%);\
+															background-color: rgba(64,64,64,10%);\
 															}\
 															\
 															QPushButton:pressed {\
-															background-color: rgba(255,0,0,80%);\
+															background-color: rgba(255,0,0,70%);\
 															}\
 															\
 															QPushButton:checked {\
-															background-color: rgba(255,0,0,80%);\
+															background-color: rgba(255,0,0,70%);\
 															}";
 
 static const QString	kFontName						= "Segoe UI";
@@ -40,7 +42,7 @@ static const QString	kSelectedStyleSheet				= "border: 2px solid rgb(255, 102, 0
 static const float		kDishWidth						= 300;		// pixels
 static const float		kDishSpacing					= 10;		// pixels
 static const float		kDaySpacing						= 10;		// pixels
-static const float		kDayWidth						= kDishWidth + kDishSpacing;	// pixels
+static const float		kDayWidth						= kDishWidth + 2 * kDishSpacing;	// pixels
 static const float		kWeekWidth						= 5 * kDayWidth + 4 * kDaySpacing + kDishSpacing;
 
 static const float		kBackgroundScrollRatio			= 0.2f;		// pixels

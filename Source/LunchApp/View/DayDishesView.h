@@ -22,7 +22,7 @@ public:
 	void				selectionChangedOn( const Dish& dish );
 
 private:
-	std::vector<DishView*>	disheViewsVect;
+	std::vector<DishView*>	dishViewsVect;
 	std::vector<Dish>&		dishesVect;
 
 

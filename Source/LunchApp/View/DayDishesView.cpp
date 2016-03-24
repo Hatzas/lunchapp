@@ -26,10 +26,12 @@ void DayDishesView::init()
 
 	AddDishes();
 
+	this->setMinimumWidth( kDayWidth );
+	this->adjustSize();
+
 	StackDishViews();
 
 	this->setMinimumSize( this->size() + QSize( kDishSpacing, 0 ) );	// add bottom spacing so the shadow is rendered completely
-
 	this->adjustSize();
 }
 
@@ -45,7 +47,7 @@ bool DayDishesView::event( QEvent* event )
 			QScrollPrepareEvent *se = static_cast<QScrollPrepareEvent *>( event );
 			se->setViewportSize( QSize( this->width(), visibleRect.height() ) );
 			se->setContentPosRange( QRectF( 0, 0, size.width(), size.height() - visibleRect.height() ) );
-			se->setContentPos( -disheViewsVect[0]->pos() );
+			se->setContentPos( -dishViewsVect[0]->pos() );
 			se->accept();
 			return true;
 		}
@@ -54,10 +56,10 @@ bool DayDishesView::event( QEvent* event )
 			QScrollEvent *se = static_cast<QScrollEvent *>( event );
 			QPointF scrollPos = -se->contentPos() - se->overshootDistance();
 
-			disheViewsVect[0]->move( disheViewsVect[0]->x(), scrollPos.y() );
-			for( int i = 1 ; i < disheViewsVect.size() ; i++ )
+			int deltaY = scrollPos.y() - dishViewsVect[0]->y();
+			for( int i = 0 ; i < dishViewsVect.size() ; i++ )
 			{
-				disheViewsVect[i]->move( disheViewsVect[i]->x(), disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );
+				dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
 			}
 
 			return true;
@@ -82,10 +84,10 @@ void DayDishesView::mainWindowResized( QResizeEvent * event )
 
 	if( visibleRect.height() >= size.height() );
 	{
-		disheViewsVect[0]->move( kDishSpacing, 0 );
-		for( int i = 1 ; i < disheViewsVect.size() ; i++ )
+		int deltaY = -dishViewsVect[0]->y();
+		for( int i = 0 ; i < dishViewsVect.size() ; i++ )
 		{
-			disheViewsVect[i]->move( kDishSpacing, disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );
+			dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
 		}
 	}
 }
@@ -93,12 +95,12 @@ void DayDishesView::mainWindowResized( QResizeEvent * event )
 void DayDishesView::selectionChangedOn( const Dish& dish )
 {
 	// Disable other dishes from same course
-	for( size_t i = 0 ; i < dishesVect.size() ; i++ )
+	for( size_t i = 0 ; i < dishViewsVect.size() ; i++ )
 	{
-		if( dish.getName() != dishesVect[i].getName()
-			&& dishesVect[i].getCourseNum() == dish.getCourseNum() )
+		if( dish.getName() != dishViewsVect[i]->getDish().getName()
+			&& dish.getCourseNum() == dishViewsVect[i]->getDish().getCourseNum() )
 		{
-			disheViewsVect[i]->setDisabled( dish.getUserSelected() );
+			dishViewsVect[i]->setDisabled( dish.getUserSelected() );
 		}
 	}
 
@@ -112,26 +114,55 @@ void DayDishesView::AddDishes()
 {
 	for( size_t i = 0 ; i < dishesVect.size() ; i++ )
 	{
-		disheViewsVect.push_back( new DishView( this, dishesVect[i] ) );
+		dishViewsVect.push_back( new DishView( this, dishesVect[i] ) );
 	}
+}
+
+bool compareDishViews( DishView* first, DishView* second )
+{
+	if( first->width() * first->height() > second->width() * second->height() )
+		return true;
+	else
+		return false;
 }
 
 void DayDishesView::StackDishViews()
 {
-	if( disheViewsVect.size() == 0 )
+	if( dishViewsVect.size() == 0 )
 		return;
 
-	disheViewsVect[0]->move( kDishSpacing, kDishSpacing );
-	for( size_t i = 1 ; i < disheViewsVect.size() ; i++ )
-	{
-		disheViewsVect[i]->move( kDishSpacing, disheViewsVect[i-1]->y() + disheViewsVect[i-1]->height() + kDishSpacing );
-	}
-
-	// Stack images
-
+	/* Stack images */
 	// Sort by size
-	// TO DO
+	std::sort( dishViewsVect.begin(), dishViewsVect.end(), compareDishViews );
 
 	// Stack
-	// TO DO
+	dishViewsVect[0]->move( kDishSpacing, 0 );
+
+	int width = this->width();
+	for( size_t i = 1 ; i < dishViewsVect.size() ; i++ )
+	{
+		DishView* lastPlaced = dishViewsVect[i - 1];
+		DishView* current = dishViewsVect[i];
+
+		int lastXCoord = lastPlaced->x() + lastPlaced->width() + kDishSpacing;
+		int lastYCoord = lastPlaced->y() + lastPlaced->height() + kDishSpacing;
+
+		int currentWidth = current->width();
+		if( lastXCoord + current->width() <= width )
+		{
+			// Place besides
+			current->move( lastXCoord, lastPlaced->y() );
+		}
+		else
+		{
+			// Place below
+			current->move( kDishSpacing, lastYCoord );
+		}
+	}
+
+	// Re-arrange model vect to keep correspondence with view vect
+	for( size_t i = 0 ; i < dishViewsVect.size() ; i++ )
+	{
+		dishesVect[i] = dishViewsVect[i]->getDish();
+	}
 }

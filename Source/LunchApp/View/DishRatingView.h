@@ -14,9 +14,6 @@ class DishRatingView : public QWidget
 public:
 							DishRatingView( QWidget *parent, const Dish& dish );
 							~DishRatingView();
-
-			void			init();
-
 public slots:
 	virtual void			likeToggled( bool checked = false );
 	virtual void			dislikeToggled( bool checked = false );
@@ -31,6 +28,7 @@ private:
 	QLabel*			numDislikesLabel;
 
 
+			void			init();
 			void			connectSignals();
 			void			updateCounterLabels();
 };

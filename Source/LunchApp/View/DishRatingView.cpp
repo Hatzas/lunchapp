@@ -18,7 +18,7 @@ DishRatingView::~DishRatingView()
 void DishRatingView::init()
 {
 	this->setAutoFillBackground( true );
-	this->setStyleSheet( "background-color: rgba(64,64,64,80%)" );
+	this->setStyleSheet( kRatingBackgroundStyleSheet );
 
 	// Add rating text
 	QPalette textPalette;
@@ -27,7 +27,7 @@ void DishRatingView::init()
 	textFont.setBold( true );
 
 	numLikesLabel = new QLabel( this );
-	numLikesLabel->setText( "___" );
+	numLikesLabel->setText( "____" );
 	numLikesLabel->setFont( textFont );
 	numLikesLabel->setPalette( textPalette );
 	numLikesLabel->setAlignment( Qt::AlignCenter );
@@ -115,29 +115,29 @@ void DishRatingView::updateCounterLabels()
 {
 	if( dish.getNumLikes() < 10 )
 	{
-		numLikesLabel->setText( "  " + QString::number( dish.getNumLikes() ) + " " );
+		numLikesLabel->setText( QString::number( dish.getNumLikes() ));
 	}
 	else if( dish.getNumLikes() < 100 )
 	{
-		numLikesLabel->setText( " " + QString::number( dish.getNumLikes() ) + " " );
+		numLikesLabel->setText( QString::number( dish.getNumLikes() ) );
 	}
 	else
 	{
-		numLikesLabel->setText( QString::number( dish.getNumLikes() ) + " " );
+		numLikesLabel->setText( QString::number( dish.getNumLikes() ) );
 		numLikesLabel->adjustSize();
 	}
 
 	if( dish.getNumDislikes() < 10 )
 	{
-		numDislikesLabel->setText( " " + QString::number( dish.getNumDislikes() ) + "  " );
+		numDislikesLabel->setText( QString::number( dish.getNumDislikes() ) );
 	}
 	else if( dish.getNumDislikes() < 100 )
 	{
-		numDislikesLabel->setText( " " + QString::number( dish.getNumDislikes() ) + " " );
+		numDislikesLabel->setText( QString::number( dish.getNumDislikes() ) );
 	}
 	else
 	{
-		numDislikesLabel->setText( " " + QString::number( dish.getNumDislikes() ) );
+		numDislikesLabel->setText( QString::number( dish.getNumDislikes() ) );
 		numDislikesLabel->adjustSize();
 	}
 }

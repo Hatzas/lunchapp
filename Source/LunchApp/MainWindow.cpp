@@ -52,7 +52,7 @@ void MainWindow::sendWeek()
 {
 	// Dummy data
 	std::vector<Dish> dishesVect;
-	dishesVect.push_back( Dish( "Quesadilla cu pui",
+	dishesVect.push_back( Dish( "Ciorba de varza",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/supa1.png"), 1 ) );
 	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
@@ -61,22 +61,73 @@ void MainWindow::sendWeek()
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/mancare3.png"), 2 ) );
+	dishesVect.push_back( Dish( "Salata din gradina ursului",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/salata3.png"), 3 ) );
+	dishesVect.push_back( Dish( "Salata din gradina ursului",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/salata4.png"), 3 ) );
+	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/supa2.png"), 1 ) );
+
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
 
 	std::vector<Day> daysVect;
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Luni", dishesVect ) );
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Marti", dishesVect ) );
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Miercuri", dishesVect ) );
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Joi", dishesVect ) );
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Vineri", dishesVect ) );
 
 	QDate monday = QDate::currentDate();

@@ -45,8 +45,6 @@ void MetroView::init()
 	this->setViewport( openGLWidget );
 #endif
 
-	//QScroller::grabGesture( this, QScroller::LeftMouseButtonGesture );
-
 	this->setRenderHint( QPainter::Antialiasing );
 	this->setRenderHint( QPainter::SmoothPixmapTransform );
 	this->setCacheMode( QGraphicsView::CacheBackground );
@@ -120,7 +118,7 @@ void MetroView::addSceneItems()
 	//animations->addAnimation( textAnimations );
 	animations->addAnimation( weekMoveAnimation );
 
-	this->setMinimumWidth( kWeekWidth );
+	this->setMinimumWidth( kWeekWidth + 150 );			// don't leave this constant here
 	this->setMinimumHeight( this->height() );
 	this->adjustSize();
 
