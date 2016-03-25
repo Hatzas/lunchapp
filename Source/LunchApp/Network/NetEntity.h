@@ -2,7 +2,7 @@
 
 #include <QString>
 #include <QList>
-
+#include <QDate>
 
 class QueryPair
 {
@@ -44,10 +44,14 @@ public:
 		QString				getError() const { return error; }
 		void				setError(const QString& errorString) { error = errorString; }
 
+		void				getDates(QDate& startDate, QDate& endDate) const;
+		void				setDates(const QDate& startDate, const QDate& endDate);
 private:
 	MethodType				methodType;			// method request type
 	QString					methodUrl;			// e.g. "meal/get"
 	QList<QueryPair>		requestParams;
 	QString					result;
 	QString					error;
+	QDate					requestStartDate;
+	QDate					requestEndDate;
 };

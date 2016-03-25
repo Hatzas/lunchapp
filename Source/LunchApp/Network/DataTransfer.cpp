@@ -25,9 +25,8 @@ void DataTransfer::getMenu(const QDate& startDate, const QDate& endDate)
 	NetEntity entity;
     entity.setMethodType(eGetMethod);
     entity.setMethodUrl("menu");
-	entity.addRequestParam("StartDate","2016-03-21");
-	entity.addRequestParam("EndDate", "2016-03-25");
-
+	entity.setDates(startDate, endDate);
+	
 	restClient->pushRequest(entity);
 }
 
@@ -36,9 +35,8 @@ void DataTransfer::getUserMenu(const QDate& startDate, const QDate& endDate)
 	NetEntity entity;
 	entity.setMethodType(eGetMethod);
 	entity.setMethodUrl("usermenu");
-	entity.addRequestParam("StartDate", "2016-03-21");
-	entity.addRequestParam("EndDate", "2016-03-25");
-
+	entity.setDates(startDate, endDate);
+	
 	restClient->pushRequest(entity);
 }
 
@@ -87,24 +85,31 @@ void DataTransfer::extractDays(const QJsonArray& json, std::vector<Day>& days)
 {
 	days.clear();
 	
-	std::vector<Dish> dishes;
 	foreach(const QJsonValue& val, json)
 	{
-		QJsonObject obj = val.toObject();
+		QJsonObject dayObject = val.toObject();
 		
-		QString date = obj["Date"].toString();
-		QJsonObject dishObj = obj["Dish"].toObject();
-		QString description = dishObj["Description"].toString();
-		QString name = dishObj["Name"].toString();
-		
-		QJsonObject pictureObj = dishObj["DishPicture"].toObject();
-		QString pictureBytes = pictureObj["Thumbnail"].toString();
+		//QString date = dayObject["Date"].toString();
+		QString day = dayObject["Day"].toString();
 
-		QPixmap pixmap;
-		pixmap.loadFromData(pictureBytes.toUtf8(), "PNG");
+		QJsonArray dishArray = dayObject["Dishes"].toArray();
+		std::vector<Dish> dishes;
 
-		dishes.push_back(Dish(name, description, pixmap, 0));
+		foreach(const QJsonValue& dish, dishArray)
+		{
+			QJsonObject dishObject = dish.toObject();
+
+			QString name = dishObject["Name"].toString();
+			QString description = dishObject["Description"].toString();
+
+			QJsonObject pictureObj = dishObject["DishPicture"].toObject();
+			QString pictureBytes = pictureObj["Thumbnail"].toString();
+			QPixmap pixmap;
+			pixmap.loadFromData(pictureBytes.toUtf8(), "PNG");
+
+			dishes.push_back(Dish(name, description, pixmap, 0));
+		}
+
+		days.push_back(Day(day, dishes));
 	}
-
-	days.push_back(Day("Luni", dishes));
 }

@@ -31,3 +31,15 @@ void NetEntity::addRequestParam(const QueryPair& queryPair)
 {
 	requestParams.push_back(queryPair);
 }
+
+void NetEntity::getDates(QDate& startDate, QDate& endDate) const
+{
+	startDate = requestStartDate;
+	endDate = requestEndDate;
+}
+
+void NetEntity::setDates(const QDate& startDate, const QDate& endDate)
+{
+	requestStartDate = startDate;
+	requestEndDate = endDate;
+}
