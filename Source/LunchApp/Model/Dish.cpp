@@ -12,8 +12,10 @@ Dish::Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum )
 	, courseNum( courseNum )
 	, userSelected( false )
 	, userInterest( eHigh )
-	, numLikes( 0 )
-	, numDislikes( 0 )
+	, numWows( 0 )
+	, numHappies( 0 )
+	, numMeahs( 0 )
+	, numYucks( 0 )
 	, userRating( eNotRated )
 {
 

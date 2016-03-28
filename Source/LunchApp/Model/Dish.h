@@ -44,11 +44,17 @@ public:
 	EUserInterest	getUserInterest() const								{ return userInterest; };
 	void			setUserInterest( EUserInterest userPreference )		{ this->userInterest = userPreference; }
 
-	int				getNumLikes()										{ return numLikes; }
-	void			setNumLikes( int numLikes )							{ this->numLikes = numLikes; }
+	int				getNumWows()										{ return numWows; }
+	void			setNumWows( int numLikes )							{ this->numWows = numLikes; }
 
-	int				getNumDislikes()									{ return numDislikes; }
-	void			setNumDislikes( int numDislikes )					{ this->numDislikes = numDislikes; }
+	int				getNumHappies()										{ return numHappies; }
+	void			setNumHappies( int numLikes )						{ this->numHappies = numLikes; }
+
+	int				getNumMeahs()										{ return numMeahs; }
+	void			setNumMeahs( int numLikes )							{ this->numMeahs = numLikes; }
+
+	int				getNumYucks()										{ return numYucks; }
+	void			setNumYucks( int numDislikes )						{ this->numYucks = numDislikes; }
 
 	EDishRating		getUserRating()										{ return userRating; }
 	void			setUserRating( EDishRating userRating )				{ this->userRating = userRating; }
@@ -63,8 +69,10 @@ private:
 	bool				userSelected;
 	EUserInterest		userInterest;
 
-	int					numLikes;
-	int					numDislikes;
+	int					numWows;
+	int					numHappies;
+	int					numMeahs;
+	int					numYucks;
 
 	EDishRating			userRating;
 };

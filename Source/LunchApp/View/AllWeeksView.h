@@ -25,10 +25,10 @@ public:
 			void			mainWindowResized( QResizeEvent* event );
 
 			void			selectionChangedOn( const Dish& dish );
+			bool			scrollStarted( EDirection direction );		// Returns true if there are items to show after scroll
 
 			void			addWeek( const Week& week );
-
-			bool			scrollStarted( EDirection direction );		// Returns true if there are items to show after scroll
+			Week			getVisibleWeek();
 
 private:
 	std::vector<WeekView*>		weekViewsVect;

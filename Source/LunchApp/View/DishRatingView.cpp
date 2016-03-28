@@ -17,47 +17,14 @@ DishRatingView::~DishRatingView()
 
 void DishRatingView::init()
 {
-	this->setAutoFillBackground( true );
-	this->setStyleSheet( kRatingBackgroundStyleSheet );
-
-	// Add rating text
-	QPalette textPalette;
-	textPalette.setColor( QPalette::Text, Qt::white );
-	QFont textFont( kFontName, 9 );
-	textFont.setBold( true );
-
-	numWowsLabel = new QLabel( this );
-	numWowsLabel->setText( "_____" );
-	numWowsLabel->setFont( textFont );
-	numWowsLabel->setPalette( textPalette );
-	numWowsLabel->setAlignment( Qt::AlignCenter );
-	numWowsLabel->adjustSize();
-
-	numHappiesLabel = new QLabel( this );
-	numHappiesLabel->setText( "_____" );
-	numHappiesLabel->setFont( textFont );
-	numHappiesLabel->setPalette( textPalette );
-	numHappiesLabel->setAlignment( Qt::AlignCenter );
-	numHappiesLabel->adjustSize();
-
-	numMeahsLabel = new QLabel( this );
-	numMeahsLabel->setText( "_____" );
-	numMeahsLabel->setFont( textFont );
-	numMeahsLabel->setPalette( textPalette );
-	numMeahsLabel->setAlignment( Qt::AlignCenter );
-	numMeahsLabel->adjustSize();
-
-	numYucksLabel = new QLabel( this );
-	numYucksLabel->setText( "_____" );
-	numYucksLabel->setFont( textFont );
-	numYucksLabel->setPalette( textPalette );
-	numYucksLabel->setAlignment( Qt::AlignCenter );
-	numYucksLabel->adjustSize();
+ 	//this->setAutoFillBackground( true );
+	//this->setStyleSheet( kRatingBackgroundStyleSheet );
 
 	// Add buttons
 	QPixmap wowPixmap = QPixmap( "Resources/wow.png" );
 	wowButton = new QPushButton( this );
 	wowButton->setCheckable( true );
+	wowButton->setAutoExclusive( true );
 	wowButton->setStyleSheet( kRatingButtonsStyleSheet );
 	wowButton->setIcon( wowPixmap );
 	wowButton->setIconSize( wowPixmap.size() );
@@ -67,29 +34,56 @@ void DishRatingView::init()
 	QPixmap happyPixmap = QPixmap( "Resources/happy.png" );
 	happyButton = new QPushButton( this );
 	happyButton->setCheckable( true );
+	happyButton->setAutoExclusive( true );
 	happyButton->setStyleSheet( kRatingButtonsStyleSheet );
 	happyButton->setIcon( happyPixmap );
 	happyButton->setIconSize( happyPixmap.size() );
-	//happyButton->setFixedHeight( numLikesLabel->height() );
 	happyButton->adjustSize();
 
 	QPixmap meahPixmap = QPixmap( "Resources/meah.png" );
 	meahButton = new QPushButton( this );
 	meahButton->setCheckable( true );
+	meahButton->setAutoExclusive( true );
 	meahButton->setStyleSheet( kRatingButtonsStyleSheet );
 	meahButton->setIcon( meahPixmap );
 	meahButton->setIconSize( meahPixmap.size() );
-	//meahButton->setFixedHeight( numLikesLabel->height() );
 	meahButton->adjustSize();
 
 	QPixmap yuckPixmap = QPixmap( "Resources/yuck.png" );
 	yuckButton = new QPushButton( this );
 	yuckButton->setCheckable( true );
+	yuckButton->setAutoExclusive( true );
 	yuckButton->setStyleSheet( kRatingButtonsStyleSheet );
 	yuckButton->setIcon( yuckPixmap );
 	yuckButton->setIconSize( yuckPixmap.size() );
-	//yuckButton->setFixedHeight( numDislikesLabel->height() );
 	yuckButton->adjustSize();
+
+	// Add rating text
+	QFont textFont( kFontName, 6 );
+
+	numWowsLabel = new QLabel( this );
+	numWowsLabel->setText( "__0_" );
+	numWowsLabel->setFont( textFont );
+	numWowsLabel->setAlignment( Qt::AlignCenter );
+	numWowsLabel->adjustSize();
+
+	numHappiesLabel = new QLabel( this );
+	numHappiesLabel->setText( "__0_" );
+	numHappiesLabel->setFont( textFont );
+	numHappiesLabel->setAlignment( Qt::AlignCenter );
+	numHappiesLabel->adjustSize();
+
+	numMeahsLabel = new QLabel( this );
+	numMeahsLabel->setText( "__0_" );
+	numMeahsLabel->setFont( textFont );
+	numMeahsLabel->setAlignment( Qt::AlignCenter );
+	numMeahsLabel->adjustSize();
+
+	numYucksLabel = new QLabel( this );
+	numYucksLabel->setText( "__0_" );
+	numYucksLabel->setFont( textFont );
+	numYucksLabel->setAlignment( Qt::AlignCenter );
+	numYucksLabel->adjustSize();
 
 	// Move
 	wowButton->move( 0, 0 );
@@ -97,10 +91,10 @@ void DishRatingView::init()
 	meahButton->move( happyButton->x() + happyButton->width(), 0 );
 	yuckButton->move( meahButton->x() + meahButton->width(), 0  );
 
-	numWowsLabel->move( wowButton->x() + wowButton->width() / 2 - numWowsLabel->width() / 2, meahButton->height() );
-	numHappiesLabel->move( happyButton->x() + happyButton->width() / 2 - numWowsLabel->width() / 2, meahButton->height() );
-	numMeahsLabel->move( meahButton->x() + meahButton->width() / 2 - numWowsLabel->width() / 2, meahButton->height() );
-	numYucksLabel->move( yuckButton->x() + yuckButton->width() / 2 - numWowsLabel->width() / 2, meahButton->height() );
+	numWowsLabel->move( wowButton->x() + wowButton->width() - numWowsLabel->width(), wowButton->y() + wowButton->height() - numWowsLabel->height() );
+	numHappiesLabel->move( happyButton->x() + happyButton->width() - numHappiesLabel->width(), happyButton->y() + happyButton->height() - numHappiesLabel->height() );
+	numMeahsLabel->move( meahButton->x() + meahButton->width() - numMeahsLabel->width(), meahButton->y() + meahButton->height() - numMeahsLabel->height() );
+	numYucksLabel->move( yuckButton->x() + yuckButton->width() - numYucksLabel->width(), yuckButton->y() + yuckButton->height() - numYucksLabel->height() );
 
 	this->adjustSize();
 
@@ -116,6 +110,8 @@ void DishRatingView::init()
 void DishRatingView::connectSignals()
 {
 	connect( wowButton, SIGNAL( toggled( bool ) ), SLOT( wowToggled( bool ) ) );
+	connect( happyButton, SIGNAL( toggled( bool ) ), SLOT( happyToggled( bool ) ) );
+	connect( meahButton, SIGNAL( toggled( bool ) ), SLOT( meahToggled( bool ) ) );
 	connect( yuckButton, SIGNAL( toggled( bool ) ), SLOT( yuckToggled( bool ) ) );
 }
 
@@ -123,12 +119,39 @@ void DishRatingView::wowToggled( bool checked /* = false */ )
 {
 	if( checked )
 	{
-		yuckButton->setChecked( false );
-		dish.setNumLikes( dish.getNumLikes() + 1 );
+		dish.setNumWows( dish.getNumWows() + 1 );
 	}
 	else
 	{
-		dish.setNumLikes( dish.getNumLikes() - 1 );
+		dish.setNumWows( dish.getNumWows() - 1 );
+	}
+
+	updateCounterLabels();
+}
+
+void DishRatingView::happyToggled( bool checked /* = false */ )
+{
+	if( checked )
+	{
+		dish.setNumHappies( dish.getNumHappies() + 1 );
+	}
+	else
+	{
+		dish.setNumHappies( dish.getNumHappies() - 1 );
+	}
+
+	updateCounterLabels();
+}
+
+void DishRatingView::meahToggled( bool checked /* = false */ )
+{
+	if( checked )
+	{
+		dish.setNumMeahs( dish.getNumMeahs() + 1 );
+	}
+	else
+	{
+		dish.setNumMeahs( dish.getNumMeahs() - 1 );
 	}
 
 	updateCounterLabels();
@@ -138,12 +161,11 @@ void DishRatingView::yuckToggled( bool checked /* = false */ )
 {
 	if( checked )
 	{
-		wowButton->setChecked( false );
-		dish.setNumDislikes( dish.getNumDislikes() + 1 );
+		dish.setNumYucks( dish.getNumYucks() + 1 );
 	}
 	else
 	{
-		dish.setNumDislikes( dish.getNumDislikes() - 1 );
+		dish.setNumYucks( dish.getNumYucks() - 1 );
 	}
 
 	updateCounterLabels();
@@ -151,31 +173,8 @@ void DishRatingView::yuckToggled( bool checked /* = false */ )
 
 void DishRatingView::updateCounterLabels()
 {
-	if( dish.getNumLikes() < 10 )
-	{
-		numWowsLabel->setText( QString::number( dish.getNumLikes() ));
-	}
-	else if( dish.getNumLikes() < 100 )
-	{
-		numWowsLabel->setText( QString::number( dish.getNumLikes() ) );
-	}
-	else
-	{
-		numWowsLabel->setText( QString::number( dish.getNumLikes() ) );
-		numWowsLabel->adjustSize();
-	}
-
-	if( dish.getNumDislikes() < 10 )
-	{
-		numYucksLabel->setText( QString::number( dish.getNumDislikes() ) );
-	}
-	else if( dish.getNumDislikes() < 100 )
-	{
-		numYucksLabel->setText( QString::number( dish.getNumDislikes() ) );
-	}
-	else
-	{
-		numYucksLabel->setText( QString::number( dish.getNumDislikes() ) );
-		numYucksLabel->adjustSize();
-	}
+	numWowsLabel->setText( QString::number( dish.getNumWows() ));
+	numHappiesLabel->setText( QString::number( dish.getNumHappies() ));
+	numMeahsLabel->setText( QString::number( dish.getNumMeahs() ));
+	numYucksLabel->setText( QString::number( dish.getNumYucks() ) );
 }

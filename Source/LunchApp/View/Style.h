@@ -13,9 +13,9 @@ static const int		kFullDishDetailsAnimationTime	= 500;		// milliseconds
 
 static const QString	kDetailsOverlayStyleSheet		= "background-color: rgba(255,255,255,80%)";
 
-static const QString	kRatingBackgroundStyleSheet		= "background-color: rgba(64,64,64,10%)";			// Should have same opacity as Buttons
+static const QString	kRatingBackgroundStyleSheet		= "background-color: rgba(255,255,255,80%)";			// Should have same opacity as Buttons
 static const QString	kRatingButtonsStyleSheet		=  "QPushButton:hover{\
-															background-color: rgba(255,127,80,70%);\
+															background-color: rgba(135,206,250,40%);\
 															}\
 															\
 															QPushButton {\
@@ -24,11 +24,11 @@ static const QString	kRatingButtonsStyleSheet		=  "QPushButton:hover{\
 															}\
 															\
 															QPushButton:pressed {\
-															background-color: rgba(255,0,0,70%);\
+															background-color: rgba(0,191,255,80%);\
 															}\
 															\
 															QPushButton:checked {\
-															background-color: rgba(255,0,0,70%);\
+															background-color: rgba(0,191,255,80%);\
 															}";
 
 static const QString	kFontName						= "Segoe UI";

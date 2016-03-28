@@ -85,6 +85,19 @@ void AllWeeksView::addWeek( const Week& week )
 	this->adjustSize();
 }
 
+Week AllWeeksView::getVisibleWeek()
+{	
+	for( int i = 0 ; i < weekViewsVect.size() ; i++ )
+	{
+		if( weekViewsVect[i]->visibleRegion().boundingRect().width() == weekViewsVect[i]->width() )
+		{
+			return weekViewsVect[i]->getWeek();
+		}
+	}
+
+	return Week();
+}
+
 bool AllWeeksView::scrollStarted( EDirection direction )
 {
 	if( weekViewsVect.size() == 0 )

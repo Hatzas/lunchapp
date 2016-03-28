@@ -71,6 +71,13 @@ void MainWindow::sendWeek()
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/supa2.png"), 1 ) );
 
+	dishesVect[0].setNumWows( 120 );
+	dishesVect[1].setNumWows( 120 );
+	dishesVect[2].setNumWows( 120 );
+	dishesVect[3].setNumWows( 120 );
+	dishesVect[4].setNumWows( 120 );
+	dishesVect[5].setNumWows( 120 );
+
 	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
 	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
 	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );

@@ -16,6 +16,8 @@ public:
 							~DishRatingView();
 public slots:
 	virtual void			wowToggled( bool checked = false );
+	virtual void			happyToggled( bool checked = false );
+	virtual void			meahToggled( bool checked = false );
 	virtual void			yuckToggled( bool checked = false );
 
 private:
