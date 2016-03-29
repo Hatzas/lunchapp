@@ -13,6 +13,7 @@
 #include <QBoxLayout>
 #include <QScroller>
 #include <QScroller>
+#include <QLocale>
 
 #include "Style.h"
 #include "InfiniteBackground.h"
@@ -244,11 +245,21 @@ void MetroView::resizeEvent( QResizeEvent * event )
 
 void MetroView::setWeekDateText( const Week &currentWeek )
 {
+	QLocale romanian;
+
 	QDate startDate = currentWeek.getStartDate();
 	QDate endDate = currentWeek.getEndDate();
-	
-	weekDateLabel->setText( QString::number( startDate.day() ) + " " + startDate.shortMonthName( startDate.month() )
-							+ " - " + QString::number( endDate.day() ) + " " + endDate.shortMonthName( endDate.month() ) );
+	if( startDate.month() != endDate.month() )
+	{
+		weekDateLabel->setText( QString::number( startDate.day() ) + " " + romanian.monthName( startDate.month() )
+			+ " - " + QString::number( endDate.day() ) + " " + romanian.monthName( endDate.month() ) );
+	}
+	else
+	{
+		weekDateLabel->setText( QString::number( startDate.day() ) + " - " + QString::number( endDate.day() ) 
+			+ " " + romanian.monthName( endDate.month() ) );
+	}
+
 	weekDateLabel->adjustSize();
 
 	weekDateInAnimation->start();

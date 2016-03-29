@@ -16,8 +16,10 @@ public:
 	enum EDishRating
 	{
 		eNotRated,
-		eLiked,
-		eDisliked
+		eWow,
+		eHappy,
+		eMeah,
+		eYuck
 	};
 
 					Dish();

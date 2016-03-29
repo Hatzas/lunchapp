@@ -4,6 +4,10 @@
 #include <QMenu>
 #include <QCloseEvent>
 
+#include "Style.h"
+#include "View/NotificationWindow.h"
+
+
 MainWindow::MainWindow(QWidget *parent)
 	: QWidget(parent)
 {
@@ -29,7 +33,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::showTrayMessage( const QString& msg )
 {
-	trayIcon->showMessage(tr("Lunch App"), msg, QSystemTrayIcon::Information);
+	NotificationWindow* customWindow = new NotificationWindow( trayIcon, msg, kNotificationShowTime );
+	customWindow->show();
+
+	//trayIcon->showMessage(tr("Lunch App"), msg, QSystemTrayIcon::Information);
 }
 
 void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
@@ -72,6 +79,7 @@ void MainWindow::sendWeek()
 		QPixmap("Resources/supa2.png"), 1 ) );
 
 	dishesVect[0].setNumWows( 120 );
+	dishesVect[0].setUserRating( Dish::eWow );
 	dishesVect[1].setNumWows( 120 );
 	dishesVect[2].setNumWows( 120 );
 	dishesVect[3].setNumWows( 120 );
@@ -151,8 +159,8 @@ void MainWindow::sendWeek()
 void MainWindow::setupTray()
 {
 	trayIcon = new QSystemTrayIcon(this);
-	trayIcon->setIcon(QIcon("Resources/like.png"));
-	trayIcon->setToolTip(tr("Lunch App\nApasa-l"));
+	trayIcon->setIcon( QPixmap( kAppIconPath ) );
+	trayIcon->setToolTip( tr( "Lunch App\nApasa-l" ) );
 
 	connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayActivation(QSystemTrayIcon::ActivationReason)));
 

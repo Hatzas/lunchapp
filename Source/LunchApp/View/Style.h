@@ -1,9 +1,15 @@
 #pragma once
 
+#include <QPixmap>
 #include <QString>
 #include <QColor>
 #include <QSize>
 
+static const QString	kAppName						= "Lunch App";
+static const QString	kAppIconPath					= "Resources/icon.png";
+
+static const int		kNotificationShowTime			= 6000;		// milliseconds
+static const int		kNotificationAnimationTime		= 450;		// milliseconds
 
 static const float		kWeekOffsetY					= 100;		// pixels ( spacing from top of view )
 
@@ -13,14 +19,13 @@ static const int		kFullDishDetailsAnimationTime	= 500;		// milliseconds
 
 static const QString	kDetailsOverlayStyleSheet		= "background-color: rgba(255,255,255,80%)";
 
-static const QString	kRatingBackgroundStyleSheet		= "background-color: rgba(255,255,255,80%)";			// Should have same opacity as Buttons
 static const QString	kRatingButtonsStyleSheet		=  "QPushButton:hover{\
 															background-color: rgba(135,206,250,40%);\
 															}\
 															\
 															QPushButton {\
 															border: none;\
-															background-color: rgba(255,255,255,80%);\
+															background-color: rgba(0,0,0,0%);\
 															}\
 															\
 															QPushButton:pressed {\

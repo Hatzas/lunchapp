@@ -20,6 +20,9 @@ public slots:
 	virtual void			meahToggled( bool checked = false );
 	virtual void			yuckToggled( bool checked = false );
 
+protected:
+	virtual	void				paintEvent( QPaintEvent * event );
+
 private:
 	Dish			dish;
 
@@ -35,6 +38,8 @@ private:
 
 
 			void			init();
+
 			void			connectSignals();
 			void			updateCounterLabels();
+			void			updateRatingButtons();
 };

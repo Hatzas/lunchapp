@@ -1,5 +1,7 @@
 #include "DishRatingView.h"
 
+#include <QPainter>
+
 #include "Style.h"
 
 
@@ -17,9 +19,6 @@ DishRatingView::~DishRatingView()
 
 void DishRatingView::init()
 {
- 	//this->setAutoFillBackground( true );
-	//this->setStyleSheet( kRatingBackgroundStyleSheet );
-
 	// Add buttons
 	QPixmap wowPixmap = QPixmap( "Resources/wow.png" );
 	wowButton = new QPushButton( this );
@@ -28,7 +27,6 @@ void DishRatingView::init()
 	wowButton->setStyleSheet( kRatingButtonsStyleSheet );
 	wowButton->setIcon( wowPixmap );
 	wowButton->setIconSize( wowPixmap.size() );
-	//wowButton->setFixedHeight( numLikesLabel->height() );
 	wowButton->adjustSize();
 
 	QPixmap happyPixmap = QPixmap( "Resources/happy.png" );
@@ -62,25 +60,25 @@ void DishRatingView::init()
 	QFont textFont( kFontName, 6 );
 
 	numWowsLabel = new QLabel( this );
-	numWowsLabel->setText( "__0_" );
+	numWowsLabel->setText( "____" );
 	numWowsLabel->setFont( textFont );
 	numWowsLabel->setAlignment( Qt::AlignCenter );
 	numWowsLabel->adjustSize();
 
 	numHappiesLabel = new QLabel( this );
-	numHappiesLabel->setText( "__0_" );
+	numHappiesLabel->setText( "____" );
 	numHappiesLabel->setFont( textFont );
 	numHappiesLabel->setAlignment( Qt::AlignCenter );
 	numHappiesLabel->adjustSize();
 
 	numMeahsLabel = new QLabel( this );
-	numMeahsLabel->setText( "__0_" );
+	numMeahsLabel->setText( "____" );
 	numMeahsLabel->setFont( textFont );
 	numMeahsLabel->setAlignment( Qt::AlignCenter );
 	numMeahsLabel->adjustSize();
 
 	numYucksLabel = new QLabel( this );
-	numYucksLabel->setText( "__0_" );
+	numYucksLabel->setText( "____" );
 	numYucksLabel->setFont( textFont );
 	numYucksLabel->setAlignment( Qt::AlignCenter );
 	numYucksLabel->adjustSize();
@@ -99,12 +97,20 @@ void DishRatingView::init()
 	this->adjustSize();
 
 	updateCounterLabels();
-	if( dish.getUserRating() == Dish::eLiked )
-		wowButton->setChecked( true );
-	else if( dish.getUserRating() == Dish::eDisliked )
-		yuckButton->setChecked( true );
+	updateRatingButtons();
 
 	connectSignals();
+}
+
+void DishRatingView::paintEvent( QPaintEvent * event )
+{
+	QPainter painter( this );
+
+	QColor bkgColor( 255, 255, 255 );
+	bkgColor.setAlphaF( 0.8f );
+	painter.fillRect( rect(), bkgColor );
+
+	QWidget::paintEvent( event );
 }
 
 void DishRatingView::connectSignals()
@@ -177,4 +183,12 @@ void DishRatingView::updateCounterLabels()
 	numHappiesLabel->setText( QString::number( dish.getNumHappies() ));
 	numMeahsLabel->setText( QString::number( dish.getNumMeahs() ));
 	numYucksLabel->setText( QString::number( dish.getNumYucks() ) );
+}
+
+void DishRatingView::updateRatingButtons()
+{
+	wowButton->setChecked( dish.getUserRating() == Dish::eWow );
+	happyButton->setChecked( dish.getUserRating() == Dish::eHappy );
+	meahButton->setChecked( dish.getUserRating() == Dish::eMeah );
+	yuckButton->setChecked( dish.getUserRating() == Dish::eYuck );
 }
