@@ -4,12 +4,16 @@
 #include <QString>
 #include <QColor>
 #include <QSize>
+#include <QTime>
 
 static const QString	kAppName						= "Lunch App";
 static const QString	kAppIconPath					= "Resources/icon.png";
 
 static const int		kNotificationShowTime			= 6000;		// milliseconds
+static const int		kMenuNotificationShowTime		= 1800000;	// milliseconds (30 minutes)
 static const int		kNotificationAnimationTime		= 450;		// milliseconds
+
+static const QTime		kDayMenuNotificationTime		= QTime( 12, 10 );	// 12h 10min
 
 static const float		kWeekOffsetY					= 100;		// pixels ( spacing from top of view )
 

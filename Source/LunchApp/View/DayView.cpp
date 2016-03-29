@@ -35,7 +35,7 @@ void DayView::init()
 
 	dishesView = new DayDishesView( this, day.getDishes() );
 
-	// Move objects
+	/* Move and resize objects */
 	dishesView->move( 0, dayNameLabel->height() + 2 * kDishSpacing );
 
 	this->adjustSize();

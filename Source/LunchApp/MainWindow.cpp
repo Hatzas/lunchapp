@@ -33,7 +33,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::showTrayMessage( const QString& msg )
 {
-	NotificationWindow* customWindow = new NotificationWindow( trayIcon, msg, kNotificationShowTime );
+	NotificationWindow* customWindow = new NotificationWindow( msg );
 	customWindow->show();
 
 	//trayIcon->showMessage(tr("Lunch App"), msg, QSystemTrayIcon::Information);
@@ -80,8 +80,10 @@ void MainWindow::sendWeek()
 
 	dishesVect[0].setNumWows( 120 );
 	dishesVect[0].setUserRating( Dish::eWow );
+	dishesVect[0].setUserSelected( true );
 	dishesVect[1].setNumWows( 120 );
 	dishesVect[2].setNumWows( 120 );
+	dishesVect[2].setUserSelected( true );
 	dishesVect[3].setNumWows( 120 );
 	dishesVect[4].setNumWows( 120 );
 	dishesVect[5].setNumWows( 120 );
@@ -161,6 +163,8 @@ void MainWindow::setupTray()
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setIcon( QPixmap( kAppIconPath ) );
 	trayIcon->setToolTip( tr( "Lunch App\nApasa-l" ) );
+
+	NotificationWindow::setup( trayIcon );
 
 	connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayActivation(QSystemTrayIcon::ActivationReason)));
 
