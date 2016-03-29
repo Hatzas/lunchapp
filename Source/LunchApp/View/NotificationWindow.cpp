@@ -100,8 +100,15 @@ void NotificationWindow::moveIn()
 	auto desktopRect = QApplication::desktop()->screenGeometry();
 	auto trayIconRect = trayIcon->geometry();
 
-	moveAnimation->setStartValue( QPoint( desktopRect.width(), trayIconRect.y() - this->height() - kNotificationOffsetY ) );
-	moveAnimation->setEndValue( QPoint( desktopRect.width() - this->width(), trayIconRect.y() - this->height() - kNotificationOffsetY ) );
+	// Compute Y position according to the taskbar position
+	int posY = 0;
+	if( trayIconRect.y() > desktopRect.height() / 2 )						// taskbar down
+		posY = trayIconRect.y() - this->height() - kNotificationOffsetY;
+	else																	// taskbar up
+		posY = trayIconRect.y() + trayIconRect.height() + kNotificationOffsetY;
+
+	moveAnimation->setStartValue( QPoint( desktopRect.width(), posY ) );
+	moveAnimation->setEndValue( QPoint( desktopRect.width() - this->width(), posY ) );
 	moveAnimation->start();
 }
 
@@ -111,6 +118,6 @@ void NotificationWindow::moveOut()
 	auto trayIconRect = trayIcon->geometry();
 
 	moveAnimation->setStartValue( this->pos() );
-	moveAnimation->setEndValue( QPoint( desktopRect.width(), trayIconRect.y() - this->height() - kNotificationOffsetY ) );
+	moveAnimation->setEndValue( QPoint( desktopRect.width(), this->y() ) );
 	moveAnimation->start();
 }
