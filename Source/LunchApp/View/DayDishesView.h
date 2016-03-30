@@ -16,12 +16,13 @@ public:
 			void		init();
 
 	virtual bool		event( QEvent* event );
-	virtual void		resizeEvent( QResizeEvent* event );
+	virtual void		wheelEvent( QWheelEvent* event );
+			void		mainWindowResized( QResizeEvent* event );
 
 	void				selectionChangedOn( const Dish& dish );
 
 private:
-	std::vector<DishView*>	disheViewsVect;
+	std::vector<DishView*>	dishViewsVect;
 	std::vector<Dish>&		dishesVect;
 
 

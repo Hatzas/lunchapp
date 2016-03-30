@@ -4,6 +4,10 @@
 #include <QMenu>
 #include <QCloseEvent>
 
+#include "Style.h"
+#include "View/NotificationWindow.h"
+
+
 MainWindow::MainWindow(QWidget *parent)
 	: QWidget(parent)
 {
@@ -29,7 +33,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::showTrayMessage( const QString& msg )
 {
-	trayIcon->showMessage(tr("Lunch App"), msg, QSystemTrayIcon::Information);
+	NotificationWindow* customWindow = new NotificationWindow( msg );
+	customWindow->show();
+
+	//trayIcon->showMessage(tr("Lunch App"), msg, QSystemTrayIcon::Information);
 }
 
 void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
@@ -52,7 +59,7 @@ void MainWindow::sendWeek()
 {
 	// Dummy data
 	std::vector<Dish> dishesVect;
-	dishesVect.push_back( Dish( "Quesadilla cu pui",
+	dishesVect.push_back( Dish( "Ciorba de varza",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/supa1.png"), 1 ) );
 	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
@@ -61,22 +68,83 @@ void MainWindow::sendWeek()
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/mancare3.png"), 2 ) );
+	dishesVect.push_back( Dish( "Salata din gradina bunicii",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/salata3.png"), 3 ) );
+	dishesVect.push_back( Dish( "Salata din gradina ursului",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/salata4.png"), 3 ) );
+	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/supa2.png"), 1 ) );
+
+	dishesVect[0].setNumWows( 120 );
+	dishesVect[0].setUserRating( Dish::eWow );
+	dishesVect[0].setUserSelected( true );
+	dishesVect[1].setNumWows( 120 );
+	dishesVect[2].setNumWows( 120 );
+	dishesVect[2].setUserSelected( true );
+	dishesVect[3].setNumWows( 120 );
+	dishesVect[4].setNumWows( 120 );
+	dishesVect[5].setNumWows( 120 );
+
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
 
 	std::vector<Day> daysVect;
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Luni", dishesVect ) );
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Marti", dishesVect ) );
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Miercuri", dishesVect ) );
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Joi", dishesVect ) );
 
 	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
 	daysVect.push_back( Day( "Vineri", dishesVect ) );
 
 	QDate monday = QDate::currentDate();
@@ -93,8 +161,10 @@ void MainWindow::sendWeek()
 void MainWindow::setupTray()
 {
 	trayIcon = new QSystemTrayIcon(this);
-	trayIcon->setIcon(QIcon("Resources/like.png"));
-	trayIcon->setToolTip(tr("Lunch App\nApasa-l"));
+	trayIcon->setIcon( QPixmap( kAppIconPath ) );
+	trayIcon->setToolTip( tr( "Lunch App\nApasa-l" ) );
+
+	NotificationWindow::setup( trayIcon );
 
 	connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayActivation(QSystemTrayIcon::ActivationReason)));
 

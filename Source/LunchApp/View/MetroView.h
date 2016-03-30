@@ -27,6 +27,7 @@ signals:
 
 public slots:
 			void	weekArrived( const Week& week );
+			void	weekAnimationFinished();
 
 protected:
 	virtual void	resizeEvent( QResizeEvent * event );
@@ -35,9 +36,11 @@ private:
 	QGraphicsScene*				scene;
 
 	InfiniteBackground*			background;
-	QLabel*						weekLabel;
+	QLabel*						weekDateLabel;
 	AllWeeksView*				weeksView;
 
+	QPropertyAnimation*			weekDateOutAnimation;
+	QPropertyAnimation*			weekDateInAnimation;
 	QPropertyAnimation*			weekMoveAnimation;
 	QPropertyAnimation*			backgroundAnimation;
 
@@ -46,4 +49,5 @@ private:
 
 	void			init();
 	void			addSceneItems();
+	void			setWeekDateText( const Week &currentWeek );
 };

@@ -17,7 +17,7 @@ public:
 						~DayView();
 
 	virtual void		wheelEvent( QWheelEvent* event );
-	virtual void		resizeEvent( QResizeEvent* event );
+			void		mainWindowResized( QResizeEvent* event );
 
 			void		selectionChangedOn( const Dish& dish );		
 

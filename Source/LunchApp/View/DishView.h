@@ -8,6 +8,7 @@
 #include <QGraphicsColorizeEffect>
 
 #include "SelectedEffect.h"
+#include "DishRatingView.h"
 #include "../Model/Dish.h"
 
 
@@ -21,6 +22,11 @@ public:
 
 			void		setDisabled( bool disabled );
 			bool		getDisabled()						{ return disabled; }
+
+	const	Dish&		getDish()							{ return dish; }
+
+			bool		operator<( const DishView& right ) const;
+
 protected:
 	virtual void		wheelEvent( QWheelEvent* event );
 	
@@ -38,14 +44,38 @@ private:
 			QLabel*						imageLabel;
 			QLabel*						ribbonLabel;
 			QLabel*						detailsLabel;
+			DishRatingView*				ratingView;
 
 			QPropertyAnimation*			detailsAnimation;
+			QPropertyAnimation*			ratingViewAnimation;
 
 			SelectedEffect*				selectedEffect;
 			QPixmap						monochromePixmap;
+			QPixmap						dishPixmap;
 
 			bool						mousePressed;
 
 			void		init();
-			QPixmap		GetRibbonByCourse( int courseNum );
+			void		resizeByUserPreference( QSize baseSize );
+
+			QPixmap		getRibbonByCourse( int courseNum );
+
+			void		setSelected( bool selected );
 };
+
+
+/************************************************************************/
+/*							Operators		                           */
+/************************************************************************/
+inline bool operator<( const DishView& first, const DishView& second )
+{
+	return first.operator<( second );
+}
+
+inline bool DishView::operator<( const DishView& right ) const
+{
+	if( width() * height() < right.width() * right.height() )
+		return true;
+	else
+		return false;
+}

@@ -7,9 +7,10 @@
 #include <QGraphicsOpacityEffect>
 #include <QPalette>
 #include <QPainter>
+#include <QRubberBand>
 
 #include "Style.h"
-#include "DayView.h"
+#include "DayDishesView.h"
 
 
 static const float			kClickMovement			= 2;
@@ -34,7 +35,10 @@ void DishView::init()
 {
 	// Compute scale based on image size and desired dish width
 	float scale = kDishWidth / dish.getPixmap().width();
-	QSize widgetSize = dish.getPixmap().size() * scale;
+	QSize baseWidgetSize = dish.getPixmap().size() * scale;
+
+	// Size
+	resizeByUserPreference( baseWidgetSize );
 
 	// Create B&W image
 	QImage blackAndWhiteImg = dish.getPixmap().toImage();//new QImage( widgetSize, QImage::Format_Grayscale8 );
@@ -48,53 +52,69 @@ void DishView::init()
 	}
 
 	monochromePixmap = QPixmap::fromImage( blackAndWhiteImg );
+	dishPixmap = dish.getPixmap();
 
 	/* Create objects */
 	imageLabel = new QLabel( this );
-	imageLabel->setPixmap( dish.getPixmap() );
-	imageLabel->setMinimumSize( widgetSize );
-	imageLabel->setMaximumSize( widgetSize );
+	imageLabel->setPixmap( dishPixmap );
+	imageLabel->setFixedSize( this->size() );
+	imageLabel->setAlignment( Qt::AlignCenter );
 	imageLabel->adjustSize();
 
+//	QRubberBand* cropBand = new QRubberBand( QRubberBand::Rectangle, imageLabel );
+//	cropBand->setGeometry( QRect( ( baseWidgetSize.width() - this->width() ) / 2, ( baseWidgetSize.height() - this->height() ) / 2, this->width(), this->height() ) );
+
 	ribbonLabel = new QLabel( this );
-	ribbonLabel->setPixmap( GetRibbonByCourse( dish.getCourseNum() ) );
+	ribbonLabel->setPixmap( getRibbonByCourse( dish.getCourseNum() ) );
 	ribbonLabel->adjustSize();
+	ribbonLabel->setScaledContents( true );
 
 	detailsLabel = new QLabel( this );
-	QString text = dish.getName() + " \n\n   Ingrediente: " + dish.getIngredients();	// Separate ingredients with 2 spaces
+	QString text = dish.getName() + " \n\nIngrediente: " + dish.getIngredients();	// Separate ingredients with 2 spaces
 	detailsLabel->setText( text );
 	detailsLabel->setWordWrap( true );
 	detailsLabel->setFont( QFont( kFontName, 10 ) );
 	detailsLabel->setAutoFillBackground( true );
-	detailsLabel->setMinimumSize( widgetSize );
-	detailsLabel->setMaximumSize( widgetSize );
+	detailsLabel->setFixedSize( this->size() );
 	detailsLabel->setAlignment( Qt::AlignTop );
 	detailsLabel->setStyleSheet( kDetailsOverlayStyleSheet );
 	detailsLabel->adjustSize();
+
+	ratingView = new DishRatingView( this, dish );
 
 	/* Animations */
 	detailsAnimation = new QPropertyAnimation( detailsLabel, "pos" );
 	detailsAnimation->setEasingCurve( QEasingCurve::OutCirc );
 
+	ratingViewAnimation = new QPropertyAnimation( ratingView, "pos" );
+	ratingViewAnimation->setEasingCurve( QEasingCurve::OutCirc );
+	ratingViewAnimation->setDuration( kBirefDishDetailsAnimationTime );
+
 	/* Effects */
 	selectedEffect = new SelectedEffect( imageLabel );
 	imageLabel->setGraphicsEffect( selectedEffect );
 
+	// Size tweaks based on user interest
+	if( dish.getUserInterest() == Dish::eLow )
+	{
+		ribbonLabel->setFixedSize( ribbonLabel->size() / 1.5f );
+
+		monochromePixmap = monochromePixmap.scaled( monochromePixmap.size() / 1.5f, Qt::KeepAspectRatio );
+		dishPixmap = dishPixmap.scaled( dishPixmap.size() / 1.5f, Qt::KeepAspectRatio );
+		imageLabel->setPixmap( dishPixmap );
+	}
+
 	/* Move objects */
-	detailsLabel->move( 0, widgetSize.height() );
+	ratingView->move( this->width(), this->height() - kBriefDetailsOffset - ratingView->height() - 2 );
+	detailsLabel->move( 0, this->height() );
 
 	/* Properties */
 	this->setMouseTracking( true );
 	imageLabel->setMouseTracking( true );
 	detailsLabel->setMouseTracking( true );
-
-	this->setMinimumSize( widgetSize );
-	this->setMaximumSize( widgetSize );
-	
-	this->adjustSize();
 }
 
-QPixmap DishView::GetRibbonByCourse( int courseNum )
+QPixmap DishView::getRibbonByCourse( int courseNum )
 {
 	if( courseNum == 1 )
 		return QPixmap( "Resources//ribbon1.png" );
@@ -106,7 +126,7 @@ QPixmap DishView::GetRibbonByCourse( int courseNum )
 
 void DishView::wheelEvent( QWheelEvent* wheelEvent )
 {
-	return ((DayView*)this->parent())->wheelEvent( wheelEvent );
+	return ((DayDishesView*)this->parent())->wheelEvent( wheelEvent );
 }
 
 void DishView::enterEvent( QEvent* event )
@@ -165,7 +185,7 @@ void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 
 void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 {
-	if( disabled )
+	if( disabled || mouseEvent->button() != Qt::LeftButton )
 		return;
 
 	mousePressed = true;
@@ -175,38 +195,17 @@ void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 
 void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 {
-	if( disabled )
+	if( disabled || !mousePressed || mouseEvent->button() != Qt::LeftButton )
 		return;
 
-	if( mousePressed )
-	{
-		mousePressed = false;
+	mousePressed = false;
 
-		dish.setSelected( !dish.isSelected() );
-		((DayView*)parent())->selectionChangedOn( dish );
+	dish.setUserSelected( !dish.getUserSelected() );
+	((DayDishesView*)parent())->selectionChangedOn( dish );
 
-		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
-	}
+	this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 
-	if( dish.isSelected() )
-	{
-		//selectedEffect->enable();
-		imageLabel->setStyleSheet( kSelectedStyleSheet );
-
-		// Drop shadow is computation intensive and reduces performance
-// 		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
-// 		dropShadow->setOffset( 0.0f );
-// 		dropShadow->setBlurRadius( kSelectedShadowSize );
-// 		dropShadow->setColor( kSelectedGlowColor );
-// 		this->setGraphicsEffect( dropShadow );
-	}
-	else
-	{
-		//selectedEffect->disable();
-		imageLabel->setStyleSheet("");
-
-//		this->setGraphicsEffect( NULL );
-	}
+	setSelected( dish.getUserSelected() );
 }
 
 void DishView::setDisabled( bool disabled )
@@ -229,6 +228,68 @@ void DishView::setDisabled( bool disabled )
 	{
 //		this->setGraphicsEffect( NULL );
 
-		imageLabel->setPixmap( dish.getPixmap() );
+		imageLabel->setPixmap( dishPixmap );
+	}
+}
+
+void DishView::setSelected( bool selected )
+{
+	if( selected )
+	{
+		// Show effects
+		//selectedEffect->enable();
+		imageLabel->setStyleSheet( kSelectedStyleSheet );
+
+		// Drop shadow is computation intensive and reduces performance
+// 		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
+// 		dropShadow->setOffset( 0.0f );
+// 		dropShadow->setBlurRadius( kSelectedShadowSize );
+// 		dropShadow->setColor( kSelectedGlowColor );
+// 		this->setGraphicsEffect( dropShadow );
+
+		// Show ratings view
+		ratingViewAnimation->stop();
+		ratingViewAnimation->setStartValue( ratingView->pos() );
+		ratingViewAnimation->setEndValue( QPointF( this->width() - ratingView->width(), ratingView->pos().y() ) );
+		ratingViewAnimation->start();
+	}
+	else
+	{
+		// Show effects
+		//selectedEffect->disable();
+		imageLabel->setStyleSheet("");
+
+//		this->setGraphicsEffect( NULL );
+
+		// Hide ratings view
+		ratingViewAnimation->stop();
+		ratingViewAnimation->setStartValue( ratingView->pos() );
+		ratingViewAnimation->setEndValue( QPointF( this->width(), ratingView->pos().y() ) );
+		ratingViewAnimation->start();
+	}
+}
+
+void DishView::resizeByUserPreference( QSize baseSize )
+{
+	this->setFixedSize( baseSize );
+	this->adjustSize();
+
+	if( dish.getUserInterest() == Dish::eHigh )
+	{
+		// Leave as is
+	}
+	else if( dish.getUserInterest() == Dish::eMedium )
+	{
+		// Crop half height
+		int newHeight = this->height() / 2;
+		this->setFixedHeight( newHeight );
+		this->adjustSize();
+	}
+	else if( dish.getUserInterest() == Dish::eLow )
+	{
+		// Crop half height
+		QSize newSize = (this->size() - QSize( kDishSpacing, 0 )) / 2;
+		this->setFixedSize( newSize );
+		this->adjustSize();
 	}
 }

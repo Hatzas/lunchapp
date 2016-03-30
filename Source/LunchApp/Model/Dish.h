@@ -6,39 +6,77 @@
 class Dish
 {
 public:
+	enum EUserInterest
+	{
+		eLow,
+		eMedium,
+		eHigh
+	};
+
+	enum EDishRating
+	{
+		eNotRated,
+		eWow,
+		eHappy,
+		eMeah,
+		eYuck
+	};
+
 					Dish();
 					Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum );
 
-	QString			getName() const								{ return name; }
-	void			setName( QString name )						{ this->name = name; }
+	QString			getName() const										{ return name; }
+	void			setName( QString name )								{ this->name = name; }
 
-	QString			getIngredients() const						{ return ingredients; }
-	void			setIngredients( QString ingredients )		{ this->ingredients = ingredients; }
+	QString			getIngredients() const								{ return ingredients; }
+	void			setIngredients( QString ingredients )				{ this->ingredients = ingredients; }
 
-	const QPixmap&	getPixmap() const							{ return pixmap; }
-	void			setPixmap( QPixmap& pixmap )				{ this->pixmap = pixmap; }
+	const QPixmap&	getPixmap() const									{ return pixmap; }
+	void			setPixmap( QPixmap& pixmap )						{ this->pixmap = pixmap; }
 
-	int				getCourseNum() const						{ return courseNum; }
-	void			setCourseNum( int courseNum )				{ this->courseNum = courseNum; }
+	int				getCourseNum() const								{ return courseNum; }
+	void			setCourseNum( int courseNum )						{ this->courseNum = courseNum; }
 
-	QString			getType()									{ return type; }
-	void			setType( QString dish )						{ this->type = type; }
+	QString			getType()											{ return type; }
+	void			setType( QString dish )								{ this->type = type; }
 
-	bool			isSelected() const							{ return selected; };
-	void			setSelected( bool selected )				{ this->selected = selected; }
+	bool			getUserSelected() const								{ return userSelected; };
+	void			setUserSelected( bool selected )					{ this->userSelected = selected; }
 
-	int				getUserPreference() const					{ return userPreference; };
-	void			setUserPreference( int userPreference )		{ this->userPreference = userPreference; }
+	EUserInterest	getUserInterest() const								{ return userInterest; };
+	void			setUserInterest( EUserInterest userPreference )		{ this->userInterest = userPreference; }
+
+	int				getNumWows()										{ return numWows; }
+	void			setNumWows( int numLikes )							{ this->numWows = numLikes; }
+
+	int				getNumHappies()										{ return numHappies; }
+	void			setNumHappies( int numLikes )						{ this->numHappies = numLikes; }
+
+	int				getNumMeahs()										{ return numMeahs; }
+	void			setNumMeahs( int numLikes )							{ this->numMeahs = numLikes; }
+
+	int				getNumYucks()										{ return numYucks; }
+	void			setNumYucks( int numDislikes )						{ this->numYucks = numDislikes; }
+
+	EDishRating		getUserRating()										{ return userRating; }
+	void			setUserRating( EDishRating userRating )				{ this->userRating = userRating; }
 
 private:
-	QString			name;
-	QString			ingredients;
-	QPixmap			pixmap;
-	int				courseNum;			// 1 == Course 1, 2 == Course 2, etc.
-	QString			type;
+	QString				name;
+	QString				ingredients;
+	QPixmap				pixmap;
+	int					courseNum;			// 1 == Course 1, 2 == Course 2, etc.
+	QString				type;
 
-	bool			selected;
-	int				userPreference;		// 0 = Best, the more the lower
+	bool				userSelected;
+	EUserInterest		userInterest;
+
+	int					numWows;
+	int					numHappies;
+	int					numMeahs;
+	int					numYucks;
+
+	EDishRating			userRating;
 };
 
 Q_DECLARE_METATYPE( Dish );

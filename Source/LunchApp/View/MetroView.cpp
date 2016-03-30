@@ -13,12 +13,13 @@
 #include <QBoxLayout>
 #include <QScroller>
 #include <QScroller>
+#include <QLocale>
 
 #include "Style.h"
 #include "InfiniteBackground.h"
 
 
-static const QString kWeekTextPrefix		= "Saptamana: ";
+static const QString kWeekDatePrefix		= "Saptamana: ";
 
 
 MetroView::MetroView(QWidget *parent)
@@ -44,8 +45,6 @@ void MetroView::init()
 
 	this->setViewport( openGLWidget );
 #endif
-
-	//QScroller::grabGesture( this, QScroller::LeftMouseButtonGesture );
 
 	this->setRenderHint( QPainter::Antialiasing );
 	this->setRenderHint( QPainter::SmoothPixmapTransform );
@@ -74,40 +73,40 @@ void MetroView::addSceneItems()
 	background = new InfiniteBackground( QPixmap( "Resources\\background3.bmp" ), this );
 
 	/* Create objects */
-	weekLabel = new QLabel( this );
-	weekLabel->setText( kWeekTextPrefix );
-	weekLabel->setFont( QFont( kFontName, 10 ) );
-	weekLabel->adjustSize();
-	weekLabel->move( 40, 30 );
+	QLabel* weekPrefixLabel = new QLabel( this );
+	weekPrefixLabel->setText( kWeekDatePrefix );
+	weekPrefixLabel->setFont( QFont( kFontName, 10 ) );
+	weekPrefixLabel->adjustSize();
+	weekPrefixLabel->move( 40, 30 );
+
+	weekDateLabel = new QLabel( this );
+	weekDateLabel->setFont( QFont( kFontName, 10 ) );
+	weekDateLabel->move( weekPrefixLabel->x() + weekPrefixLabel->width(), 30 );
 
 	weeksView = new AllWeeksView( this );
 	weeksView->move( 0, kWeekOffsetY );
 
 	/* Add to scene */
 	scene->addWidget( background );
-	scene->addWidget( weekLabel );
+	scene->addWidget( weekDateLabel );
 
 	/* Effects */
 	QGraphicsOpacityEffect *opacity = new QGraphicsOpacityEffect();
 	opacity->setOpacity( 1.0f );
-	weekLabel->setGraphicsEffect( opacity );
+	weekDateLabel->setGraphicsEffect( opacity );
 
 	/* Animations */
-	QPropertyAnimation* weekTextAnimationOut = new QPropertyAnimation( opacity, "opacity" );
-	weekTextAnimationOut->setDuration( kWeekAnimationTime / 2.f );
-	weekTextAnimationOut->setStartValue( 1.0f );
-	weekTextAnimationOut->setEndValue( 0.0f );
-	weekTextAnimationOut->setEasingCurve( QEasingCurve::OutCubic );
+	weekDateOutAnimation = new QPropertyAnimation( opacity, "opacity" );
+	weekDateOutAnimation->setDuration( kWeekAnimationTime / 2.f );
+	weekDateOutAnimation->setStartValue( 1.0f );
+	weekDateOutAnimation->setEndValue( 0.0f );
+	weekDateOutAnimation->setEasingCurve( QEasingCurve::OutCubic );
 
-	QPropertyAnimation* weekTextAnimationIn = new QPropertyAnimation( opacity, "opacity" );
-	weekTextAnimationIn->setDuration( kWeekAnimationTime / 2.f );
-	weekTextAnimationIn->setStartValue( 0.0f );
-	weekTextAnimationIn->setEndValue( 1.0f );
-	weekTextAnimationIn->setEasingCurve( QEasingCurve::InCubic );
-
-	QSequentialAnimationGroup* textAnimations = new QSequentialAnimationGroup();
-	textAnimations->addAnimation( weekTextAnimationOut );
-	textAnimations->addAnimation( weekTextAnimationIn );
+	weekDateInAnimation = new QPropertyAnimation( opacity, "opacity" );
+	weekDateInAnimation->setDuration( kWeekAnimationTime / 2.f );
+	weekDateInAnimation->setStartValue( 0.0f );
+	weekDateInAnimation->setEndValue( 1.0f );
+	weekDateInAnimation->setEasingCurve( QEasingCurve::InCubic );
 
 	weekMoveAnimation = new QPropertyAnimation( weeksView, "pos" );
 	weekMoveAnimation->setEasingCurve( QEasingCurve::OutCirc );
@@ -117,10 +116,10 @@ void MetroView::addSceneItems()
 
 	animations = new QParallelAnimationGroup();
 	animations->addAnimation( backgroundAnimation );
-	//animations->addAnimation( textAnimations );
 	animations->addAnimation( weekMoveAnimation );
+	animations->addAnimation( weekDateOutAnimation );
 
-	this->setMinimumWidth( kWeekWidth );
+	this->setMinimumWidth( kWeekWidth + 150 );			// don't leave this constant here
 	this->setMinimumHeight( this->height() );
 	this->adjustSize();
 
@@ -128,11 +127,26 @@ void MetroView::addSceneItems()
 	background->setMinimumSize( this->size() );
 	background->setMaximumSize( this->size() );
 	background->adjustSize();
+
+	// Signals / Slots
+	connect( weekMoveAnimation, SIGNAL( finished(void) ), this, SLOT( weekAnimationFinished(void) ) );
 }
 
 void MetroView::weekArrived( const Week& week )
 {
 	weeksView->addWeek( week );
+
+	setWeekDateText( week );
+}
+
+void MetroView::weekAnimationFinished()
+{
+	// Get currently visible week
+	Week currentWeek = weeksView->getVisibleWeek();
+	if( currentWeek.getDays().size() == 0 )
+		return;
+
+	setWeekDateText( currentWeek );
 }
 
 void MetroView::wheelEvent( QWheelEvent* wheelEvent )
@@ -224,10 +238,29 @@ void MetroView::resizeEvent( QResizeEvent * event )
 	background->setMaximumSize( this->size() );
 	background->adjustSize();
 
-	// Center week on screen
-	// TO DO
-
-	weeksView->resizeEvent( event );
+	weeksView->mainWindowResized( event );
 
 	QGraphicsView::resizeEvent( event );
+}
+
+void MetroView::setWeekDateText( const Week &currentWeek )
+{
+	QLocale romanian;
+
+	QDate startDate = currentWeek.getStartDate();
+	QDate endDate = currentWeek.getEndDate();
+	if( startDate.month() != endDate.month() )
+	{
+		weekDateLabel->setText( QString::number( startDate.day() ) + " " + romanian.monthName( startDate.month() )
+			+ " - " + QString::number( endDate.day() ) + " " + romanian.monthName( endDate.month() ) );
+	}
+	else
+	{
+		weekDateLabel->setText( QString::number( startDate.day() ) + " - " + QString::number( endDate.day() ) 
+			+ " " + romanian.monthName( endDate.month() ) );
+	}
+
+	weekDateLabel->adjustSize();
+
+	weekDateInAnimation->start();
 }

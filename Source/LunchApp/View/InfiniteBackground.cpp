@@ -83,9 +83,9 @@ void InfiniteBackground::paintEvent( QPaintEvent * event )
 
 void InfiniteBackground::resizeEvent( QResizeEvent * event )
 {
-	QWidget::resizeEvent( event );
-
 	pixmap.scaledToHeight( this->height() );
+
+	QWidget::resizeEvent( event );
 }
 
 void InfiniteBackground::wheelEvent( QWheelEvent* wheelEvent )

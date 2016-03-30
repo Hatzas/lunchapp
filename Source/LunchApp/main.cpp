@@ -3,6 +3,7 @@
 #include <QtQuick/QQuickWindow>
 #include <QtCore/QUrl>
 
+#include "View/Style.h"
 #include "MainWindow.h"
 #include "Model/Week.h"
 #include "Model/Day.h"
@@ -18,8 +19,12 @@ int main( int argc, char* argv[] )
 	qRegisterMetaType<Day>();
 	qRegisterMetaType<Dish>();
 
+	QLocale::setDefault( QLocale( QLocale::Romanian, QLocale::Romania ) );
+
 	// Show
 	MainWindow mainWindow;
+	mainWindow.setWindowTitle( kAppName );
+
 	//mainWindow.showFullScreen();
 	mainWindow.show();
 
