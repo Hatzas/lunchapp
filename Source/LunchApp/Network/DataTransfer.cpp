@@ -105,7 +105,7 @@ void DataTransfer::extractDays(const QJsonArray& json, std::vector<Day>& days)
 			QJsonObject pictureObj = dishObject["DishPicture"].toObject();
 			QString pictureBytes = pictureObj["Thumbnail"].toString();
 			QPixmap pixmap;
-			pixmap.loadFromData(pictureBytes.toUtf8(), "PNG");
+			pixmap.loadFromData( QByteArray::fromBase64(pictureBytes.toUtf8()), "PNG");
 
 			dishes.push_back(Dish(name, description, pixmap, 0));
 		}
