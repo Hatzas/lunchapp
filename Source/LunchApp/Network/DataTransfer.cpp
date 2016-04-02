@@ -77,7 +77,9 @@ void DataTransfer::onRequestFinished(const NetEntity& entity)
 
 	QDate startDate;
 	QDate endDate;
+	entity.getDates(startDate, endDate);
 	Week week(startDate, endDate, vdays);
+
 	emit menuFinished(week);
 }
 
