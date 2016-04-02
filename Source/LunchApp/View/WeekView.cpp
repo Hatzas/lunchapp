@@ -100,7 +100,7 @@ void WeekView::AddDays()
 		DayView* dayView = new DayView( this, daysVect[i] );
 
 		if( i > 0 )
-			dayView->move( dayViewsVect[i-1]->pos().x() + dayViewsVect[i-1]->width() - kDishSpacing + kDaySpacing, 0 );		// "- kDishSpacing" is a temporary patch to fix double spacing between days
+			dayView->move( dayViewsVect[i-1]->pos().x() + dayViewsVect[i-1]->width() - Style::getDishSpacing() + Style::getDaySpacing(), 0 );		// "- Style::getDishSpacing()" is a temporary patch to fix double spacing between days
 
 		dayViewsVect.push_back( dayView );
 	}

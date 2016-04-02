@@ -6,13 +6,21 @@
 
 #include "Style.h"
 #include "DayView.h"
+#include "../Controller/Controller.h"
 
 
 DayDishesView::DayDishesView( QWidget *parent, std::vector<Dish>& dishesVect )
 	: QWidget( parent )
 	, dishesVect( dishesVect )
 {
-	init();
+	if( Controller::getUser()->getRole() == User::eRegular )
+	{
+		init();
+	}
+	else if( Controller::getUser()->getRole() == User::eAdmin )
+	{
+		initEditable();
+	}
 }
 
 DayDishesView::~DayDishesView()
@@ -25,13 +33,27 @@ void DayDishesView::init()
 	QScroller::grabGesture( this, QScroller::MiddleMouseButtonGesture );
 
 	AddDishes();
+	this->adjustSize();
 
-	this->setMinimumWidth( kDayWidth );
+	auto width = this->width();
+	this->setMinimumWidth( this->width() + Style::getDishSpacing() );
 	this->adjustSize();
 
 	StackDishViews();
 
-	this->setMinimumSize( this->size() + QSize( kDishSpacing, 0 ) );	// add bottom spacing so the shadow is rendered completely
+	this->setMinimumSize( this->size() + QSize( 0, Style::getDishSpacing() ) );	// add bottom spacing so the shadow is rendered completely
+	this->adjustSize();
+}
+
+void DayDishesView::initEditable()
+{
+	// Placeholder
+	dishViewsVect.push_back( new DishView( this ) );
+
+	this->setMinimumWidth( this->width() + Style::getDishSpacing() );
+	this->adjustSize();
+
+	this->setMinimumSize( this->size() + QSize( 0, Style::getDishSpacing() ) );	// add bottom spacing so the shadow is rendered completely
 	this->adjustSize();
 }
 
@@ -136,7 +158,7 @@ void DayDishesView::StackDishViews()
 	std::sort( dishViewsVect.begin(), dishViewsVect.end(), compareDishViews );
 
 	// Stack
-	dishViewsVect[0]->move( kDishSpacing, 0 );
+	dishViewsVect[0]->move( Style::getDishSpacing(), 0 );
 
 	int width = this->width();
 	for( size_t i = 1 ; i < dishViewsVect.size() ; i++ )
@@ -144,8 +166,8 @@ void DayDishesView::StackDishViews()
 		DishView* lastPlaced = dishViewsVect[i - 1];
 		DishView* current = dishViewsVect[i];
 
-		int lastXCoord = lastPlaced->x() + lastPlaced->width() + kDishSpacing;
-		int lastYCoord = lastPlaced->y() + lastPlaced->height() + kDishSpacing;
+		int lastXCoord = lastPlaced->x() + lastPlaced->width() + Style::getDishSpacing();
+		int lastYCoord = lastPlaced->y() + lastPlaced->height() + Style::getDishSpacing();
 
 		int currentWidth = current->width();
 		if( lastXCoord + current->width() <= width )
@@ -156,12 +178,12 @@ void DayDishesView::StackDishViews()
 		else
 		{
 			// Place below
-			current->move( kDishSpacing, lastYCoord );
+			current->move( Style::getDishSpacing(), lastYCoord );
 		}
 	}
 
 	// Re-arrange model vect to keep correspondence with view vect
-	for( size_t i = 0 ; i < dishViewsVect.size() ; i++ )
+	for( size_t i = 0 ; i < dishesVect.size() ; i++ )
 	{
 		dishesVect[i] = dishViewsVect[i]->getDish();
 	}

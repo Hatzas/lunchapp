@@ -36,12 +36,12 @@ void DayView::init()
 	dishesView = new DayDishesView( this, day.getDishes() );
 
 	/* Move and resize objects */
-	dishesView->move( 0, dayNameLabel->height() + 2 * kDishSpacing );
+	dishesView->move( 0, dayNameLabel->height() + 2 * Style::getDishSpacing() );
 
 	this->adjustSize();
-	dayNameLabel->move( kDishSpacing + ( this->width() - dayNameLabel->width() ) / 2.0f , 0 );
+	dayNameLabel->move( Style::getDishSpacing() + ( this->width() - dayNameLabel->width() ) / 2.0f , 0 );
 
-	this->setMinimumSize( this->size() + QSize( 0, kDishSpacing ) );	// add bottom spacing so the shadow is rendered completely
+	this->setMinimumSize( this->size() + QSize( 0, Style::getDishSpacing() ) );	// add bottom spacing so the shadow is rendered completely
 	this->adjustSize();
 }
 

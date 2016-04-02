@@ -24,7 +24,7 @@ void DishRatingView::init()
 	wowButton = new QPushButton( this );
 	wowButton->setCheckable( true );
 	wowButton->setAutoExclusive( true );
-	wowButton->setStyleSheet( kRatingButtonsStyleSheet );
+	wowButton->setStyleSheet( kButtonsStyleSheet );
 	wowButton->setIcon( wowPixmap );
 	wowButton->setIconSize( wowPixmap.size() );
 	wowButton->adjustSize();
@@ -33,7 +33,7 @@ void DishRatingView::init()
 	happyButton = new QPushButton( this );
 	happyButton->setCheckable( true );
 	happyButton->setAutoExclusive( true );
-	happyButton->setStyleSheet( kRatingButtonsStyleSheet );
+	happyButton->setStyleSheet( kButtonsStyleSheet );
 	happyButton->setIcon( happyPixmap );
 	happyButton->setIconSize( happyPixmap.size() );
 	happyButton->adjustSize();
@@ -42,7 +42,7 @@ void DishRatingView::init()
 	meahButton = new QPushButton( this );
 	meahButton->setCheckable( true );
 	meahButton->setAutoExclusive( true );
-	meahButton->setStyleSheet( kRatingButtonsStyleSheet );
+	meahButton->setStyleSheet( kButtonsStyleSheet );
 	meahButton->setIcon( meahPixmap );
 	meahButton->setIconSize( meahPixmap.size() );
 	meahButton->adjustSize();
@@ -51,7 +51,7 @@ void DishRatingView::init()
 	yuckButton = new QPushButton( this );
 	yuckButton->setCheckable( true );
 	yuckButton->setAutoExclusive( true );
-	yuckButton->setStyleSheet( kRatingButtonsStyleSheet );
+	yuckButton->setStyleSheet( kButtonsStyleSheet );
 	yuckButton->setIcon( yuckPixmap );
 	yuckButton->setIconSize( yuckPixmap.size() );
 	yuckButton->adjustSize();

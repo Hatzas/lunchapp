@@ -17,6 +17,8 @@
 
 #include "Style.h"
 #include "InfiniteBackground.h"
+#include "MainWindow.h"
+#include "../Controller/Controller.h"
 
 
 static const QString kWeekDatePrefix		= "Saptamana: ";
@@ -38,10 +40,11 @@ void MetroView::init()
 #ifndef QT_NO_OPENGL
 	QOpenGLWidget* openGLWidget = new QOpenGLWidget();
 
-	QSurfaceFormat format;
-	format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-	format.setOption( QSurfaceFormat::StereoBuffers, true );
-	openGLWidget->setFormat( format );
+// 	QSurfaceFormat format;
+// 	format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
+// 	format.setOption( QSurfaceFormat::StereoBuffers, true );
+// 	openGLWidget->setUpdateBehavior( QOpenGLWidget::PartialUpdate );
+// 	openGLWidget->setFormat( format );
 
 	this->setViewport( openGLWidget );
 #endif
@@ -77,32 +80,51 @@ void MetroView::addSceneItems()
 	weekPrefixLabel->setText( kWeekDatePrefix );
 	weekPrefixLabel->setFont( QFont( kFontName, 10 ) );
 	weekPrefixLabel->adjustSize();
-	weekPrefixLabel->move( 40, 30 );
+	weekPrefixLabel->move( kDateUsernameSideOffset, kDateUsernameTopOffset );
 
-	weekDateLabel = new QLabel( this );
-	weekDateLabel->setFont( QFont( kFontName, 10 ) );
-	weekDateLabel->move( weekPrefixLabel->x() + weekPrefixLabel->width(), 30 );
+	weekDateButton = new QPushButton( this );
+	weekDateButton->setFont( QFont( kFontName, 10 ) );
+	weekDateButton->setStyleSheet( kButtonsStyleSheet );
+	weekDateButton->move( weekPrefixLabel->x() + weekPrefixLabel->width(), 30 );
 
 	weeksView = new AllWeeksView( this );
-	weeksView->move( 0, kWeekOffsetY );
+	weeksView->move( 0, kWeekTopOffset );
+
+	userLabel = new QLabel( this );
+	userLabel->setText( Controller::getUser()->getUsername() );
+	userLabel->setFont( QFont( kFontName, 10 ) );
+	userLabel->adjustSize();
+
+	calendar = new QCalendarWidget( this );
+	calendar->hide();
 
 	/* Add to scene */
 	scene->addWidget( background );
-	scene->addWidget( weekDateLabel );
+	scene->addWidget( weeksView );
+	scene->addWidget( weekDateButton );
+	scene->addWidget( userLabel );
 
 	/* Effects */
-	QGraphicsOpacityEffect *opacity = new QGraphicsOpacityEffect();
-	opacity->setOpacity( 1.0f );
-	weekDateLabel->setGraphicsEffect( opacity );
+	QGraphicsOpacityEffect *weekDateOpacity = new QGraphicsOpacityEffect();
+	weekDateOpacity->setOpacity( 1.0f );
+	weekDateButton->setGraphicsEffect( weekDateOpacity );
+
+	QGraphicsOpacityEffect *calendarOpacity = new QGraphicsOpacityEffect();
+	calendarOpacity->setOpacity( 0.5f );
+	//calendar->setGraphicsEffect( calendarOpacity );
 
 	/* Animations */
-	weekDateOutAnimation = new QPropertyAnimation( opacity, "opacity" );
+	calendarFadeAnimation = new QPropertyAnimation( calendarOpacity, "opacity" );
+	calendarFadeAnimation->setDuration( kWeekAnimationTime / 2.f );
+	calendarFadeAnimation->setEasingCurve( QEasingCurve::InCubic );
+
+	weekDateOutAnimation = new QPropertyAnimation( weekDateOpacity, "opacity" );
 	weekDateOutAnimation->setDuration( kWeekAnimationTime / 2.f );
 	weekDateOutAnimation->setStartValue( 1.0f );
 	weekDateOutAnimation->setEndValue( 0.0f );
 	weekDateOutAnimation->setEasingCurve( QEasingCurve::OutCubic );
 
-	weekDateInAnimation = new QPropertyAnimation( opacity, "opacity" );
+	weekDateInAnimation = new QPropertyAnimation( weekDateOpacity, "opacity" );
 	weekDateInAnimation->setDuration( kWeekAnimationTime / 2.f );
 	weekDateInAnimation->setStartValue( 0.0f );
 	weekDateInAnimation->setEndValue( 1.0f );
@@ -119,9 +141,12 @@ void MetroView::addSceneItems()
 	animations->addAnimation( weekMoveAnimation );
 	animations->addAnimation( weekDateOutAnimation );
 
-	this->setMinimumWidth( kWeekWidth + 150 );			// don't leave this constant here
-	this->setMinimumHeight( this->height() );
+	// Size	
+	this->setMinimumSize( Style::getWeekWidth(), Style::getWindowHeight() );
 	this->adjustSize();
+
+	// Move
+	userLabel->move( this->width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
 
 	// Scrolling image background
 	background->setMinimumSize( this->size() );
@@ -130,6 +155,8 @@ void MetroView::addSceneItems()
 
 	// Signals / Slots
 	connect( weekMoveAnimation, SIGNAL( finished(void) ), this, SLOT( weekAnimationFinished(void) ) );
+	connect( weekDateButton, SIGNAL( clicked( bool ) ), this, SLOT( weekDatePressed( bool ) ) );
+	connect( calendar, SIGNAL( selectionChanged() ), this, SLOT( dateSelected() ) );
 }
 
 void MetroView::weekArrived( const Week& week )
@@ -149,9 +176,40 @@ void MetroView::weekAnimationFinished()
 	setWeekDateText( currentWeek );
 }
 
+void MetroView::weekDatePressed( bool checked )
+{
+	calendar->move( weekDateButton->x() + weekDateButton->width(), weekDateButton->y() + weekDateButton->height() );
+
+// 	if( !calendar->isVisible() )
+// 	{
+// 		calendarFadeAnimation->setStartValue( 0.0f );
+// 		calendarFadeAnimation->setEndValue( 1.0f );
+// 
+// 		calendarFadeAnimation->start();
+// 	}
+
+	calendar->setVisible( !calendar->isVisible() );	
+}
+
+void MetroView::dateSelected()
+{
+	calendar->setVisible( false );
+
+	QDate date = calendar->selectedDate();
+
+	// Determine week based selected date
+	QDate startDate = date.addDays( -date.dayOfWeek() + 1 );
+	QDate endDate = date.addDays( 5 - date.dayOfWeek() );
+
+	// Request week based on selected date
+	// TO DO
+}
+
 void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 {
-	int scrollDist = this->width() /*kDayWidth*/;	// Scroll one column or the whole week
+	calendar->setVisible( false );
+
+	int scrollDist = this->width() /*Style::getDayWidth()*/;	// Scroll one column or the whole week
 	if( wheelEvent->delta() > 0 )
 	{
 		if( weekMoveAnimation->state() != QAbstractAnimation::Running )
@@ -181,7 +239,7 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
 			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() + scrollDist, weeksView->pos().y() ) );
 
-			int numDays = (int)((weekMoveAnimation->endValue().toPointF().x() - weekMoveAnimation->startValue().toPointF().x()) / kDayWidth);
+			int numDays = (int)((weekMoveAnimation->endValue().toPointF().x() - weekMoveAnimation->startValue().toPointF().x()) / Style::getDayWidth());
 			weekMoveAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
@@ -220,7 +278,7 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
 			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() - scrollDist, weeksView->pos().y() ) );
 
-			int numDays = (int)((weekMoveAnimation->startValue().toPointF().x() - weekMoveAnimation->endValue().toPointF().x()) / kDayWidth);
+			int numDays = (int)((weekMoveAnimation->startValue().toPointF().x() - weekMoveAnimation->endValue().toPointF().x()) / Style::getDayWidth());
 			weekMoveAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
 			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
@@ -234,13 +292,15 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 
 void MetroView::resizeEvent( QResizeEvent * event )
 {
+	QGraphicsView::resizeEvent( event );
+
 	background->setMinimumSize( this->size() );
 	background->setMaximumSize( this->size() );
 	background->adjustSize();
 
 	weeksView->mainWindowResized( event );
 
-	QGraphicsView::resizeEvent( event );
+	userLabel->move( event->size().width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
 }
 
 void MetroView::setWeekDateText( const Week &currentWeek )
@@ -251,16 +311,16 @@ void MetroView::setWeekDateText( const Week &currentWeek )
 	QDate endDate = currentWeek.getEndDate();
 	if( startDate.month() != endDate.month() )
 	{
-		weekDateLabel->setText( QString::number( startDate.day() ) + " " + romanian.monthName( startDate.month() )
-			+ " - " + QString::number( endDate.day() ) + " " + romanian.monthName( endDate.month() ) );
+		weekDateButton->setText( " " + QString::number( startDate.day() ) + " " + romanian.monthName( startDate.month() )
+			+ " - " + QString::number( endDate.day() ) + " " + romanian.monthName( endDate.month() ) + " " );
 	}
 	else
 	{
-		weekDateLabel->setText( QString::number( startDate.day() ) + " - " + QString::number( endDate.day() ) 
-			+ " " + romanian.monthName( endDate.month() ) );
+		weekDateButton->setText( " " + QString::number( startDate.day() ) + " - " + QString::number( endDate.day() ) 
+			+ " " + romanian.monthName( endDate.month() ) + " " );
 	}
 
-	weekDateLabel->adjustSize();
+	weekDateButton->adjustSize();
 
 	weekDateInAnimation->start();
 }

@@ -172,6 +172,7 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Model\Day.cpp" />
     <ClCompile Include="Model\Dish.cpp" />
+    <ClCompile Include="Model\User.cpp" />
     <ClCompile Include="Model\Week.cpp" />
     <ClCompile Include="Network\DataTransfer.cpp" />
     <ClCompile Include="Network\NetEntity.cpp" />
@@ -185,6 +186,7 @@
     <ClCompile Include="View\NotificationWindow.cpp" />
     <ClCompile Include="View\SelectedEffect.cpp" />
     <ClCompile Include="View\AllWeeksView.cpp" />
+    <ClCompile Include="View\Style.cpp" />
     <ClCompile Include="View\WeekView.cpp" />
   </ItemGroup>
   <ItemGroup>

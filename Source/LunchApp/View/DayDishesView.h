@@ -13,8 +13,6 @@ public:
 						DayDishesView( QWidget *parent, std::vector<Dish>& dishesVect );
 						~DayDishesView();
 
-			void		init();
-
 	virtual bool		event( QEvent* event );
 	virtual void		wheelEvent( QWheelEvent* event );
 			void		mainWindowResized( QResizeEvent* event );
@@ -25,6 +23,8 @@ private:
 	std::vector<DishView*>	dishViewsVect;
 	std::vector<Dish>&		dishesVect;
 
+	void				init();
+	void				initEditable();
 
 	void				AddDishes();
 	void				StackDishViews();

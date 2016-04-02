@@ -3,9 +3,15 @@
 #include <windows.h>
 #include "Network/DataTransfer.h"
 
+
+User* Controller::user = NULL;
+
+
 Controller::Controller(QObject *parent)
 	: QThread(parent)
 {
+	user = new User( "Andi", User::eRegular );
+
 	dataTransfer = new DataTransfer( this );
 	dataTransfer->getMenu( QDate(), QDate() );
 }

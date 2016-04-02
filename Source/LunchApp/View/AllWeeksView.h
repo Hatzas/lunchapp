@@ -34,7 +34,7 @@ private:
 	std::vector<WeekView*>		weekViewsVect;
 	QLabel*						loadingLabel;
 
-	int							screenWidth;
+	int							windowWidth;
 
 			void			increaseSize( EDirection direction );
 			void			centerWeekViews();

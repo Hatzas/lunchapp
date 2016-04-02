@@ -3,6 +3,8 @@
 #include <QGraphicsView>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include <QPushButton>
+#include <QCalendarWidget>
 #include <QLabel>
 
 #include "AllWeeksView.h"
@@ -28,6 +30,8 @@ signals:
 public slots:
 			void	weekArrived( const Week& week );
 			void	weekAnimationFinished();
+			void	weekDatePressed( bool checked );
+			void	dateSelected();
 
 protected:
 	virtual void	resizeEvent( QResizeEvent * event );
@@ -36,11 +40,15 @@ private:
 	QGraphicsScene*				scene;
 
 	InfiniteBackground*			background;
-	QLabel*						weekDateLabel;
+	QPushButton*				weekDateButton;
 	AllWeeksView*				weeksView;
+	QLabel*						userLabel;
+
+	QCalendarWidget*			calendar;
 
 	QPropertyAnimation*			weekDateOutAnimation;
 	QPropertyAnimation*			weekDateInAnimation;
+	QPropertyAnimation*			calendarFadeAnimation;
 	QPropertyAnimation*			weekMoveAnimation;
 	QPropertyAnimation*			backgroundAnimation;
 

@@ -11,18 +11,30 @@
 MainWindow::MainWindow(QWidget *parent)
 	: QWidget(parent)
 {
+	// Style
+	Style::init();
+
+	// Size
+	this->setMinimumSize( Style::getWeekWidth(), Style::getWindowHeight() );
+	this->adjustSize();
+
+	// Controller and connections
+	setupController();
+
 	// UI
 	ui.setupUi(this);
 	metroView = new MetroView( parent );
 	ui.verticalLayout->addWidget( metroView );
 
+	this->resize( this->minimumSize() );
+
 	// Tray
 	setupTray();
-	showTrayMessage( "Baga meniul" );
-
-	// Controller and connections
-	setupController();
+	showTrayMessage( "Sunt si eu aici" );
 	
+	// Connections
+	makeConnections();
+
 	// Dummy data
 	sendWeek();
 }
@@ -37,6 +49,10 @@ void MainWindow::showTrayMessage( const QString& msg )
 	customWindow->show();
 
 	//trayIcon->showMessage(tr("Lunch App"), msg, QSystemTrayIcon::Information);
+}
+
+void MainWindow::resizeEvent( QResizeEvent * event )
+{
 }
 
 void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
@@ -181,13 +197,15 @@ void MainWindow::setupTray()
 void MainWindow::setupController()
 {
 	controller = new Controller();
+	controller->moveToThread( controller );
+	controller->start();
+}
 
+void MainWindow::makeConnections()
+{
 	connect( controller, SIGNAL( weekArrived( const Week& ) ), metroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
-	
+
 	connect( metroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
 	connect( metroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) ), Qt::QueuedConnection );
 	connect( metroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
-
-	controller->moveToThread( controller );
-	controller->start();
 }

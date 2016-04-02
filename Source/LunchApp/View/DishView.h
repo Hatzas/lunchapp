@@ -17,29 +17,34 @@ class DishView : public QWidget
 	Q_OBJECT
 
 public:
-						DishView( QWidget *parent, const Dish& dish );
-						~DishView();
+								DishView( QWidget* parent );						// Placeholder constructor
+								DishView( QWidget *parent, const Dish& dish );
+								~DishView();
 
-			void		setDisabled( bool disabled );
-			bool		getDisabled()						{ return disabled; }
+			void				setDisabled( bool disabled );
+			bool				getDisabled()						{ return disabled; }
 
-	const	Dish&		getDish()							{ return dish; }
+	const	Dish&				getDish()							{ return dish; }
 
-			bool		operator<( const DishView& right ) const;
+			bool				operator<( const DishView& right ) const;
+
+public slots:
+			void				comboSelectionChanged( int selection );
 
 protected:
-	virtual void		wheelEvent( QWheelEvent* event );
+	virtual void				wheelEvent( QWheelEvent* event );
 	
-	virtual void		enterEvent( QEvent* event );
-	virtual void		leaveEvent( QEvent* event );
+	virtual void				enterEvent( QEvent* event );
+	virtual void				leaveEvent( QEvent* event );
 
-	virtual void		mouseMoveEvent( QMouseEvent* event );
-	virtual void		mousePressEvent( QMouseEvent* event );
-	virtual void		mouseReleaseEvent( QMouseEvent* event );
+	virtual void				mouseMoveEvent( QMouseEvent* event );
+	virtual void				mousePressEvent( QMouseEvent* event );
+	virtual void				mouseReleaseEvent( QMouseEvent* event );
 
 private:
 			Dish						dish;
 			bool						disabled;			// true when a user selection excludes other dishes (like from the same course)
+			bool						isPlaceholder;
 
 			QLabel*						imageLabel;
 			QLabel*						ribbonLabel;
@@ -55,12 +60,13 @@ private:
 
 			bool						mousePressed;
 
-			void		init();
-			void		resizeByUserPreference( QSize baseSize );
+			void				init();
+			void				initPlaceholder();
+			void				resizeByUserPreference( QSize baseSize );
 
-			QPixmap		getRibbonByCourse( int courseNum );
+			QPixmap				getRibbonByCourse( int courseNum );
 
-			void		setSelected( bool selected );
+			void				setSelected( bool selected );
 };
 
 
