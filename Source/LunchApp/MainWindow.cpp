@@ -47,8 +47,6 @@ void MainWindow::showTrayMessage( const QString& msg )
 {
 	NotificationWindow* customWindow = new NotificationWindow( msg );
 	customWindow->show();
-
-	//trayIcon->showMessage(tr("Lunch App"), msg, QSystemTrayIcon::Information);
 }
 
 void MainWindow::resizeEvent( QResizeEvent * event )

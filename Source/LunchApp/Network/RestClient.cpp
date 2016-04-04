@@ -25,7 +25,12 @@ void RestClient::pushRequest(const NetEntity& entity)
 	{
 	case eGetMethod:
 		{
+			QDate startDate, endDate;
+			entity.getDates(startDate, endDate);
 			QUrlQuery queryUrl;
+			queryUrl.addQueryItem("startDate", startDate.toString(Qt::ISODate));
+			queryUrl.addQueryItem("endDate", endDate.toString(Qt::ISODate));
+
 			foreach(const QueryPair& queryPair, entity.getRequestParams())
 			{
 				queryUrl.addQueryItem(queryPair.key, queryPair.value);
