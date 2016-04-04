@@ -9,14 +9,10 @@ class Week
 {
 public:
 							Week();
-							Week( QString startEndDate, const std::vector<Day>& daysVect );		// This is used just for debug purposes
 							Week( QDate startDate, QDate endDate, const std::vector<Day>& daysVect );
 
 	std::vector<Day>&		getDays()											{ return daysVect; }
 	void					setDays( const std::vector<Day>& daysVect )			{ this->daysVect = daysVect; }
-
-	QString					getStartEndDate() const								{ return startEndDate; }
-	void					setStartEndDate( QString startEndDate )				{ this->startEndDate = startEndDate; }
 
 	QDate					getStartDate() const								{ return startDate; }
 	void					setStartDate( QDate startDate )						{ this->startDate = startDate; }
@@ -24,12 +20,19 @@ public:
 	QDate					getEndDate() const									{ return endDate; }
 	void					setEndDate( QDate endDate )							{ this->endDate = endDate; }
 
+	bool					isFirstAvailable() const							{ return firstAvailable; }
+	void					setFirstAvailable( bool first )						{ firstAvailable = first; }
+
+	bool					isLastAvailable() const								{ return lastAvailable; }
+	void					setLastAvailable( bool last )						{ lastAvailable = last; }
+
 private:
 	QDate				startDate;
 	QDate				endDate;
 	std::vector<Day>	daysVect;
 
-	QString				startEndDate;		// Formatted date string
+	bool				lastAvailable;			// True if no more weeks in database after this
+	bool				firstAvailable;			// True if no more weeks in database before this
 };
 
 Q_DECLARE_METATYPE( Week );

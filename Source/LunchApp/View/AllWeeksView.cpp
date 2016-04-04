@@ -8,6 +8,9 @@
 #include "MetroView.h"
 
 
+static const float		kWeekElasticWidth		= 200;
+
+
 AllWeeksView::AllWeeksView(QWidget *parent)
 	: QWidget(parent)
 	, windowWidth( Style::getWeekWidth() )
@@ -21,12 +24,26 @@ AllWeeksView::~AllWeeksView()
 
 void AllWeeksView::init()
 {
+	// Loading gif
 	loadingLabel = new QLabel( this );
 	loadingLabel->setMovie( new QMovie( "Resources/loader1.gif" ) );
 	loadingLabel->movie()->setScaledSize( kLoadingAnimSize );
 	loadingLabel->setMinimumSize( kLoadingAnimSize );
 	loadingLabel->adjustSize();
 	loadingLabel->hide();
+
+	// Animations
+	forwardAnimation = new QPropertyAnimation( this, "pos" );
+	forwardAnimation->setEasingCurve( QEasingCurve::OutCirc );
+	forwardAnimation->setDuration( kWeekAnimationTime / 2 );
+
+	backAnimation = new QPropertyAnimation( this, "pos" );
+	backAnimation->setEasingCurve( QEasingCurve::OutCirc );
+	backAnimation->setDuration( kWeekAnimationTime / 1.2f );
+
+	firstLastAnimations = new QSequentialAnimationGroup();
+	firstLastAnimations->addAnimation( forwardAnimation );
+	firstLastAnimations->addAnimation( backAnimation );
 }
 
 void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
@@ -102,11 +119,8 @@ Week AllWeeksView::getVisibleWeek()
 
 bool AllWeeksView::scrollStarted( EDirection direction )
 {
-	if( weekViewsVect.size() == 0 )
-		return false;
-
-	// If loading, do nothing
-	if( loadingLabel->isVisible() )
+	// If loading or animating or no weeks, do nothing
+	if( weekViewsVect.size() == 0 || loadingLabel->isVisible() || firstLastAnimations->state() == QAbstractAnimation::Running )
 		return false;
 
 	WeekView* firstWeek = weekViewsVect[ 0 ];
@@ -114,6 +128,20 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 
 	if( direction == eToLeftDirection && firstWeek->visibleRegion().boundingRect().width() == firstWeek->width() )
 	{
+		// If no more weeks before
+		if( firstWeek->getWeek().isFirstAvailable() )
+		{
+			// Show animation
+			forwardAnimation->setStartValue( this->pos() );
+			forwardAnimation->setEndValue( this->pos() + QPoint( Style::getWeekWidth() / 5, 0 ) );
+			backAnimation->setStartValue( forwardAnimation->endValue() );
+			backAnimation->setEndValue( this->pos() );
+
+			firstLastAnimations->start();
+
+			return false;
+		}
+
 		// Increase view size and reposition to accommodate new view
 		increaseSize( direction );
 		showLoadingAnim( true, direction );
@@ -123,6 +151,20 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 	}
 	else if( direction == eToRightDirection && lastWeek->visibleRegion().boundingRect().width() == lastWeek->width() )
 	{
+		// If no more weeks after
+		if( lastWeek->getWeek().isLastAvailable() )
+		{
+			// Show animation
+			forwardAnimation->setStartValue( this->pos() );
+			forwardAnimation->setEndValue( this->pos() - QPoint( Style::getWeekWidth() / 5, 0 ) );
+			backAnimation->setStartValue( forwardAnimation->endValue() );
+			backAnimation->setEndValue( this->pos() );
+
+			firstLastAnimations->start();
+
+			return false;
+		}
+
 		// Increase view size and reposition to accommodate new view
 		increaseSize( direction );
 		showLoadingAnim( true, direction );

@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 	makeConnections();
 
 	// Dummy data
-	sendWeek();
+	sendDummyWeek();
 }
 
 MainWindow::~MainWindow()
@@ -69,7 +69,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	showTrayMessage(tr("Aplicatia nu e moarta, se transforma (in tray)"));
 }
 
-void MainWindow::sendWeek()
+void MainWindow::sendDummyWeek()
 {
 	// Dummy data
 	std::vector<Dish> dishesVect;

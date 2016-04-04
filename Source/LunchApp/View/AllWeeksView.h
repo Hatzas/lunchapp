@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QAtomicInt>
+#include <QSequentialAnimationGroup>
 
 #include "WeekView.h"
 
@@ -35,6 +36,10 @@ private:
 	QLabel*						loadingLabel;
 
 	int							windowWidth;
+
+	QSequentialAnimationGroup*	firstLastAnimations;
+	QPropertyAnimation*			forwardAnimation;
+	QPropertyAnimation*			backAnimation;
 
 			void			increaseSize( EDirection direction );
 			void			centerWeekViews();

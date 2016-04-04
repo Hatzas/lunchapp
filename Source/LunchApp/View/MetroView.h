@@ -52,7 +52,6 @@ private:
 	QPropertyAnimation*			weekMoveAnimation;
 	QPropertyAnimation*			backgroundAnimation;
 
-	QSequentialAnimationGroup*	weekAnimationsQueue;
 	QParallelAnimationGroup*	animations;
 
 	void			init();

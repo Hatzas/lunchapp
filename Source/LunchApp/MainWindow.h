@@ -37,7 +37,7 @@ private:
 			QSystemTrayIcon*	trayIcon;
 			QMenu*				trayIconMenu;
 
-			void				sendWeek();
+			void				sendDummyWeek();
 
 			void				setupTray();
 			void				setupController();

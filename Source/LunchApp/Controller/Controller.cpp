@@ -13,7 +13,7 @@ Controller::Controller(QObject *parent)
 	user = new User( "Andi", User::eRegular );
 
 	dataTransfer = new DataTransfer( this );
-	dataTransfer->getMenu( QDate(2016, 3, 21), QDate(2016, 3, 25) );
+	//dataTransfer->getMenu( QDate(2016, 3, 21), QDate(2016, 3, 25) );		// disabled until better looking images
 
 	connect(dataTransfer, SIGNAL(menuFinished(const Week&)), this, SLOT(dataFinished(const Week&)));
 }
@@ -61,10 +61,108 @@ void Controller::run()
 
 void Controller::requestWeek( QDate startDate, QDate endDate )
 {
-	dataTransfer->getMenu(startDate, endDate);
+	//dataTransfer->getMenu(startDate, endDate);		// disabled until better looking images
+
+	// Dummy data
+	sendDummyData(startDate, endDate);
 }
 
 void Controller::dataFinished(const Week& week)
 {
+	emit weekArrived( week );
+}
+
+void Controller::sendDummyData(QDate startDate, QDate endDate)
+{
+	Sleep( 500 );
+
+	std::vector<Dish> dishesVect;
+	dishesVect.push_back( Dish( "Ciorba de varza",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/supa3.png"), 1 ) );
+	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/mancare5.png"), 2 ) );
+	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/mancare1.png"), 2 ) );
+	dishesVect.push_back( Dish( "Salata din gradina ursului",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/salata1.png"), 3 ) );
+	dishesVect.push_back( Dish( "Salata din gradina bunicii",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/salata2.png"), 3 ) );
+	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/supa4.png"), 1 ) );
+
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
+	std::vector<Day> daysVect;
+
+	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
+	daysVect.push_back( Day( "Luni", dishesVect ) );
+
+	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
+	daysVect.push_back( Day( "Marti", dishesVect ) );
+
+	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
+	daysVect.push_back( Day( "Miercuri", dishesVect ) );
+
+	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
+	daysVect.push_back( Day( "Joi", dishesVect ) );
+
+	std::random_shuffle( dishesVect.begin(), dishesVect.end() );
+	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
+	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[2].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[3].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+	dishesVect[4].setUserInterest( Dish::EUserInterest( rand() % 4 - 1) );
+	dishesVect[5].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
+
+	daysVect.push_back( Day( "Vineri", dishesVect ) );
+
+	Week week( startDate, endDate, daysVect );
+
+	// Show only 2 after and 2 before
+	QDate today = QDate::currentDate();
+	if( startDate.weekNumber() - today.weekNumber() > 1 )
+		week.setLastAvailable( true );
+	else if( startDate.weekNumber() - today.weekNumber() < -1 )
+		week.setFirstAvailable( true );
+
 	emit weekArrived( week );
 }

@@ -40,4 +40,6 @@ private:
 	static	User*			user;
 
 			DataTransfer*	dataTransfer;
+
+			void		sendDummyData(QDate startDate, QDate endDate);
 };
