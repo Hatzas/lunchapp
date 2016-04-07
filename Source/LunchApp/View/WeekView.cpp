@@ -82,7 +82,7 @@ void WeekView::showDayMenuNotification()
 	{
 		if( currentDay.getDishes()[i].getUserSelected() )
 		{
-			todayMenu = "Azi ai:\n" + currentDay.getDishes()[i].getName();
+			todayMenu = "Azi ai:\n" + currentDay.getDishes()[i].getName() + " ( " + currentDay.getDishes()[i].getIdentifier() + " )";
 
 			dishesPixmaps.clear();
 			dishesPixmaps.push_back( currentDay.getDishes()[i].getPixmap() );

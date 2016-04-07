@@ -9,7 +9,8 @@
 #include <QPainter>
 #include <QRubberBand>
 #include <QComboBox>
-
+#include <QBitmap>
+#include <QPainterPath>
 
 #include "Style.h"
 #include "MainWindow.h"
@@ -19,6 +20,7 @@ static const int			kAtEnd					= 0xffffff;
 static const float			kClickMovement			= 2;
 static const float			kBriefDetailsOffset		= 30;
 
+static const int			kIdentifierFontSize		= 11;
 
 DishView::DishView( QWidget *parent )
 	: QWidget( parent )
@@ -72,10 +74,24 @@ void DishView::init()
 	imageLabel->setAlignment( Qt::AlignCenter );
 	imageLabel->adjustSize();
 
+	QPixmap ribbonPixmap = getRibbonByCourse( dish.getCourseNum() );
 	ribbonLabel = new QLabel( this );
-	ribbonLabel->setPixmap( getRibbonByCourse( dish.getCourseNum() ) );
+	ribbonLabel->setPixmap( ribbonPixmap );
 	ribbonLabel->adjustSize();
 	ribbonLabel->setScaledContents( true );
+
+// 	QBitmap textMask = ribbonPixmap.createMaskFromColor( Qt::black, Qt::MaskInColor );
+// 	ribbonLabel->setMask( textMask );
+
+	dishIdentifierLabel = new QLabel( this );
+	dishIdentifierLabel->setText( dish.getIdentifier() );
+	dishIdentifierLabel->setFont( QFont( kFontName, kIdentifierFontSize ) );
+	dishIdentifierLabel->setAlignment( Qt::AlignCenter );
+	dishIdentifierLabel->adjustSize();
+
+	QPalette palette = dishIdentifierLabel->palette();
+	palette.setColor( dishIdentifierLabel->foregroundRole(), kDishIdentifierColor );
+	dishIdentifierLabel->setPalette( palette );
 
 	detailsLabel = new QLabel( this );
 	QString text = dish.getName() + " \n\nIngrediente: " + dish.getIngredients();	// Separate ingredients with 2 spaces
@@ -110,9 +126,13 @@ void DishView::init()
 		monochromePixmap = monochromePixmap.scaled( monochromePixmap.size() / 1.5f, Qt::KeepAspectRatio );
 		dishPixmap = dishPixmap.scaled( dishPixmap.size() / 1.5f, Qt::KeepAspectRatio );
 		imageLabel->setPixmap( dishPixmap );
+
+		dishIdentifierLabel->setFont( QFont( kFontName, kIdentifierFontSize / 1.5f ) );
+		dishIdentifierLabel->adjustSize();
 	}
 
 	/* Move objects */
+	dishIdentifierLabel->move( ( ribbonLabel->width() - dishIdentifierLabel->width() ) / 2, 0 );
 	ratingView->move( this->width(), this->height() - kBriefDetailsOffset - ratingView->height() - 2 );
 	detailsLabel->move( 0, this->height() );
 
@@ -161,12 +181,36 @@ void DishView::initPlaceholder()
 
 QPixmap DishView::getRibbonByCourse( int courseNum )
 {
+	QPixmap pixmap;
 	if( courseNum == 1 )
-		return QPixmap( "Resources//ribbon1.png" );
+		pixmap = QPixmap( "Resources//ribbon1.png" );
 	else if( courseNum == 2 )
-		return QPixmap( "Resources//ribbon2.png" );
+		pixmap = QPixmap( "Resources//ribbon2.png" );
+	else
+		pixmap = QPixmap( "Resources//ribbon3.png" );
 
-	return QPixmap( "Resources//ribbon3.png" );
+	// Text clip path (not working good)
+//	QPixmap bkpPixmap = pixmap;
+
+//	QPainter painter( &pixmap );
+//	painter.eraseRect( pixmap.rect() );
+
+// 	QFont font = QFont( kFontName, kIdentifierFontSize, QFont::Bold );
+// 	font.setKerning( false );
+// 	font.setStrikeOut( false );
+// 	font.setStyleStrategy( QFont::PreferAntialias );
+
+// 	QPainterPath clipTextPath;
+// 	clipTextPath.addText( pixmap.width() / 2 - kIdentifierFontSize, pixmap.height() / 2, font, dish.getIdentifier() );
+
+// 	painter.setFont( font );
+// 	painter.drawText( pixmap.width() / 2 - kIdentifierFontSize, pixmap.height() / 2, dish.getIdentifier() );
+
+// 	painter.setClipPath( clipTextPath );
+// 	painter.drawPixmap( 0, 0, bkpPixmap );
+// 	painter.end();
+
+	return pixmap;
 }
 
 void DishView::comboSelectionChanged( int selection )

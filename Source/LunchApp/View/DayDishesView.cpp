@@ -30,7 +30,11 @@ DayDishesView::~DayDishesView()
 
 void DayDishesView::init()
 {
-	QScroller::grabGesture( this, QScroller::MiddleMouseButtonGesture );
+	//QScroller::grabGesture( this, QScroller::MiddleMouseButtonGesture );
+
+	scrollAnimation = new QPropertyAnimation( this, "contentOffset" );
+	scrollAnimation->setEasingCurve( QEasingCurve::OutCirc );
+	scrollAnimation->setDuration( kWeekAnimationTime / 1.5f );
 
 	AddDishes();
 	this->adjustSize();
@@ -93,9 +97,31 @@ bool DayDishesView::event( QEvent* event )
 	return QWidget::event( event );
 }
 
-void DayDishesView::wheelEvent( QWheelEvent* event )
+void DayDishesView::wheelEvent( QWheelEvent* wheelEvent )
 {
-	return ((DayView*)this->parent())->wheelEvent( event );
+	//return ((DayView*)this->parent())->wheelEvent( event );
+
+	if( dishViewsVect.size() == 0 || scrollAnimation->state() == QAbstractAnimation::Running )
+		return;
+
+	if( wheelEvent->delta() > 0 )
+	{
+		if( dishViewsVect.front()->visibleRegion().boundingRect().height() == dishViewsVect.front()->height() )
+			return;
+
+		scrollAnimation->setStartValue( internalContentOffset);
+		scrollAnimation->setEndValue( internalContentOffset + QPoint( 0, dishViewsVect.front()->height() + Style::getDishSpacing() ) );
+		scrollAnimation->start();
+	}
+	else if( wheelEvent->delta() < 0 )
+	{
+		if( dishViewsVect.back()->visibleRegion().boundingRect().height() == dishViewsVect.back()->height() )
+			return;
+
+		scrollAnimation->setStartValue( internalContentOffset );
+		scrollAnimation->setEndValue( internalContentOffset - QPoint( 0, dishViewsVect.front()->height() + Style::getDishSpacing() ) );
+		scrollAnimation->start();
+	}
 }
 
 void DayDishesView::mainWindowResized( QResizeEvent * event )
@@ -130,6 +156,23 @@ void DayDishesView::selectionChangedOn( const Dish& dish )
 
 	// Update View
 	update();
+}
+
+void DayDishesView::setContentOffset( QPoint offset )
+{
+	if( dishViewsVect.size() == 0 )
+		return;
+
+	internalContentOffset = offset;
+
+	int deltaY = internalContentOffset.y() - dishViewsVect[0]->y();
+	dishViewsVect[0]->move( dishViewsVect[0]->pos().x(), internalContentOffset.y() );
+
+	// Offset all dish views
+	for( size_t i = 1 ; i < dishViewsVect.size() ; i++ )
+	{
+		dishViewsVect[i]->move( dishViewsVect[i]->pos().x(), dishViewsVect[i]->pos().y() + deltaY );
+	}
 }
 
 void DayDishesView::AddDishes()

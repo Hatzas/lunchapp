@@ -48,6 +48,7 @@ private:
 
 			QLabel*						imageLabel;
 			QLabel*						ribbonLabel;
+			QLabel*						dishIdentifierLabel;
 			QLabel*						detailsLabel;
 			DishRatingView*				ratingView;
 

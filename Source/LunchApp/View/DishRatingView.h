@@ -29,12 +29,12 @@ private:
 	QPushButton*	wowButton;
 	QPushButton*	happyButton;
 	QPushButton*	meahButton;
-	QPushButton*	yuckButton;
+//	QPushButton*	yuckButton;
 
 	QLabel*			numWowsLabel;
 	QLabel*			numHappiesLabel;
 	QLabel*			numMeahsLabel;
-	QLabel*			numYucksLabel;
+//	QLabel*			numYucksLabel;
 
 
 			void			init();

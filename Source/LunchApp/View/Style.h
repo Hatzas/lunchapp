@@ -52,13 +52,14 @@ static const float		kSelectedShadowSize				= 20.0f;
 static const QColor		kSelectedGlowColor				= QColor( 255, 102, 0 );
 static const QColor		kDisabledColor					= QColor( 32, 32, 32 );
 static const QString	kSelectedStyleSheet				= "border: 2px solid rgb(255, 102, 0)";
+static const QColor		kDishIdentifierColor			= QColor( 255, 255, 0, 255 );
 
 static const QSize		kDishPlaceholderSize			= QSize( 300, 200 );
 
-static const float		kBackgroundScrollRatio			= 0.2f;		// pixels
+static const float		kBackgroundScrollRatio			= 0.2f;
 
 static const QSize		kLoadingAnimSize				= QSize( 24, 24 );
-static const int		kLoadingAnimOffset				= 200;
+static const int		kLoadingAnimOffset				= 300;
 
 class Style
 {
@@ -76,7 +77,7 @@ public:
 
 
 private:
-	static	float		windowScale;
+	static	float			windowScale;
 
 	static const int		kBaseWindowHeight;
 

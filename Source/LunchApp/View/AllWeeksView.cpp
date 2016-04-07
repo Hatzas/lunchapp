@@ -8,7 +8,7 @@
 #include "MetroView.h"
 
 
-static const float		kWeekElasticWidth		= 200;
+static const float		kScrollOwershootRatio		= 1 / 8.f;
 
 
 AllWeeksView::AllWeeksView(QWidget *parent)
@@ -35,7 +35,7 @@ void AllWeeksView::init()
 	// Animations
 	forwardAnimation = new QPropertyAnimation( this, "pos" );
 	forwardAnimation->setEasingCurve( QEasingCurve::OutCirc );
-	forwardAnimation->setDuration( kWeekAnimationTime / 2 );
+	forwardAnimation->setDuration( kWeekAnimationTime / 3 );
 
 	backAnimation = new QPropertyAnimation( this, "pos" );
 	backAnimation->setEasingCurve( QEasingCurve::OutCirc );
@@ -133,7 +133,7 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 		{
 			// Show animation
 			forwardAnimation->setStartValue( this->pos() );
-			forwardAnimation->setEndValue( this->pos() + QPoint( Style::getWeekWidth() / 5, 0 ) );
+			forwardAnimation->setEndValue( this->pos() + QPoint( Style::getWeekWidth() * kScrollOwershootRatio, 0 ) );
 			backAnimation->setStartValue( forwardAnimation->endValue() );
 			backAnimation->setEndValue( this->pos() );
 
@@ -156,7 +156,7 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 		{
 			// Show animation
 			forwardAnimation->setStartValue( this->pos() );
-			forwardAnimation->setEndValue( this->pos() - QPoint( Style::getWeekWidth() / 5, 0 ) );
+			forwardAnimation->setEndValue( this->pos() - QPoint( Style::getWeekWidth() * kScrollOwershootRatio, 0 ) );
 			backAnimation->setStartValue( forwardAnimation->endValue() );
 			backAnimation->setEndValue( this->pos() );
 
@@ -233,15 +233,16 @@ void AllWeeksView::showLoadingAnim( bool show, EDirection direction )
 		return;
 	}
 
+	QSize parentSize = ((QWidget*)((QWidget*)parent())->parent())->size();
 	if( direction == eToRightDirection )
 	{
-		loadingLabel->move( this->width() - windowWidth / 2 - loadingLabel->width() / 2, this->y() + kLoadingAnimOffset );
+		loadingLabel->move( this->width() - windowWidth / 2 - loadingLabel->width() / 2, parentSize.height() / 3 );
 		loadingLabel->show();
 		loadingLabel->movie()->start();
 	}
 	else if( direction == eToLeftDirection )
 	{
-		loadingLabel->move( windowWidth / 2 - loadingLabel->width() / 2, this->y() + kLoadingAnimOffset );
+		loadingLabel->move( windowWidth / 2 - loadingLabel->width() / 2, parentSize.height() / 3 );
 		loadingLabel->show();
 		loadingLabel->movie()->start();
 	}

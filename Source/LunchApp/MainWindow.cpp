@@ -92,6 +92,14 @@ void MainWindow::sendDummyWeek()
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/supa2.png"), 1 ) );
 
+	// Identifiers
+	dishesVect[0].setIdentifier( "C1" );
+	dishesVect[1].setIdentifier( "M1" );
+	dishesVect[2].setIdentifier( "M2" );
+	dishesVect[3].setIdentifier( "S1" );
+	dishesVect[4].setIdentifier( "S2" );
+	dishesVect[5].setIdentifier( "C2" );
+
 	dishesVect[0].setNumWows( 120 );
 	dishesVect[0].setUserRating( Dish::eWow );
 	dishesVect[0].setUserSelected( true );
