@@ -14,13 +14,14 @@
 
 #include "Style.h"
 #include "MainWindow.h"
-#include "DayDishesView.h"
 
 static const int			kAtEnd					= 0xffffff;
 static const float			kClickMovement			= 2;
 static const float			kBriefDetailsOffset		= 30;
 
 static const int			kIdentifierFontSize		= 11;
+
+static const float			kPointToPixel			= 2.5f;
 
 DishView::DishView( QWidget *parent )
 	: QWidget( parent )
@@ -29,11 +30,12 @@ DishView::DishView( QWidget *parent )
 	initPlaceholder();
 }
 
-DishView::DishView( QWidget *parent, const Dish& dish )
+DishView::DishView( QWidget *parent, const Dish& dish, bool editMode /*= false*/ )
 	: QWidget( parent )
 	, dish( dish )
 	, disabled( false )
 	, isPlaceholder( false )
+	, editMode( editMode )
 	, mousePressed( false )
 {
 	init();
@@ -64,8 +66,8 @@ void DishView::init()
 		}
 	}
 
-	monochromePixmap = QPixmap::fromImage( blackAndWhiteImg );
-	dishPixmap = dish.getPixmap();
+	monochromePixmap = QPixmap::fromImage( blackAndWhiteImg ).scaled( QSize( dish.getPixmap().size() * scale ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+	dishPixmap = dish.getPixmap().scaled( QSize( dish.getPixmap().size() * scale ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
 
 	/* Create objects */
 	imageLabel = new QLabel( this );
@@ -134,7 +136,11 @@ void DishView::init()
 	/* Move objects */
 	dishIdentifierLabel->move( ( ribbonLabel->width() - dishIdentifierLabel->width() ) / 2, 0 );
 	ratingView->move( this->width(), this->height() - kBriefDetailsOffset - ratingView->height() - 2 );
-	detailsLabel->move( 0, this->height() );
+
+	if( editMode )
+		detailsLabel->move( 0, this->height() - detailsLabel->font().pointSize() * kPointToPixel );
+	else
+		detailsLabel->move( 0, this->height() );
 
 	/* Properties */
 	this->setMouseTracking( true );
@@ -145,7 +151,7 @@ void DishView::init()
 void DishView::initPlaceholder()
 {
 	// Size
-	this->setFixedSize( kDishPlaceholderSize );
+	this->setFixedSize( kDishPlaceholderSize * Style::getWindowScale() );
 	this->adjustSize();
 
 	/* Create objects */
@@ -220,12 +226,12 @@ void DishView::comboSelectionChanged( int selection )
 
 void DishView::wheelEvent( QWheelEvent* wheelEvent )
 {
-	return ((DayDishesView*)this->parent())->wheelEvent( wheelEvent );
+	return QWidget::wheelEvent( wheelEvent );
 }
 
 void DishView::enterEvent( QEvent* event )
 {
-	if( disabled || isPlaceholder )
+	if( disabled || isPlaceholder || editMode )
 		return;
 
 	if( detailsAnimation->state() == QAbstractAnimation::Running )
@@ -233,7 +239,7 @@ void DishView::enterEvent( QEvent* event )
 
 	// Start text animation
 	detailsAnimation->setStartValue( detailsLabel->pos() );
-	detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() - kBriefDetailsOffset ) );
+	detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() - detailsLabel->font().pointSize() * kPointToPixel ) );
 
 	detailsAnimation->setDuration( kBirefDishDetailsAnimationTime );
 	detailsAnimation->start();
@@ -244,10 +250,8 @@ void DishView::leaveEvent( QEvent* event )
 	if( disabled || isPlaceholder )
 		return;
 
-	if( mousePressed )
+	if( mousePressed && !editMode )
 	{
-		mousePressed = false;
-
 		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 	}
 
@@ -255,16 +259,27 @@ void DishView::leaveEvent( QEvent* event )
 		detailsAnimation->stop();
 
 	detailsAnimation->setStartValue( detailsLabel->pos() );
-	detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() ) );
+
+	if( editMode )
+		detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() - detailsLabel->font().pointSize() * kPointToPixel ) );
+	else
+		detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() ) );
 
 	detailsAnimation->setDuration( kBirefDishDetailsAnimationTime );
 	detailsAnimation->start();
+
+	mousePressed = false;
 }
 
 void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 {
 	if( disabled || isPlaceholder )
 		return;
+
+	if( editMode && mousePressed )
+	{
+		return QWidget::mousePressEvent( mouseEvent );
+	}
 
 	// Show full details if mouse over them
 	if( ( this->childAt( mouseEvent->pos() ) == detailsLabel ) && ( detailsAnimation->state() != QAbstractAnimation::Running ) )
@@ -283,8 +298,15 @@ void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 		return;
 
 	mousePressed = true;
-
-	this->move( this->pos() + QPoint( kClickMovement, kClickMovement ) );
+	
+	if( editMode )
+	{
+		return QWidget::mousePressEvent( mouseEvent );
+	}
+	else
+	{
+		this->move( this->pos() + QPoint( kClickMovement, kClickMovement ) );
+	}
 }
 
 void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
@@ -294,12 +316,19 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 
 	mousePressed = false;
 
-	dish.setUserSelected( !dish.getUserSelected() );
-	((DayDishesView*)parent())->selectionChangedOn( dish );
+	if( editMode )
+	{
+		return QWidget::mousePressEvent( mouseEvent );
+	}
+	else
+	{
+		dish.setUserSelected( !dish.getUserSelected() );
+		((DayDishesView*)parent())->selectionChangedOn( dish );
 
-	this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
+		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 
-	setSelected( dish.getUserSelected() );
+		setSelected( dish.getUserSelected() );
+	}
 }
 
 void DishView::setDisabled( bool disabled )

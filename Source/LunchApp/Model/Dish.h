@@ -23,6 +23,7 @@ public:
 	};
 
 					Dish();
+					Dish( QByteArray inputBuffer );
 					Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum );
 
 	QString			getName() const										{ return name; }
@@ -63,6 +64,8 @@ public:
 
 	EDishRating		getUserRating()										{ return userRating; }
 	void			setUserRating( EDishRating userRating )				{ this->userRating = userRating; }
+
+	operator		QByteArray() const;
 
 private:
 	QString				name;

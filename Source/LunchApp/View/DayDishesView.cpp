@@ -3,24 +3,32 @@
 #include <QScroller>
 #include <QScrollEvent>
 #include <QEvent>
+#include <QDrag>
+#include <QMimeData>
 
 #include "Style.h"
 #include "DayView.h"
 #include "../Controller/Controller.h"
 
 
-DayDishesView::DayDishesView( QWidget *parent, std::vector<Dish>& dishesVect )
+static const QString	kDishMimeType = "dish";
+static const float		kBackgroundMarginRatio = 0.8f;
+
+
+DayDishesView::DayDishesView( QWidget *parent, std::vector<Dish>& dishesVect, EMode mode /*= eNormalMode */)
 	: QWidget( parent )
 	, dishesVect( dishesVect )
+	, mode( mode )
+	, editBackgroundLabel( NULL )
 {
-	if( Controller::getUser()->getRole() == User::eRegular )
-	{
+// 	if( Controller::getUser()->getRole() == User::eRegular )
+// 	{
 		init();
-	}
-	else if( Controller::getUser()->getRole() == User::eAdmin )
-	{
-		initEditable();
-	}
+// 	}
+// 	else if( Controller::getUser()->getRole() == User::eAdmin )
+// 	{
+// 		initEditable();
+// 	}
 }
 
 DayDishesView::~DayDishesView()
@@ -30,23 +38,38 @@ DayDishesView::~DayDishesView()
 
 void DayDishesView::init()
 {
+	// Properties
 	//QScroller::grabGesture( this, QScroller::MiddleMouseButtonGesture );
 
+	if( mode == eEditMode )
+	{
+		this->setAcceptDrops( true );
+	}
+
+	// Size
+	this->setMinimumSize( QSize( Style::getDishWidth() + 2 * Style::getDishSpacing(), 2 * (Style::getDishWidth() + Style::getDishSpacing()) ) );
+	this->adjustSize();
+
+	// Animation
 	scrollAnimation = new QPropertyAnimation( this, "contentOffset" );
 	scrollAnimation->setEasingCurve( QEasingCurve::OutCirc );
 	scrollAnimation->setDuration( kWeekAnimationTime / 1.5f );
 
-	AddDishes();
+	// Objects
+	addDishes();
+
+	stackDishViews();
+
 	this->adjustSize();
 
-	auto width = this->width();
-	this->setMinimumWidth( this->width() + Style::getDishSpacing() );
-	this->adjustSize();
-
-	StackDishViews();
-
-	this->setMinimumSize( this->size() + QSize( 0, Style::getDishSpacing() ) );	// add bottom spacing so the shadow is rendered completely
-	this->adjustSize();
+	if( mode == eEditMode )
+	{
+		editBackgroundLabel = new QLabel( this );
+		editBackgroundLabel->setStyleSheet( kEditableDayStyleSheet );
+		editBackgroundLabel->setFixedSize( this->size() - QSize( 2 * kBackgroundMarginRatio * Style::getDishSpacing(), 0 ) );
+		editBackgroundLabel->move( Style::getDishSpacing() * kBackgroundMarginRatio, 0 );
+		editBackgroundLabel->adjustSize();
+	}
 }
 
 void DayDishesView::initEditable()
@@ -59,6 +82,65 @@ void DayDishesView::initEditable()
 
 	this->setMinimumSize( this->size() + QSize( 0, Style::getDishSpacing() ) );	// add bottom spacing so the shadow is rendered completely
 	this->adjustSize();
+}
+
+void DayDishesView::mainWindowResized( QSize size )
+{
+	// Reposition dishes if they fit in the view
+	if( dishViewsVect.size() > 0 )
+	{
+		QRect visibleRect = this->visibleRegion().boundingRect();
+
+		if( visibleRect.height() >= this->size().height() );
+		{
+			int deltaY = -dishViewsVect[0]->y();
+			for( int i = 0 ; i < dishViewsVect.size() ; i++ )
+			{
+				dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
+			}
+		}
+	}
+
+	if( mode == eEditMode || mode == eNormalMode )
+	{
+		this->setMinimumHeight( size.height() );
+		this->adjustSize();
+	}
+}
+
+void DayDishesView::selectionChangedOn( const Dish& dish )
+{
+	// Disable other dishes from same course
+	for( size_t i = 0 ; i < dishViewsVect.size() ; i++ )
+	{
+		if( dish.getName() != dishViewsVect[i]->getDish().getName()
+			&& dish.getCourseNum() == dishViewsVect[i]->getDish().getCourseNum() )
+		{
+			dishViewsVect[i]->setDisabled( dish.getUserSelected() );
+		}
+	}
+
+	((DayView*)this->parent())->selectionChangedOn( dish );
+
+	// Update View
+	update();
+}
+
+void DayDishesView::setContentOffset( QPoint offset )
+{
+	if( dishViewsVect.size() == 0 )
+		return;
+
+	internalContentOffset = offset;
+
+	int deltaY = internalContentOffset.y() - dishViewsVect[0]->y();
+	dishViewsVect[0]->move( dishViewsVect[0]->pos().x(), internalContentOffset.y() );
+
+	// Offset all dish views
+	for( size_t i = 1 ; i < dishViewsVect.size() ; i++ )
+	{
+		dishViewsVect[i]->move( dishViewsVect[i]->pos().x(), dishViewsVect[i]->pos().y() + deltaY );
+	}
 }
 
 bool DayDishesView::event( QEvent* event )
@@ -124,62 +206,103 @@ void DayDishesView::wheelEvent( QWheelEvent* wheelEvent )
 	}
 }
 
-void DayDishesView::mainWindowResized( QResizeEvent * event )
+void DayDishesView::mousePressEvent( QMouseEvent* mouseEvent )
 {
-	// Reposition dishes if they fit in the view
-	QRect visibleRect = this->visibleRegion().boundingRect();
-	QSize size = this->size();
-
-	if( visibleRect.height() >= size.height() );
+	if( mode == eEditMode || mode == eBrowseMode )
 	{
-		int deltaY = -dishViewsVect[0]->y();
-		for( int i = 0 ; i < dishViewsVect.size() ; i++ )
-		{
-			dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
-		}
+		// Get selected dish
+		QWidget* child = this->childAt( mouseEvent->pos() );
+		if( child == NULL )
+			return;
+
+		child = (QWidget*)(child->parent());
+
+		DishView* selectedDishView = dynamic_cast<DishView*>( child );
+		if( selectedDishView == NULL )
+			return;
+
+		const Dish& selectedDish = selectedDishView->getDish();
+
+		// Start drag
+		QDrag *drag = new QDrag( this );
+
+		QMimeData *mimeData = new QMimeData();
+		mimeData->setText( selectedDish.getName() );
+		mimeData->setData( kDishMimeType, selectedDish );
+		drag->setMimeData( mimeData );
+
+		drag->setPixmap( selectedDishView->getScaledPixmap() );
+		drag->setHotSpot( mouseEvent->pos() - child->pos() );
+
+		Qt::DropAction dropAction = drag->exec();
 	}
 }
 
-void DayDishesView::selectionChangedOn( const Dish& dish )
+void DayDishesView::dragEnterEvent( QDragEnterEvent* event )
 {
-	// Disable other dishes from same course
-	for( size_t i = 0 ; i < dishViewsVect.size() ; i++ )
+	if( event->mimeData()->hasFormat( kDishMimeType ) )
 	{
-		if( dish.getName() != dishViewsVect[i]->getDish().getName()
-			&& dish.getCourseNum() == dishViewsVect[i]->getDish().getCourseNum() )
-		{
-			dishViewsVect[i]->setDisabled( dish.getUserSelected() );
-		}
-	}
-
-	((DayView*)this->parent())->selectionChangedOn( dish );
-
-	// Update View
-	update();
-}
-
-void DayDishesView::setContentOffset( QPoint offset )
-{
-	if( dishViewsVect.size() == 0 )
-		return;
-
-	internalContentOffset = offset;
-
-	int deltaY = internalContentOffset.y() - dishViewsVect[0]->y();
-	dishViewsVect[0]->move( dishViewsVect[0]->pos().x(), internalContentOffset.y() );
-
-	// Offset all dish views
-	for( size_t i = 1 ; i < dishViewsVect.size() ; i++ )
-	{
-		dishViewsVect[i]->move( dishViewsVect[i]->pos().x(), dishViewsVect[i]->pos().y() + deltaY );
+		editBackgroundLabel->setStyleSheet( kEditableDayDragEnterStyleSheet );
+		event->acceptProposedAction();
 	}
 }
 
-void DayDishesView::AddDishes()
+void DayDishesView::dragLeaveEvent( QDragLeaveEvent* event )
+{
+	editBackgroundLabel->setStyleSheet( kEditableDayStyleSheet );
+}
+
+void DayDishesView::dropEvent( QDropEvent* event )
+{
+	const QMimeData* mimeData = event->mimeData();
+
+	QString text = mimeData->text();
+	Dish dish = mimeData->data( kDishMimeType );
+
+	event->acceptProposedAction();
+
+	addDish(dish);
+
+	editBackgroundLabel->setStyleSheet( kEditableDayStyleSheet );
+}
+
+void DayDishesView::resizeEvent( QResizeEvent* event )
+{
+	QWidget::resizeEvent( event );
+
+	if( editBackgroundLabel )
+	{
+		editBackgroundLabel->setFixedSize( this->size() - QSize( 2 * kBackgroundMarginRatio * Style::getDishSpacing(), 0 ) );
+		editBackgroundLabel->adjustSize();
+	}
+}
+
+void DayDishesView::addDish( const Dish& dish )
+{
+	DishView* dishView = new DishView( this, dish, mode != eNormalMode );
+	dishViewsVect.push_back( dishView );
+
+	// Place last
+	if( dishViewsVect.size() > 1 )
+	{
+		DishView* dishBefore = dishViewsVect[ dishViewsVect.size() - 2 ];
+		dishView->move( dishBefore->x(), dishBefore->y() + dishBefore->height() + Style::getDishSpacing() );
+	}
+	else
+	{
+		dishView->move( Style::getDishSpacing(), 0 );
+	}
+
+	dishView->show();
+
+	this->adjustSize();
+}
+
+void DayDishesView::addDishes()
 {
 	for( size_t i = 0 ; i < dishesVect.size() ; i++ )
 	{
-		dishViewsVect.push_back( new DishView( this, dishesVect[i] ) );
+		dishViewsVect.push_back( new DishView( this, dishesVect[i], mode != eNormalMode ) );
 	}
 }
 
@@ -191,7 +314,7 @@ bool compareDishViews( DishView* first, DishView* second )
 		return false;
 }
 
-void DayDishesView::StackDishViews()
+void DayDishesView::stackDishViews()
 {
 	if( dishViewsVect.size() == 0 )
 		return;

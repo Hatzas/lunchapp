@@ -9,9 +9,10 @@
 static const QString	kDayNames[] = { "Luni", "Marti", "Miercuri", "Joi", "Vineri" };
 
 
-WeekView::WeekView( QWidget *parent, const Week& week  )
+WeekView::WeekView( QWidget *parent, const Week& week, bool editMode /*= false*/ )
 	: QWidget(parent)
 	, week( week )
+	, editMode( editMode )
 {
 	init();
 }
@@ -45,12 +46,14 @@ void WeekView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((AllWeeksView*)this->parent())->wheelEvent( wheelEvent );
 }
 
-void WeekView::mainWindowResized( QResizeEvent* event )
+void WeekView::mainWindowResized( QSize size )
 {
 	for( int i = 0 ; i < dayViewsVect.size() ; i++ )
 	{
-		dayViewsVect[i]->mainWindowResized( event );
+		dayViewsVect[i]->mainWindowResized( size );
 	}
+
+	this->adjustSize();
 }
 
 void WeekView::selectionChangedOn( const Dish& dish )
@@ -97,7 +100,7 @@ void WeekView::AddDays()
 	std::vector<Day>& daysVect = week.getDays();
 	for( size_t i = 0 ; i < daysVect.size() ; i++ )
 	{
-		DayView* dayView = new DayView( this, daysVect[i] );
+		DayView* dayView = new DayView( this, daysVect[i], editMode ? eEditMode : eNormalMode );
 
 		if( i > 0 )
 			dayView->move( dayViewsVect[i-1]->pos().x() + dayViewsVect[i-1]->width() - Style::getDishSpacing() + Style::getDaySpacing(), 0 );		// "- Style::getDishSpacing()" is a temporary patch to fix double spacing between days

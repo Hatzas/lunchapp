@@ -18,13 +18,14 @@ class DishView : public QWidget
 
 public:
 								DishView( QWidget* parent );						// Placeholder constructor
-								DishView( QWidget *parent, const Dish& dish );
+								DishView( QWidget *parent, const Dish& dish, bool editMode = false );
 								~DishView();
 
 			void				setDisabled( bool disabled );
 			bool				getDisabled()						{ return disabled; }
 
 	const	Dish&				getDish()							{ return dish; }
+	const	QPixmap&			getScaledPixmap()					{ return dishPixmap; }
 
 			bool				operator<( const DishView& right ) const;
 
@@ -45,6 +46,7 @@ private:
 			Dish						dish;
 			bool						disabled;			// true when a user selection excludes other dishes (like from the same course)
 			bool						isPlaceholder;
+			bool						editMode;
 
 			QLabel*						imageLabel;
 			QLabel*						ribbonLabel;

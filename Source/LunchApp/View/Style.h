@@ -45,6 +45,19 @@ static const QString	kButtonsStyleSheet				=  "QPushButton:hover{\
 															background-color: rgba(0,191,255,80%);\
 															}";
 
+static const QString	kEditableDayStyleSheet			=  "QLabel{\
+															background-color: rgba(128,128,128,10%);\
+															}\
+															\
+															QLabel:hover{\
+															border: 2px dashed rgb(0, 191, 255);\
+															background-color: rgba(128,128,128,10%);\
+															}";
+static const QString	kEditableDayDragEnterStyleSheet	=  "QLabel{\
+														   border: 2px dashed rgb(0, 191, 255);\
+														   background-color: rgba(128,128,128,10%);\
+														   }";
+
 static const QString	kFontName						= "Segoe UI";
 
 static const float		kSelectedGlowSize				= 2.0f;

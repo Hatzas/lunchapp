@@ -18,6 +18,7 @@ public:
 						~Controller();
 
 	static	User*		getUser()							{ return user; }
+
 signals:
 			void		weekArrived( const Week& week );
 

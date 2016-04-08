@@ -16,32 +16,35 @@ class MetroView : public QGraphicsView
 	Q_OBJECT
 
 public:
-					MetroView( QWidget *parent );
-					~MetroView();
+							MetroView( QWidget *parent );
+							~MetroView();
 
-	virtual void	wheelEvent( QWheelEvent* event );
+	virtual void			wheelEvent( QWheelEvent* event );
 
 signals:
-		void		requestWeekBefore( const Week& week );
-		void		requestWeekAfter( const Week& week );
+		void				requestWeekBefore( const Week& week );
+		void				requestWeekAfter( const Week& week );
 
-		void		selectionChangedOn( const Dish& dish );
+		void				selectionChangedOn( const Dish& dish );
 
 public slots:
-			void	weekArrived( const Week& week );
-			void	weekAnimationFinished();
-			void	weekDatePressed( bool checked );
-			void	dateSelected();
+			void			weekArrived( const Week& week );
+			void			weekAnimationFinished();
+			void			weekDatePressed( bool checked );
+			void			dateSelected();
 
 protected:
-	virtual void	resizeEvent( QResizeEvent * event );
+	virtual void			resizeEvent( QResizeEvent * event );
 
 private:
 	QGraphicsScene*				scene;
 
+	bool						adminMode;
+
 	InfiniteBackground*			background;
 	QPushButton*				weekDateButton;
 	AllWeeksView*				weeksView;
+	DayView*					allDishesView;
 	QLabel*						userLabel;
 
 	QCalendarWidget*			calendar;
@@ -54,7 +57,10 @@ private:
 
 	QParallelAnimationGroup*	animations;
 
-	void			init();
-	void			addSceneItems();
-	void			setWeekDateText( const Week &currentWeek );
+	void					init();
+	void					addSceneItems();
+
+	void					setWeekDateText( const Week &currentWeek );
+
+	std::vector<Dish>		getAllDishes();
 };

@@ -14,10 +14,6 @@ MainWindow::MainWindow(QWidget *parent)
 	// Style
 	Style::init();
 
-	// Size
-	this->setMinimumSize( Style::getWeekWidth(), Style::getWindowHeight() );
-	this->adjustSize();
-
 	// Controller and connections
 	setupController();
 
@@ -26,7 +22,10 @@ MainWindow::MainWindow(QWidget *parent)
 	metroView = new MetroView( parent );
 	ui.verticalLayout->addWidget( metroView );
 
-	this->resize( this->minimumSize() );
+	// Size
+	this->setMinimumSize( metroView->minimumSize() );
+	this->adjustSize();
+	this->resize( metroView->minimumSize() );
 
 	// Tray
 	setupTray();
@@ -36,7 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
 	makeConnections();
 
 	// Dummy data
-	sendDummyWeek();
+	if( Controller::getUser()->getRole() == User::eRegular )
+		sendDummyWeek();
 }
 
 MainWindow::~MainWindow()

@@ -10,6 +10,8 @@ User* Controller::user = NULL;
 Controller::Controller(QObject *parent)
 	: QThread(parent)
 {
+	// The user should be taken from the AD or just username
+	// And the user type from the DB
 	user = new User( "Andi", User::eRegular );
 
 	dataTransfer = new DataTransfer( this );

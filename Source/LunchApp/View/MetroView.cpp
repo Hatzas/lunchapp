@@ -24,9 +24,14 @@
 static const QString kWeekDatePrefix		= "Saptamana: ";
 
 
-MetroView::MetroView(QWidget *parent)
-	: QGraphicsView(parent)
+MetroView::MetroView( QWidget *parent )
+	: QGraphicsView( parent )
+	, adminMode( false )
+	, allDishesView( NULL )
 {
+	if( Controller::getUser()->getRole() == User::eAdmin )
+		adminMode = true;									// This should be replaced by a menu button
+
 	init();
 }
 
@@ -64,15 +69,6 @@ void MetroView::init()
 void MetroView::addSceneItems()
 {
 	/* Background */
-	// Gradient background
-	// 	QLinearGradient linearGrad(	QPointF( this->width() / 4.f, 0 ), QPointF( this->width() / 2.f, this->height() ) );
-	// 	linearGrad.setColorAt( 1, QColor( 135, 206, 255 ) );
-	// 	linearGrad.setColorAt( 0, QColor( 30, 144, 255 ) );
-	// 	this->setBackgroundBrush( QBrush( linearGrad ) );
-
-	// Image background
-	//	this->setBackgroundBrush( QBrush( QPixmap( "Resources\\background1.jpg" ) ) );
-
 	background = new InfiniteBackground( QPixmap( "Resources\\background3.bmp" ), this );
 
 	/* Create objects */
@@ -87,8 +83,17 @@ void MetroView::addSceneItems()
 	weekDateButton->setStyleSheet( kButtonsStyleSheet );
 	weekDateButton->move( weekPrefixLabel->x() + weekPrefixLabel->width(), 30 );
 
-	weeksView = new AllWeeksView( this );
+	weeksView = new AllWeeksView( this, adminMode );
 	weeksView->move( 0, kWeekTopOffset );
+
+	if( adminMode )
+	{
+		// Add view with all dishes
+		allDishesView = new DayView( this, "Toate", getAllDishes(), eBrowseMode );
+
+		// Move to right of screen
+		allDishesView->move( this->width() - allDishesView->width() - 2 * Style::getDishSpacing(), weeksView->y() );
+	}
 
 	userLabel = new QLabel( this );
 	userLabel->setText( Controller::getUser()->getUsername() );
@@ -142,7 +147,10 @@ void MetroView::addSceneItems()
 	animations->addAnimation( weekDateOutAnimation );
 
 	// Size	
-	this->setMinimumSize( Style::getWeekWidth(), Style::getWindowHeight() );
+	if( allDishesView )
+		this->setMinimumSize( Style::getWeekWidth() + allDishesView->width() + Style::getDishSpacing(), Style::getWindowHeight() );
+	else
+		this->setMinimumSize( Style::getWeekWidth(), Style::getWindowHeight() );
 	this->adjustSize();
 
 	// Move
@@ -208,6 +216,9 @@ void MetroView::dateSelected()
 void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 {
 	calendar->setVisible( false );
+
+	if( Controller::getUser()->getRole() == User::eAdmin )		// Scrolling through weeks disabled for now
+		return;
 
 	int scrollDist = this->width() /*Style::getDayWidth()*/;	// Scroll one column or the whole week
 	if( wheelEvent->delta() > 0 )
@@ -298,7 +309,15 @@ void MetroView::resizeEvent( QResizeEvent * event )
 	background->setMaximumSize( this->size() );
 	background->adjustSize();
 
-	weeksView->mainWindowResized( event );
+	QSize size = event->size();
+	if( allDishesView )
+		size.setWidth( size.width() - allDishesView->width() - 2 * Style::getDishSpacing() );
+
+	weeksView->mainWindowResized( size );
+
+	// Move to right of screen
+	if( adminMode && allDishesView )
+		allDishesView->move( this->width() - allDishesView->width() - 2 * Style::getDishSpacing(), weeksView->y() );
 
 	userLabel->move( event->size().width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
 }
@@ -323,4 +342,30 @@ void MetroView::setWeekDateText( const Week &currentWeek )
 	weekDateButton->adjustSize();
 
 	weekDateInAnimation->start();
+}
+
+std::vector<Dish> MetroView::getAllDishes()
+{
+	// Dummy data
+	std::vector<Dish> dishesVect;
+	dishesVect.push_back( Dish( "Ciorba de varza",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/supa1.png"), 1 ) );
+	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/mancare2.png"), 2 ) );
+	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/mancare3.png"), 2 ) );
+	dishesVect.push_back( Dish( "Salata din gradina bunicii",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/salata3.png"), 3 ) );
+	dishesVect.push_back( Dish( "Salata din gradina ursului",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/salata4.png"), 3 ) );
+	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
+		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
+		QPixmap("Resources/supa2.png"), 1 ) );
+
+	return dishesVect;
 }

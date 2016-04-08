@@ -5,7 +5,7 @@ Day::Day()
 
 }
 
-Day::Day( QString name, const std::vector<Dish>& dishesVect )
+Day::Day( QString name, std::vector<Dish> dishesVect /*= std::vector<Dish>()*/ )
 	: name( name )
 	, dishesVect( dishesVect )
 {

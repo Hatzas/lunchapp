@@ -11,8 +11,9 @@
 static const float		kScrollOwershootRatio		= 1 / 8.f;
 
 
-AllWeeksView::AllWeeksView(QWidget *parent)
+AllWeeksView::AllWeeksView( QWidget *parent, bool editMode /*= false*/ )
 	: QWidget(parent)
+	, editMode( editMode )
 	, windowWidth( Style::getWeekWidth() )
 {
 	init();
@@ -44,6 +45,9 @@ void AllWeeksView::init()
 	firstLastAnimations = new QSequentialAnimationGroup();
 	firstLastAnimations->addAnimation( forwardAnimation );
 	firstLastAnimations->addAnimation( backAnimation );
+
+	if( editMode )
+		addEmptyWeek();
 }
 
 void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
@@ -51,16 +55,16 @@ void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((MetroView*)this->parent())->wheelEvent( wheelEvent );
 }
 
-void AllWeeksView::mainWindowResized( QResizeEvent* event )
+void AllWeeksView::mainWindowResized( QSize size )
 {
-	auto eventWidth = event->size().width();
-	windowWidth = qMax<int>( (int)(Style::getWeekWidth() * Style::getWindowScale()), event->size().width() );
+	auto eventWidth = size.width();
+	windowWidth = qMax<int>( (int)(Style::getWeekWidth() * Style::getWindowScale()), size.width() );
 
 	centerWeekViews();
 
 	for( int i = 0 ; i < weekViewsVect.size() ; i++ )
 	{
-		weekViewsVect[i]->mainWindowResized( event );
+		weekViewsVect[i]->mainWindowResized( size );
 	}
 }
 
@@ -75,8 +79,53 @@ void AllWeeksView::addWeek( const Week& week )
 
 	WeekView* weekView = new WeekView( this, week );
 
-	int startDay = week.getStartDate().day();
-	int endDay = week.getEndDate().day();
+	// Position according to date
+	int centerX = ( windowWidth - weekView->width() ) / 2;
+	if( weekViewsVect.size() == 0 )
+	{
+		weekViewsVect.push_back( weekView );
+	}
+	else if( week < weekViewsVect[0]->getWeek() )
+	{
+		// Insert before first
+		weekView->move( centerX, 0 );
+
+		weekViewsVect.insert( weekViewsVect.begin(), weekView );
+	}
+	else if( week > weekViewsVect[ weekViewsVect.size() - 1 ]->getWeek() )
+	{
+		// Insert after last
+		weekView->move( weekViewsVect.size() * windowWidth + centerX, 0 );
+
+		weekViewsVect.push_back( weekView );
+	}
+
+	weekView->show();
+
+	this->adjustSize();
+}
+
+void AllWeeksView::addEmptyWeek()
+{
+	// Create Week
+	weeksVect.push_back( Week() );
+	Week& week = weeksVect.back();
+
+	QDate firstMonday = QDate::currentDate().addDays( -QDate::currentDate().dayOfWeek() );
+	QDate firstFriday = firstMonday.addDays( 5 );
+	week.setStartDate( firstMonday );
+	week.setEndDate( firstFriday );
+
+	std::vector<Day> emptyDaysVect;
+	emptyDaysVect.push_back( Day( "Luni" ) );
+	emptyDaysVect.push_back( Day( "Marti" ) );
+	emptyDaysVect.push_back( Day( "Miercuri" ) );
+	emptyDaysVect.push_back( Day( "Joi" ) );
+	emptyDaysVect.push_back( Day( "Vineri" ) );
+	week.setDays( emptyDaysVect );
+
+	// Create view
+	WeekView* weekView = new WeekView( this, week, editMode );
 
 	// Position according to date
 	int centerX = ( windowWidth - weekView->width() ) / 2;
