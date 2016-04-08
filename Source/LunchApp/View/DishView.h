@@ -50,7 +50,7 @@ private:
 
 			QLabel*						imageLabel;
 			QLabel*						ribbonLabel;
-			QLabel*						dishIdentifierLabel;
+			QLabel*						identifierLabel;
 			QLabel*						detailsLabel;
 			DishRatingView*				ratingView;
 

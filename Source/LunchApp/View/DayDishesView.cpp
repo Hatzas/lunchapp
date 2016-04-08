@@ -12,7 +12,7 @@
 
 
 static const QString	kDishMimeType = "dish";
-static const float		kBackgroundMarginRatio = 0.8f;
+static const float		kBackgroundMarginRatio = 0.7f;
 
 
 DayDishesView::DayDishesView( QWidget *parent, std::vector<Dish>& dishesVect, EMode mode /*= eNormalMode */)
@@ -87,7 +87,12 @@ void DayDishesView::initEditable()
 void DayDishesView::mainWindowResized( QSize size )
 {
 	// Reposition dishes if they fit in the view
-	if( dishViewsVect.size() > 0 )
+	if( mode == eEditMode || mode == eNormalMode )
+	{
+		this->setMinimumHeight( size.height() );
+		this->adjustSize();
+	}
+	else if( dishViewsVect.size() > 0 )
 	{
 		QRect visibleRect = this->visibleRegion().boundingRect();
 
@@ -99,12 +104,6 @@ void DayDishesView::mainWindowResized( QSize size )
 				dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
 			}
 		}
-	}
-
-	if( mode == eEditMode || mode == eNormalMode )
-	{
-		this->setMinimumHeight( size.height() );
-		this->adjustSize();
 	}
 }
 
@@ -290,7 +289,7 @@ void DayDishesView::addDish( const Dish& dish )
 	}
 	else
 	{
-		dishView->move( Style::getDishSpacing(), 0 );
+		dishView->move( Style::getDishSpacing(), Style::getDishSpacing() * ( 1.f - kBackgroundMarginRatio ) );
 	}
 
 	dishView->show();

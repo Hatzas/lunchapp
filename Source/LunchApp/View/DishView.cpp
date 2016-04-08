@@ -19,7 +19,7 @@ static const int			kAtEnd					= 0xffffff;
 static const float			kClickMovement			= 2;
 static const float			kBriefDetailsOffset		= 30;
 
-static const int			kIdentifierFontSize		= 11;
+static const int			kIdentifierFontSize		= 9;
 
 static const float			kPointToPixel			= 2.5f;
 
@@ -85,15 +85,15 @@ void DishView::init()
 // 	QBitmap textMask = ribbonPixmap.createMaskFromColor( Qt::black, Qt::MaskInColor );
 // 	ribbonLabel->setMask( textMask );
 
-	dishIdentifierLabel = new QLabel( this );
-	dishIdentifierLabel->setText( dish.getIdentifier() );
-	dishIdentifierLabel->setFont( QFont( kFontName, kIdentifierFontSize ) );
-	dishIdentifierLabel->setAlignment( Qt::AlignCenter );
-	dishIdentifierLabel->adjustSize();
+	identifierLabel = new QLabel( this );
+	identifierLabel->setText( ""/*dish.getIdentifier()*/ );					// disabled, as might only be relevant when going to lunch
+	identifierLabel->setFont( QFont( kFontName, kIdentifierFontSize ) );
+	identifierLabel->setAlignment( Qt::AlignCenter );
+	identifierLabel->adjustSize();
 
-	QPalette palette = dishIdentifierLabel->palette();
-	palette.setColor( dishIdentifierLabel->foregroundRole(), kDishIdentifierColor );
-	dishIdentifierLabel->setPalette( palette );
+	QPalette palette = identifierLabel->palette();
+	palette.setColor( identifierLabel->foregroundRole(), kDishIdentifierColor );
+	identifierLabel->setPalette( palette );
 
 	detailsLabel = new QLabel( this );
 	QString text = dish.getName() + " \n\nIngrediente: " + dish.getIngredients();	// Separate ingredients with 2 spaces
@@ -129,12 +129,12 @@ void DishView::init()
 		dishPixmap = dishPixmap.scaled( dishPixmap.size() / 1.5f, Qt::KeepAspectRatio );
 		imageLabel->setPixmap( dishPixmap );
 
-		dishIdentifierLabel->setFont( QFont( kFontName, kIdentifierFontSize / 1.5f ) );
-		dishIdentifierLabel->adjustSize();
+		identifierLabel->setFont( QFont( kFontName, kIdentifierFontSize / 1.5f ) );
+		identifierLabel->adjustSize();
 	}
 
 	/* Move objects */
-	dishIdentifierLabel->move( ( ribbonLabel->width() - dishIdentifierLabel->width() ) / 2, 0 );
+	identifierLabel->move( ( ribbonLabel->width() - identifierLabel->width() ) / 2, 0 );
 	ratingView->move( this->width(), this->height() - kBriefDetailsOffset - ratingView->height() - 2 );
 
 	if( editMode )
@@ -216,7 +216,7 @@ QPixmap DishView::getRibbonByCourse( int courseNum )
 // 	painter.drawPixmap( 0, 0, bkpPixmap );
 // 	painter.end();
 
-	return pixmap;
+	return pixmap.scaled( QSize( pixmap.size() * Style::getWindowScale() ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
 }
 
 void DishView::comboSelectionChanged( int selection )
