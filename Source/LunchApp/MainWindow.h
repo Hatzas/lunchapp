@@ -18,6 +18,9 @@ public:
 	
 			void		showTrayMessage( const QString& msg );
 
+public slots:
+			void		switchAdministrate( bool );
+
 signals:
 			void		selectionChangedOn( const Dish& dish );
 
@@ -31,11 +34,14 @@ private slots:
 private:
 			Ui::MainWindow		ui;
 
-			MetroView*			metroView;
+			MetroView*			regularMetroView;
+			MetroView*			adminMetroView;
 			Controller*			controller;
 	
 			QSystemTrayIcon*	trayIcon;
 			QMenu*				trayIconMenu;
+
+			bool				adminMode;
 
 			void				sendDummyWeek();
 

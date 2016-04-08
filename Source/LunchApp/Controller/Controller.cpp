@@ -12,7 +12,7 @@ Controller::Controller(QObject *parent)
 {
 	// The user should be taken from the AD or just username
 	// And the user type from the DB
-	user = new User( "Andi", User::eRegular );
+	user = new User( "Andi", User::eAdmin );
 
 	dataTransfer = new DataTransfer( this );
 	//dataTransfer->getMenu( QDate(2016, 3, 21), QDate(2016, 3, 25) );		// disabled until better looking images

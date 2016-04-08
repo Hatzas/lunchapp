@@ -16,7 +16,7 @@ class MetroView : public QGraphicsView
 	Q_OBJECT
 
 public:
-							MetroView( QWidget *parent );
+							MetroView( QWidget *parent, bool adminMode = false );
 							~MetroView();
 
 	virtual void			wheelEvent( QWheelEvent* event );
@@ -46,6 +46,7 @@ private:
 	AllWeeksView*				weeksView;
 	DayView*					allDishesView;
 	QLabel*						userLabel;
+	QPushButton*				administrateButton;
 
 	QCalendarWidget*			calendar;
 

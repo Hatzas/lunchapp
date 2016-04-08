@@ -8,8 +8,10 @@
 #include "View/NotificationWindow.h"
 
 
-MainWindow::MainWindow(QWidget *parent)
-	: QWidget(parent)
+MainWindow::MainWindow( QWidget *parent )
+	: QWidget( parent )
+	, adminMetroView( NULL )
+	, adminMode( false )
 {
 	// Style
 	Style::init();
@@ -19,28 +21,60 @@ MainWindow::MainWindow(QWidget *parent)
 
 	// UI
 	ui.setupUi(this);
-	metroView = new MetroView( parent );
-	ui.verticalLayout->addWidget( metroView );
+	regularMetroView = new MetroView( this );
+	ui.verticalLayout->addWidget( regularMetroView );
+
+	if( Controller::getUser()->getRole() == User::eAdmin )
+	{
+		adminMetroView = new MetroView( this, true );
+		adminMetroView->hide();
+	}
 
 	// Size
-	this->setMinimumSize( metroView->minimumSize() );
+	this->setMinimumSize( regularMetroView->minimumSize() );
 	this->adjustSize();
-	this->resize( metroView->minimumSize() );
-
-	// Tray
-	setupTray();
-	showTrayMessage( "Sunt si eu aici" );
 	
 	// Connections
 	makeConnections();
 
 	// Dummy data
-	if( Controller::getUser()->getRole() == User::eRegular )
-		sendDummyWeek();
+	sendDummyWeek();
+
+	// Tray
+	setupTray();
+	showTrayMessage( "Sunt si eu aici" );
 }
 
 MainWindow::~MainWindow()
 {
+}
+
+void MainWindow::switchAdministrate( bool )
+{
+	adminMode = !adminMode;
+
+	if( adminMode )
+	{
+		regularMetroView->hide();
+		ui.verticalLayout->removeWidget( regularMetroView );
+
+		adminMetroView->show();
+		ui.verticalLayout->addWidget( adminMetroView );
+
+		this->setMinimumSize( adminMetroView->minimumSize() );
+	}
+	else
+	{
+		adminMetroView->hide();
+		ui.verticalLayout->removeWidget( adminMetroView );
+
+		regularMetroView->show();
+		ui.verticalLayout->addWidget( regularMetroView );
+
+		this->setMinimumSize( regularMetroView->minimumSize() );
+	}
+
+	this->adjustSize();
 }
 
 void MainWindow::showTrayMessage( const QString& msg )
@@ -177,7 +211,7 @@ void MainWindow::sendDummyWeek()
 
 	Week week( monday, friday, daysVect );
 
-	metroView->weekArrived( week );
+	regularMetroView->weekArrived( week );
 }
 
 void MainWindow::setupTray()
@@ -209,9 +243,9 @@ void MainWindow::setupController()
 
 void MainWindow::makeConnections()
 {
-	connect( controller, SIGNAL( weekArrived( const Week& ) ), metroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
+	connect( controller, SIGNAL( weekArrived( const Week& ) ), regularMetroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
 
-	connect( metroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
-	connect( metroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) ), Qt::QueuedConnection );
-	connect( metroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
+	connect( regularMetroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
+	connect( regularMetroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) ), Qt::QueuedConnection );
+	connect( regularMetroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
 }

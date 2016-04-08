@@ -24,13 +24,13 @@
 static const QString kWeekDatePrefix		= "Saptamana: ";
 
 
-MetroView::MetroView( QWidget *parent )
+MetroView::MetroView( QWidget *parent, bool adminMode /*= false*/ )
 	: QGraphicsView( parent )
-	, adminMode( false )
+	, adminMode( adminMode )
 	, allDishesView( NULL )
 {
-	if( Controller::getUser()->getRole() == User::eAdmin )
-		adminMode = true;									// This should be replaced by a menu button
+// 	if( Controller::getUser()->getRole() == User::eAdmin )
+// 		adminMode = true;									// This should be replaced by a menu button
 
 	init();
 }
@@ -100,6 +100,14 @@ void MetroView::addSceneItems()
 	userLabel->setFont( QFont( kFontName, 10 ) );
 	userLabel->adjustSize();
 
+	administrateButton = new QPushButton( this );
+	administrateButton->setText( adminMode ? " Meniu " : " Administrare " );
+	administrateButton->setFont( QFont( kFontName, 10 ) );
+	administrateButton->setStyleSheet( kButtonsStyleSheet );
+
+	if( Controller::getUser()->getRole() != User::eAdmin )
+		administrateButton->hide();
+
 	calendar = new QCalendarWidget( this );
 	calendar->hide();
 
@@ -108,6 +116,7 @@ void MetroView::addSceneItems()
 	scene->addWidget( weeksView );
 	scene->addWidget( weekDateButton );
 	scene->addWidget( userLabel );
+	scene->addWidget( administrateButton );
 
 	/* Effects */
 	QGraphicsOpacityEffect *weekDateOpacity = new QGraphicsOpacityEffect();
@@ -154,7 +163,15 @@ void MetroView::addSceneItems()
 	this->adjustSize();
 
 	// Move
-	userLabel->move( this->width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+	if( Controller::getUser()->getRole() == User::eAdmin )
+	{
+		administrateButton->move( this->width() - administrateButton->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+		userLabel->move( administrateButton->x() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+	}
+	else
+	{
+		userLabel->move( this->width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+	}
 
 	// Scrolling image background
 	background->setMinimumSize( this->size() );
@@ -165,6 +182,7 @@ void MetroView::addSceneItems()
 	connect( weekMoveAnimation, SIGNAL( finished(void) ), this, SLOT( weekAnimationFinished(void) ) );
 	connect( weekDateButton, SIGNAL( clicked( bool ) ), this, SLOT( weekDatePressed( bool ) ) );
 	connect( calendar, SIGNAL( selectionChanged() ), this, SLOT( dateSelected() ) );
+	connect( administrateButton, SIGNAL( clicked( bool ) ), parent(), SLOT( switchAdministrate( bool ) ) );
 }
 
 void MetroView::weekArrived( const Week& week )
@@ -217,7 +235,7 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 {
 	calendar->setVisible( false );
 
-	if( Controller::getUser()->getRole() == User::eAdmin )		// Scrolling through weeks disabled for now
+	if( adminMode )		// Scrolling through weeks disabled for now
 		return;
 
 	int scrollDist = this->width() /*Style::getDayWidth()*/;	// Scroll one column or the whole week
@@ -305,7 +323,7 @@ void MetroView::resizeEvent( QResizeEvent * event )
 {
 	QGraphicsView::resizeEvent( event );
 
-	background->setMinimumSize( this->size() );
+	background->setFixedSize( this->size() );
 	background->setMaximumSize( this->size() );
 	background->adjustSize();
 
@@ -319,7 +337,15 @@ void MetroView::resizeEvent( QResizeEvent * event )
 	if( adminMode && allDishesView )
 		allDishesView->move( this->width() - allDishesView->width() - 2 * Style::getDishSpacing(), weeksView->y() );
 
-	userLabel->move( event->size().width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+	if( Controller::getUser()->getRole() == User::eAdmin )
+	{
+		administrateButton->move( this->width() - administrateButton->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+		userLabel->move( administrateButton->x() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+	}
+	else
+	{
+		userLabel->move( this->width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+	}
 }
 
 void MetroView::setWeekDateText( const Week &currentWeek )
