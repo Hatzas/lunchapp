@@ -19,11 +19,7 @@ public:
 
 	static	User*		getUser()							{ return user; }
 
-<<<<<<< HEAD
 			void		sendDummyWeek( QDate startDate, QDate endDate );
-=======
-			void		sendDummyData( QDate startDate, QDate endDate );
->>>>>>> master
 
 signals:
 			void		weekArrived( const Week& week );
@@ -43,17 +39,13 @@ protected:
 			void		run();
 
 private slots:
-			void		dataFinished( Week& week );
+			void		dataFinished(const Week& week);
 
 private:
 	static	User*			user;
 
 			DataTransfer*	dataTransfer;
 
-<<<<<<< HEAD
 
 	std::vector<Dish>	getAllDishes();
-=======
-			void		randomizeRatings(std::vector<Dish> &dishesVect);
->>>>>>> master
 };

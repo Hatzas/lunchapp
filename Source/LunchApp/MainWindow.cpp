@@ -33,13 +33,6 @@ MainWindow::MainWindow( QWidget *parent )
 	// Connections
 	makeConnections();
 
-<<<<<<< HEAD
-=======
-	// Dummy data
-	controller->sendDummyData( QDate(2016, 3, 21), QDate(2016, 3, 25) );
-	//sendDummyWeek();
-
->>>>>>> master
 	// Tray
 	setupTray();
 	showTrayMessage( "Sunt si eu aici" );

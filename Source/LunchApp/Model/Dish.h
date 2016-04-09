@@ -44,6 +44,12 @@ public:
 	QString			getIdentifier()										{ return identifier; }
 	void			setIdentifier( QString identifier )					{ this->identifier = identifier; }
 
+	bool			getUserSelected() const								{ return userSelected; };
+	void			setUserSelected( bool selected )					{ this->userSelected = selected; }
+
+	EUserInterest	getUserInterest() const								{ return userInterest; };
+	void			setUserInterest( EUserInterest userPreference )		{ this->userInterest = userPreference; }
+
 	int				getNumWows()										{ return numWows; }
 	void			setNumWows( int numLikes )							{ this->numWows = numLikes; }
 
@@ -56,20 +62,8 @@ public:
 	int				getNumYucks()										{ return numYucks; }
 	void			setNumYucks( int numDislikes )						{ this->numYucks = numDislikes; }
 
-	int				getNumUserOffers()									{ return numUserOffers; }
-	void			setNumUserOffers( int numUserOffers )				{ this->numUserOffers = numUserOffers; }
-
-	int				getNumUserPicks()									{ return numUserPicks; }
-	void			setNumUserPicks( int numUserPicks )					{ this->numUserPicks = numUserPicks; }
-
 	EDishRating		getUserRating()										{ return userRating; }
 	void			setUserRating( EDishRating userRating )				{ this->userRating = userRating; }
-
-	bool			getUserSelected() const								{ return userSelected; };
-	void			setUserSelected( bool selected )					{ this->userSelected = selected; }
-
-	EUserInterest	getUserInterest() const								{ return userInterest; };
-	void			setUserInterest( EUserInterest userPreference )		{ this->userInterest = userPreference; }
 
 	operator		QByteArray() const;
 
@@ -81,19 +75,15 @@ private:
 	QString				type;				// Dish type (salad, soup...)
 	QString				identifier;
 
+	bool				userSelected;
+	EUserInterest		userInterest;
+
 	int					numWows;
 	int					numHappies;
 	int					numMeahs;
-	int					numYucks;			// No negative ratings
-
-	int					numUserOffers;
-	int					numUserPicks;
+	int					numYucks;
 
 	EDishRating			userRating;
-
-	bool				userSelected;
-
-	EUserInterest		userInterest;
 };
 
 Q_DECLARE_METATYPE( Dish );

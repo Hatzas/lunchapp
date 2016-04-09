@@ -209,9 +209,6 @@
     <ClCompile Include="View\Style.cpp">
       <Filter>Source Files\View</Filter>
     </ClCompile>
-    <ClCompile Include="Model\InterestCruncher.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LunchApp.rc" />
@@ -290,9 +287,6 @@
     </ClInclude>
     <ClInclude Include="View\CommonStructs.h">
       <Filter>Header Files\View</Filter>
-    </ClInclude>
-    <ClInclude Include="Model\InterestCruncher.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
