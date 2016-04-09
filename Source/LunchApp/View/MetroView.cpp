@@ -85,11 +85,7 @@ void MetroView::addSceneItems()
 
 	if( adminMode )
 	{
-		// Add view with all dishes
-		allDishesView = new DayView( this, "Toate", getAllDishes(), eBrowseMode );
-
-		// Move to right of screen
-		allDishesView->move( this->width() - allDishesView->width() - 2 * Style::getDishSpacing(), weeksView->y() );
+		//emit allDishesArrived( getAllDishes() );
 
 		publishButton = new QPushButton( this );
 		publishButton->setText( " Publicare " );
@@ -165,8 +161,8 @@ void MetroView::addSceneItems()
 		setWeekDateText( weeksView->getWeek( 0 ) );
 
 	// Size	
-	if( allDishesView )
-		this->setMinimumSize( Style::getWeekWidth() + allDishesView->width() + Style::getDishSpacing(), Style::getWindowHeight() );
+	if( adminMode )
+		this->setMinimumSize( Style::getWeekWidth() + Style::getDishWidth() + 3 * Style::getDishSpacing(), Style::getWindowHeight() );
 	else
 		this->setMinimumSize( Style::getWeekWidth(), Style::getWindowHeight() );
 	this->adjustSize();
@@ -191,6 +187,20 @@ void MetroView::weekArrived( const Week& week )
 	weeksView->addWeek( week );
 
 	setWeekDateText( week );
+}
+
+void MetroView::allDishesArrived( std::vector<Dish>& allDishesVect )
+{
+	if( allDishesView != NULL || !adminMode )
+		return;
+
+	// Add view with all dishes
+	allDishesView = new DayView( this, "Toate", allDishesVect, eBrowseMode );
+
+	// Move to right of screen
+	allDishesView->move( this->width() - allDishesView->width() - 2 * Style::getDishSpacing(), weeksView->y() );
+
+	this->adjustSize();
 }
 
 void MetroView::weekAnimationFinished()
@@ -367,32 +377,6 @@ void MetroView::setWeekDateText( const Week &currentWeek )
 	weekDateButton->adjustSize();
 
 	weekDateInAnimation->start();
-}
-
-std::vector<Dish> MetroView::getAllDishes()
-{
-	// Dummy data
-	std::vector<Dish> dishesVect;
-	dishesVect.push_back( Dish( "Ciorba de varza",
-		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa1.png"), 1 ) );
-	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
-		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare2.png"), 2 ) );
-	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
-		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare3.png"), 2 ) );
-	dishesVect.push_back( Dish( "Salata din gradina bunicii",
-		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata3.png"), 3 ) );
-	dishesVect.push_back( Dish( "Salata din gradina ursului",
-		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata4.png"), 3 ) );
-	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
-		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa2.png"), 1 ) );
-
-	return dishesVect;
 }
 
 void MetroView::alignButtons()

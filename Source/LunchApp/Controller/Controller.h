@@ -23,11 +23,13 @@ public:
 
 signals:
 			void		weekArrived( const Week& week );
+			void		allDishesArrived( std::vector<Dish>& allDishesVect );
 
 public slots:
 			void		requestWeekBefore( const Week& week );
 			void		requestWeekAfter( const Week& week );
 			void		requestWeek( QDate startDate, QDate endDate );
+			void		requestAllDishes();
 
 			void		selectionChangedOn( const Dish& dish );
 
@@ -43,4 +45,7 @@ private:
 	static	User*			user;
 
 			DataTransfer*	dataTransfer;
+
+
+	std::vector<Dish>	getAllDishes();
 };

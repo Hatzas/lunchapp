@@ -22,15 +22,18 @@ public:
 	virtual void			wheelEvent( QWheelEvent* event );
 
 signals:
-		void				requestWeekBefore( const Week& week );
-		void				requestWeekAfter( const Week& week );
+			void				requestWeekBefore( const Week& week );
+			void				requestWeekAfter( const Week& week );
+			void				requestAllDishes();
 
-		void				selectionChangedOn( const Dish& dish );
+			void				selectionChangedOn( const Dish& dish );
 
-		void				publishWeek( const Week& week );
+			void				publishWeek( const Week& week );
 
 public slots:
 			void			weekArrived( const Week& week );
+			void			allDishesArrived( std::vector<Dish>& allDishesVect );
+
 			void			weekAnimationFinished();
 
 			void			weekDatePressed( bool checked );			
@@ -68,8 +71,6 @@ private:
 	void					addSceneItems();
 
 	void					setWeekDateText( const Week &currentWeek );
-
-	std::vector<Dish>		getAllDishes();
 
 	void					alignButtons();
 };
