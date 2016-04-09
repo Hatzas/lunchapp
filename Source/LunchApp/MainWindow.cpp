@@ -38,7 +38,7 @@ MainWindow::MainWindow( QWidget *parent )
 	makeConnections();
 
 	// Dummy data
-	sendDummyWeek();
+	controller->sendDummyWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
 
 	// Tray
 	setupTray();

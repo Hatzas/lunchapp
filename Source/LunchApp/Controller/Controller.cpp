@@ -17,7 +17,7 @@ Controller::Controller(QObject *parent)
 	dataTransfer = new DataTransfer( this );
 	//dataTransfer->getMenu( QDate(2016, 3, 21), QDate(2016, 3, 25) );		// disabled until better looking images
 
-	connect(dataTransfer, SIGNAL(menuFinished(const Week&)), this, SLOT(dataFinished(const Week&)));
+	connect( dataTransfer, SIGNAL( menuFinished(const Week&) ), this, SLOT( dataFinished(const Week&) ) );
 }
 
 Controller::~Controller()
@@ -66,7 +66,7 @@ void Controller::requestWeek( QDate startDate, QDate endDate )
 	//dataTransfer->getMenu(startDate, endDate);		// disabled until better looking images
 
 	// Dummy data
-	sendDummyData(startDate, endDate);
+	sendDummyWeek( startDate, endDate );
 }
 
 void Controller::dataFinished(const Week& week)
@@ -74,7 +74,7 @@ void Controller::dataFinished(const Week& week)
 	emit weekArrived( week );
 }
 
-void Controller::sendDummyData(QDate startDate, QDate endDate)
+void Controller::sendDummyWeek(QDate startDate, QDate endDate)
 {
 	Sleep( 500 );
 
@@ -166,5 +166,5 @@ void Controller::sendDummyData(QDate startDate, QDate endDate)
 	else if( startDate.weekNumber() - today.weekNumber() < -1 )
 		week.setFirstAvailable( true );
 
-	emit weekArrived( week );
+	emit dataFinished( week );
 }

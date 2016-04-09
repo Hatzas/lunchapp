@@ -19,6 +19,8 @@ public:
 
 	static	User*		getUser()							{ return user; }
 
+			void		sendDummyWeek( QDate startDate, QDate endDate );
+
 signals:
 			void		weekArrived( const Week& week );
 
@@ -41,6 +43,4 @@ private:
 	static	User*			user;
 
 			DataTransfer*	dataTransfer;
-
-			void		sendDummyData(QDate startDate, QDate endDate);
 };
