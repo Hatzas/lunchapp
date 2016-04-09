@@ -46,6 +46,6 @@ private:
 
 			DataTransfer*	dataTransfer;
 
-
 	std::vector<Dish>	getAllDishes();
+	void				randomizeRatings( std::vector<Dish> &dishesVect );
 };

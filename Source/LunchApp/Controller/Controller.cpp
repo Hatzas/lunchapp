@@ -232,3 +232,25 @@ std::vector<Dish> Controller::getAllDishes()
 
 	return dishesVect;
 }
+
+void Controller::randomizeRatings( std::vector<Dish> &dishesVect )
+{
+	dishesVect[0].setNumHappies( rand() % 250 );
+	dishesVect[0].setNumWows( rand() % 50 );
+	dishesVect[0].setNumMeahs( rand() % 100 );
+	dishesVect[1].setNumHappies( rand() % 250 );
+	dishesVect[1].setNumWows( rand() % 50 );
+	dishesVect[1].setNumMeahs( rand() % 100 );
+	dishesVect[2].setNumHappies( rand() % 250 );
+	dishesVect[2].setNumWows( rand() % 50 );
+	dishesVect[2].setNumMeahs( rand() % 100 );
+	dishesVect[3].setNumHappies( rand() % 250 );
+	dishesVect[3].setNumWows( rand() % 50 );
+	dishesVect[3].setNumMeahs( rand() % 100 );
+	dishesVect[4].setNumHappies( rand() % 250 );
+	dishesVect[4].setNumWows( rand() % 50 );
+	dishesVect[4].setNumMeahs( rand() % 100 );
+	dishesVect[5].setNumHappies( rand() % 250 );
+	dishesVect[5].setNumWows( rand() % 50 );
+	dishesVect[5].setNumMeahs( rand() % 100 );
+}
