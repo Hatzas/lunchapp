@@ -20,7 +20,7 @@ Controller::Controller(QObject *parent)
 
 	dataTransfer = new DataTransfer( this );
 
-	connect( dataTransfer, SIGNAL( menuFinished(const Week&) ), this, SLOT( dataFinished(const Week&) ) );
+	connect( dataTransfer, SIGNAL( menuFinished( Week& ) ), this, SLOT( dataFinished( Week& ) ) );
 }
 
 Controller::~Controller()
