@@ -6,6 +6,7 @@
 
 
 class QNetworkReply;
+//class QAuthenticator;
 
 typedef QMap<QNetworkReply*, NetEntity>		MapType;
 
@@ -26,7 +27,7 @@ signals:
 
 private slots:
     void		onNetworkReply(QNetworkReply* reply);
-
+//	void		provideAuthenication(QNetworkReply* reply, QAuthenticator* auth);
 private:
 	QNetworkAccessManager*		networkManager;
     QString                     webApiUrl;

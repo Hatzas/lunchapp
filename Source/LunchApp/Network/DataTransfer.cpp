@@ -9,6 +9,11 @@
 
 static const QString kWebApiUrl = "http://194.102.98.239/api/";
 
+static const QString kRatingHappy	= "happy";
+static const QString kRatingWow		= "wow";
+static const QString kRatingMeah	= "meah";
+
+
 DataTransfer::DataTransfer(QObject* parent) : QObject(parent)
 {
     restClient = new RestClient(kWebApiUrl, this);
@@ -83,6 +88,18 @@ void DataTransfer::onRequestFinished(const NetEntity& entity)
 	emit menuFinished(week);
 }
 
+Dish::EDishRating DataTransfer::translateRating(const QString& rating) const
+{
+	if(rating == kRatingHappy)
+		return Dish::eHappy;
+	else if(rating == kRatingWow)
+		return Dish::eWow;
+	else if(rating == kRatingMeah)
+		return Dish::eMeah;
+
+	return Dish::eNotRated;
+}
+
 void DataTransfer::extractDays(const QJsonArray& json, std::vector<Day>& days)
 {
 	days.clear();
@@ -97,19 +114,32 @@ void DataTransfer::extractDays(const QJsonArray& json, std::vector<Day>& days)
 		QJsonArray dishArray = dayObject["Dishes"].toArray();
 		std::vector<Dish> dishes;
 
-		foreach(const QJsonValue& dish, dishArray)
+		foreach(const QJsonValue& dishValue, dishArray)
 		{
-			QJsonObject dishObject = dish.toObject();
+			QJsonObject dishObject = dishValue.toObject();
 
 			QString name = dishObject["Name"].toString();
 			QString description = dishObject["Description"].toString();
 
+			// picture
 			QJsonObject pictureObj = dishObject["DishPicture"].toObject();
 			QString pictureBytes = pictureObj["Thumbnail"].toString();
 			QPixmap pixmap;
 			pixmap.loadFromData(QByteArray::fromBase64(pictureBytes.toUtf8()), "PNG");
 
-			dishes.push_back(Dish(name, description, pixmap, 0));
+			// statistics
+			Dish dish(name, description, pixmap, 0);
+
+			QJsonArray statsArray = dishObject["DishStatistics"].toArray();
+			foreach(const QJsonValue& statsValue, statsArray)
+			{
+				QJsonObject statsObj = statsValue.toObject();
+				Dish::EDishRating dishRating = translateRating(statsObj["Rating"].toString());
+				dish.setUserRating(dishRating);
+				dish.setNumHappies(statsObj["RatingCount"].toInt();
+			}
+			
+			dishes.push_back(dish);
 		}
 
 		days.push_back(Day(day, dishes));

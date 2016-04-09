@@ -2,6 +2,7 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
 #include <QUrlQuery>
+//#include <QAuthenticator>
 
 
 RestClient::RestClient(const QString &apiUrl, QObject* parent) : QObject(parent),
@@ -9,6 +10,7 @@ RestClient::RestClient(const QString &apiUrl, QObject* parent) : QObject(parent)
 {
     networkManager = new QNetworkAccessManager(this);
 
+//	connect(networkManager, SIGNAL(authenticationRequired(QNetworkReply*, QAuthenticator*)), this, SLOT(provideAuthenication(QNetworkReply*, QAuthenticator*)));
     connect(networkManager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onNetworkReply(QNetworkReply*)));
 }
 
@@ -30,6 +32,7 @@ void RestClient::pushRequest(const NetEntity& entity)
 			QUrlQuery queryUrl;
 			queryUrl.addQueryItem("startDate", startDate.toString(Qt::ISODate));
 			queryUrl.addQueryItem("endDate", endDate.toString(Qt::ISODate));
+			//queryUrl.addQueryItem("type", "2");
 
 			foreach(const QueryPair& queryPair, entity.getRequestParams())
 			{
@@ -37,6 +40,8 @@ void RestClient::pushRequest(const NetEntity& entity)
 			}
 
 			url.setQuery(queryUrl);
+			//url.setUserName("123");
+			
 			QNetworkRequest request(url);
 			reply = networkManager->get(request);
 			break;
@@ -90,3 +95,13 @@ void RestClient::onNetworkReply(QNetworkReply* reply)
 
 	reply->deleteLater();
 }
+/*
+void RestClient::provideAuthenication(QNetworkReply* reply, QAuthenticator* auth)
+{
+	// NTLM Authentication
+	QString re = auth->realm();
+	QString a = reply->readAll(); // this is just to see what we received
+	auth->setUser("");
+	//auth->setPassword("");
+}
+*/

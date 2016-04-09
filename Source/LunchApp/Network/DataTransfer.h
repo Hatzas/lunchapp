@@ -26,7 +26,8 @@ private slots:
     void		onRequestFinished(const NetEntity& entity);
 
 private:
-	void		extractDays(const QJsonArray& json, std::vector<Day>& days);
+	Dish::EDishRating	translateRating(const QString& rating) const;
+	void				extractDays(const QJsonArray& json, std::vector<Day>& days);
 
 private:
 	RestClient*	restClient;
