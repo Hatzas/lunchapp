@@ -64,7 +64,7 @@ static const float		kSelectedGlowSize				= 2.0f;
 static const float		kSelectedShadowSize				= 20.0f;
 static const QColor		kSelectedGlowColor				= QColor( 255, 102, 0 );
 static const QColor		kDisabledColor					= QColor( 32, 32, 32 );
-static const QString	kSelectedStyleSheet				= "border: 2px solid rgb(255, 102, 0)";
+static const QString	kSelectedStyleSheet				= "border: 2px solid rgb(255, 0, 0)";
 static const QColor		kDishIdentifierColor			= QColor( 255, 255, 0, 255 );
 
 static const QSize		kDishPlaceholderSize			= QSize( 300, 200 );
@@ -83,6 +83,7 @@ public:
 	static int			getWindowHeight()		{ return kBaseWindowHeight * windowScale; }
 
 	static float		getDishWidth()			{ return kDishWidth * windowScale; }
+	static float		getDishHeight()			{ return kDishHeight * windowScale; }
 	static float		getDishSpacing()		{ return kDishSpacing * windowScale; }
 	static float		getDaySpacing()			{ return kDaySpacing * windowScale; }
 	static float		getDayWidth()			{ return kDayWidth * windowScale; }
@@ -95,6 +96,7 @@ private:
 	static const int		kBaseWindowHeight;
 
 	static const float		kDishWidth;
+	static const float		kDishHeight;
 	static const float		kDishSpacing;
 	static const float		kDaySpacing;
 	static const float		kDayWidth;

@@ -8,6 +8,7 @@
 
 const	int		Style::kBaseWindowHeight	= 750;		// pixels
 const	float	Style::kDishWidth			= 270;		// pixels
+const	float	Style::kDishHeight			= 200;		// pixels
 const	float	Style::kDishSpacing			= 10;		// pixels
 const	float	Style::kDaySpacing			= 10;		// pixels
 const	float	Style::kDayWidth			= kDishWidth + 2 * kDishSpacing;	// pixels

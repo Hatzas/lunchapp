@@ -30,19 +30,20 @@ MainWindow::MainWindow( QWidget *parent )
 		adminMetroView->hide();
 	}
 
-	// Size
-	this->setMinimumSize( regularMetroView->minimumSize() );
-	this->adjustSize();
-	
 	// Connections
 	makeConnections();
-
-	// Dummy data
-	controller->sendDummyWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
 
 	// Tray
 	setupTray();
 	showTrayMessage( "Sunt si eu aici" );
+
+	// Size
+	this->setMinimumSize( regularMetroView->minimumSize() );
+	this->adjustSize();
+
+	// Dummy data
+	//controller->sendDummyWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
+	emit controller->requestWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
 }
 
 MainWindow::~MainWindow()
@@ -61,7 +62,11 @@ void MainWindow::switchAdministrate( bool )
 		adminMetroView->show();
 		ui.verticalLayout->addWidget( adminMetroView );
 
-		this->setMinimumSize( adminMetroView->minimumSize() );
+ 		if( this->width() < adminMetroView->minimumWidth() )
+		{
+			this->setMinimumWidth( adminMetroView->minimumWidth() );
+			this->adjustSize();
+		}	
 	}
 	else
 	{
@@ -71,10 +76,16 @@ void MainWindow::switchAdministrate( bool )
 		regularMetroView->show();
 		ui.verticalLayout->addWidget( regularMetroView );
 
-		this->setMinimumSize( regularMetroView->minimumSize() );
+		int previousWidth = this->width();
+
+ 		if( this->width() < regularMetroView->minimumWidth() )
+		{
+ 			this->setMinimumWidth( regularMetroView->minimumWidth() );
+			this->adjustSize();
+		}
 	}
 
-	this->adjustSize();
+	
 }
 
 void MainWindow::showTrayMessage( const QString& msg )
@@ -248,4 +259,7 @@ void MainWindow::makeConnections()
 	connect( regularMetroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
 	connect( regularMetroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) ), Qt::QueuedConnection );
 	connect( regularMetroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
+
+	if( adminMetroView )
+		connect( adminMetroView, SIGNAL( publishWeek( const Week& ) ), controller, SLOT( publishWeek( const Week& ) ), Qt::QueuedConnection );
 }

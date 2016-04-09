@@ -20,6 +20,7 @@ DayDishesView::DayDishesView( QWidget *parent, std::vector<Dish>& dishesVect, EM
 	, dishesVect( dishesVect )
 	, mode( mode )
 	, editBackgroundLabel( NULL )
+	, internalContentOffset( 0, Style::getDishSpacing() )
 {
 // 	if( Controller::getUser()->getRole() == User::eRegular )
 // 	{
@@ -190,7 +191,7 @@ void DayDishesView::wheelEvent( QWheelEvent* wheelEvent )
 		if( dishViewsVect.front()->visibleRegion().boundingRect().height() == dishViewsVect.front()->height() )
 			return;
 
-		scrollAnimation->setStartValue( internalContentOffset);
+		scrollAnimation->setStartValue( internalContentOffset );
 		scrollAnimation->setEndValue( internalContentOffset + QPoint( 0, dishViewsVect.front()->height() + Style::getDishSpacing() ) );
 		scrollAnimation->start();
 	}
@@ -323,7 +324,7 @@ void DayDishesView::stackDishViews()
 	std::sort( dishViewsVect.begin(), dishViewsVect.end(), compareDishViews );
 
 	// Stack
-	dishViewsVect[0]->move( Style::getDishSpacing(), 0 );
+	dishViewsVect[0]->move( Style::getDishSpacing(), Style::getDishSpacing() );
 
 	int width = this->width();
 	for( size_t i = 1 ; i < dishViewsVect.size() ; i++ )

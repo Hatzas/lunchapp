@@ -15,7 +15,6 @@ Controller::Controller(QObject *parent)
 	user = new User( "Andi", User::eAdmin );
 
 	dataTransfer = new DataTransfer( this );
-	//dataTransfer->getMenu( QDate(2016, 3, 21), QDate(2016, 3, 25) );		// disabled until better looking images
 
 	connect( dataTransfer, SIGNAL( menuFinished(const Week&) ), this, SLOT( dataFinished(const Week&) ) );
 }
@@ -54,6 +53,12 @@ void Controller::selectionChangedOn( const Dish& dish )
 	// TO DO
 }
 
+void Controller::publishWeek( const Week& week )
+{
+	// Store week in database
+	// TO DO
+}
+
 void Controller::run()
 {
 	// Could check for notifications here
@@ -63,10 +68,10 @@ void Controller::run()
 
 void Controller::requestWeek( QDate startDate, QDate endDate )
 {
-	//dataTransfer->getMenu(startDate, endDate);		// disabled until better looking images
+	dataTransfer->getMenu(startDate, endDate);		// disabled until better looking images
 
 	// Dummy data
-	sendDummyWeek( startDate, endDate );
+	// sendDummyWeek( startDate, endDate );
 }
 
 void Controller::dataFinished(const Week& week)
@@ -97,6 +102,16 @@ void Controller::sendDummyWeek(QDate startDate, QDate endDate)
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/supa4.png"), 1 ) );
+
+	dishesVect[0].setNumWows( 120 );
+	dishesVect[0].setUserRating( Dish::eWow );
+	dishesVect[0].setUserSelected( true );
+	dishesVect[1].setNumWows( 120 );
+	dishesVect[2].setNumWows( 120 );
+	dishesVect[2].setUserSelected( true );
+	dishesVect[3].setNumWows( 120 );
+	dishesVect[4].setNumWows( 120 );
+	dishesVect[5].setNumWows( 120 );
 
 	dishesVect[0].setUserInterest( Dish::EUserInterest( rand() % 4 - 1 ) );
 	dishesVect[1].setUserInterest( Dish::EUserInterest( rand() % 4 ) );
