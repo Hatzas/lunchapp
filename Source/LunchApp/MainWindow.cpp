@@ -43,7 +43,7 @@ MainWindow::MainWindow( QWidget *parent )
 
 	// Request data
 	//controller->sendDummyWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
-	emit controller->requestWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
+	emit controller->requestWeek( QDate(2016, 4, 11), QDate(2016, 4, 15) );
 	if( Controller::getUser()->getRole() == User::eAdmin )
 		emit controller->requestAllDishes();
 }

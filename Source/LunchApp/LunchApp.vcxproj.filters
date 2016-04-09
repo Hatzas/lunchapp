@@ -210,7 +210,7 @@
       <Filter>Source Files\View</Filter>
     </ClCompile>
     <ClCompile Include="Model\InterestCruncher.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -292,7 +292,7 @@
       <Filter>Header Files\View</Filter>
     </ClInclude>
     <ClInclude Include="Model\InterestCruncher.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controller</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

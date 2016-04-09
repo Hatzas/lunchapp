@@ -59,15 +59,15 @@ void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
 
 void AllWeeksView::mainWindowResized( QSize size )
 {
-	auto eventWidth = size.width();
 	windowWidth = qMax<int>( (int)(Style::getWeekWidth() * Style::getWindowScale()), size.width() );
-
 	centerWeekViews();
 
 	for( int i = 0 ; i < weekViewsVect.size() ; i++ )
 	{
 		weekViewsVect[i]->mainWindowResized( size );
 	}
+
+	this->adjustSize();
 }
 
 void AllWeeksView::selectionChangedOn( const Dish& dish )
@@ -105,6 +105,8 @@ void AllWeeksView::addWeek( const Week& week )
 	weekView->show();
 
 	this->adjustSize();
+
+	centerWeekViews();
 }
 
 void AllWeeksView::addEmptyWeek()

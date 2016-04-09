@@ -21,7 +21,7 @@
 #include "../Controller/Controller.h"
 
 
-static const QString kWeekDatePrefix		= "saptamana: ";
+static const QString kWeekDatePrefix		= "Saptamana: ";
 
 
 MetroView::MetroView( QWidget *parent, bool adminMode /*= false*/ )
