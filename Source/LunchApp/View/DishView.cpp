@@ -19,7 +19,7 @@ static const int			kAtEnd					= 0xffffff;
 static const float			kClickMovement			= 2;
 static const float			kBriefDetailsOffset		= 30;
 
-static const int			kIdentifierFontSize		= 9;
+static const int			kIdentifierFontSize		= 10;
 
 static const float			kPointToPixel			= 2.5f;
 
@@ -98,13 +98,13 @@ void DishView::init()
 // 	ribbonLabel->setMask( textMask );
 
 	identifierLabel = new QLabel( this );
-	identifierLabel->setText( ""/*dish.getIdentifier()*/ );					// disabled, as might only be relevant when going to lunch
+	identifierLabel->setText( dish.getIdentifier() );					// disabled, as might only be relevant when going to lunch
 	identifierLabel->setFont( QFont( kFontName, kIdentifierFontSize ) );
 	identifierLabel->setAlignment( Qt::AlignCenter );
 	identifierLabel->adjustSize();
 
 	QPalette palette = identifierLabel->palette();
-	palette.setColor( identifierLabel->foregroundRole(), kDishIdentifierColor );
+	palette.setColor( identifierLabel->foregroundRole(), Qt::white );
 	identifierLabel->setPalette( palette );
 
 	detailsLabel = new QLabel( this );
@@ -146,7 +146,7 @@ void DishView::init()
 	}
 
 	/* Move objects */
-	identifierLabel->move( ( ribbonLabel->width() - identifierLabel->width() ) / 2, 0 );
+	identifierLabel->move( identifierLabel->width() / 2, 0 );
 	ratingView->move( this->width(), this->height() - kBriefDetailsOffset - ratingView->height() - 2 );
 
 	if( editMode )
