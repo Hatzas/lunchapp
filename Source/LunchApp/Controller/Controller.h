@@ -39,7 +39,7 @@ protected:
 			void		run();
 
 private slots:
-			void		dataFinished(const Week& week);
+			void		dataFinished( Week& week );
 
 private:
 	static	User*			user;
