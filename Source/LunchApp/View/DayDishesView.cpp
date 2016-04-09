@@ -63,7 +63,7 @@ void DayDishesView::init()
 
 	this->adjustSize();
 
-	if( mode == eEditMode )
+	if( mode == eEditMode || mode == eBrowseMode )
 	{
 		editBackgroundLabel = new QLabel( this );
 		editBackgroundLabel->setStyleSheet( kEditableDayStyleSheet );
