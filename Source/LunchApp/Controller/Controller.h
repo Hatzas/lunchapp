@@ -27,14 +27,14 @@ signals:
 public slots:
 			void		requestWeekBefore( const Week& week );
 			void		requestWeekAfter( const Week& week );
+			void		requestWeek( QDate startDate, QDate endDate );
 
 			void		selectionChangedOn( const Dish& dish );
 
+			void		publishWeek( const Week& week );
+
 protected:
 			void		run();
-
-private:
-			void		requestWeek( QDate startDate, QDate endDate );
 
 private slots:
 			void		dataFinished(const Week& week);

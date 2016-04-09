@@ -27,11 +27,16 @@ signals:
 
 		void				selectionChangedOn( const Dish& dish );
 
+		void				publishWeek( const Week& week );
+
 public slots:
 			void			weekArrived( const Week& week );
 			void			weekAnimationFinished();
-			void			weekDatePressed( bool checked );
+
+			void			weekDatePressed( bool checked );			
 			void			dateSelected();
+
+			void			publishPressed( bool );
 
 protected:
 	virtual void			resizeEvent( QResizeEvent * event );
@@ -47,6 +52,7 @@ private:
 	DayView*					allDishesView;
 	QLabel*						userLabel;
 	QPushButton*				administrateButton;
+	QPushButton*				publishButton;
 
 	QCalendarWidget*			calendar;
 
@@ -64,4 +70,6 @@ private:
 	void					setWeekDateText( const Week &currentWeek );
 
 	std::vector<Dish>		getAllDishes();
+
+	void					alignButtons();
 };

@@ -14,6 +14,7 @@ class AllWeeksView : public QWidget
 public:
 	enum EDirection
 	{
+		eHere,
 		eToRightDirection,
 		eToLeftDirection
 	};
@@ -30,6 +31,8 @@ public:
 
 			void			addWeek( const Week& week );
 			Week			getVisibleWeek();
+
+			Week			getWeek( int index );
 
 private:
 	bool						editMode;

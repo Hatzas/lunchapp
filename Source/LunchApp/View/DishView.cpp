@@ -48,15 +48,27 @@ DishView::~DishView()
 
 void DishView::init()
 {
+	// If dish has no image
+	if( dish.getPixmap().isNull() )
+	{
+		dishPixmap = QPixmap( Style::getDishWidth(), Style::getDishHeight() );
+		dishPixmap.fill( Qt::darkRed );
+	}
+	else
+	{
+		dishPixmap = dish.getPixmap();
+	}
+
 	// Compute scale based on image size, desired dish width and screen resolution
-	float scale = Style::getDishWidth() / dish.getPixmap().width();
-	QSize baseWidgetSize = dish.getPixmap().size() * scale;
+	int w = dishPixmap.width();
+	float scale = Style::getDishWidth() / dishPixmap.width();
+	QSize baseWidgetSize = dishPixmap.size() * scale;
 
 	// Size
 	resizeByUserPreference( baseWidgetSize );
 
 	// Create B&W image
-	QImage blackAndWhiteImg = dish.getPixmap().toImage();//new QImage( widgetSize, QImage::Format_Grayscale8 );
+	QImage blackAndWhiteImg = dishPixmap.toImage();//new QImage( widgetSize, QImage::Format_Grayscale8 );
 	for( int x = 0 ; x < blackAndWhiteImg.width() ; x++ )
 	{
 		for( int y = 0 ; y < blackAndWhiteImg.height() ; y++ )
@@ -66,8 +78,8 @@ void DishView::init()
 		}
 	}
 
-	monochromePixmap = QPixmap::fromImage( blackAndWhiteImg ).scaled( QSize( dish.getPixmap().size() * scale ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
-	dishPixmap = dish.getPixmap().scaled( QSize( dish.getPixmap().size() * scale ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+	monochromePixmap = QPixmap::fromImage( blackAndWhiteImg ).scaled( QSize( dishPixmap.size() * scale ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+	dishPixmap = dishPixmap.scaled( QSize( dishPixmap.size() * scale ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
 
 	/* Create objects */
 	imageLabel = new QLabel( this );
@@ -364,11 +376,11 @@ void DishView::setSelected( bool selected )
 		imageLabel->setStyleSheet( kSelectedStyleSheet );
 
 		// Drop shadow is computation intensive and reduces performance
-// 		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
-// 		dropShadow->setOffset( 0.0f );
-// 		dropShadow->setBlurRadius( kSelectedShadowSize );
-// 		dropShadow->setColor( kSelectedGlowColor );
-// 		this->setGraphicsEffect( dropShadow );
+		QGraphicsDropShadowEffect* dropShadow = new QGraphicsDropShadowEffect( this );
+		dropShadow->setOffset( 0.0f );
+		dropShadow->setBlurRadius( kSelectedShadowSize );
+		dropShadow->setColor( kSelectedGlowColor );
+		this->setGraphicsEffect( dropShadow );
 
 		// Show ratings view
 		ratingViewAnimation->stop();
@@ -382,7 +394,7 @@ void DishView::setSelected( bool selected )
 		//selectedEffect->disable();
 		imageLabel->setStyleSheet("");
 
-//		this->setGraphicsEffect( NULL );
+		this->setGraphicsEffect( NULL );
 
 		// Hide ratings view
 		ratingViewAnimation->stop();

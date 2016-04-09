@@ -48,6 +48,8 @@ void AllWeeksView::init()
 
 	if( editMode )
 		addEmptyWeek();
+	else
+		showLoadingAnim( true, eHere );
 }
 
 void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
@@ -111,10 +113,11 @@ void AllWeeksView::addEmptyWeek()
 	weeksVect.push_back( Week() );
 	Week& week = weeksVect.back();
 
-	QDate firstMonday = QDate::currentDate().addDays( -QDate::currentDate().dayOfWeek() );
-	QDate firstFriday = firstMonday.addDays( 5 );
-	week.setStartDate( firstMonday );
-	week.setEndDate( firstFriday );
+	// Next week date
+	QDate mondayAfter = QDate::currentDate().addDays( 8 - QDate::currentDate().dayOfWeek() );
+	QDate fridayAfter = mondayAfter.addDays( 4 );
+	week.setStartDate( mondayAfter );
+	week.setEndDate( fridayAfter );
 
 	std::vector<Day> emptyDaysVect;
 	emptyDaysVect.push_back( Day( "Luni" ) );
@@ -162,6 +165,14 @@ Week AllWeeksView::getVisibleWeek()
 			return weekViewsVect[i]->getWeek();
 		}
 	}
+
+	return Week();
+}
+
+Week AllWeeksView::getWeek( int index )
+{
+	if( index < weekViewsVect.size() )
+		return weekViewsVect[ index ]->getWeek();
 
 	return Week();
 }
@@ -286,13 +297,16 @@ void AllWeeksView::showLoadingAnim( bool show, EDirection direction )
 	if( direction == eToRightDirection )
 	{
 		loadingLabel->move( this->width() - windowWidth / 2 - loadingLabel->width() / 2, parentSize.height() / 3 );
-		loadingLabel->show();
-		loadingLabel->movie()->start();
 	}
 	else if( direction == eToLeftDirection )
 	{
 		loadingLabel->move( windowWidth / 2 - loadingLabel->width() / 2, parentSize.height() / 3 );
-		loadingLabel->show();
-		loadingLabel->movie()->start();
 	}
+	else
+	{
+		loadingLabel->move( windowWidth / 2 - loadingLabel->width() / 2, parentSize.height() / 3 );
+	}
+
+	loadingLabel->show();
+	loadingLabel->movie()->start();
 }

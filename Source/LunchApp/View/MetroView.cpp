@@ -21,7 +21,7 @@
 #include "../Controller/Controller.h"
 
 
-static const QString kWeekDatePrefix		= "Saptamana: ";
+static const QString kWeekDatePrefix		= "saptamana: ";
 
 
 MetroView::MetroView( QWidget *parent, bool adminMode /*= false*/ )
@@ -29,9 +29,6 @@ MetroView::MetroView( QWidget *parent, bool adminMode /*= false*/ )
 	, adminMode( adminMode )
 	, allDishesView( NULL )
 {
-// 	if( Controller::getUser()->getRole() == User::eAdmin )
-// 		adminMode = true;									// This should be replaced by a menu button
-
 	init();
 }
 
@@ -93,6 +90,11 @@ void MetroView::addSceneItems()
 
 		// Move to right of screen
 		allDishesView->move( this->width() - allDishesView->width() - 2 * Style::getDishSpacing(), weeksView->y() );
+
+		publishButton = new QPushButton( this );
+		publishButton->setText( " Publicare " );
+		publishButton->setFont( QFont( kFontName, 10 ) );
+		publishButton->setStyleSheet( kButtonsStyleSheet );
 	}
 
 	userLabel = new QLabel( this );
@@ -104,6 +106,7 @@ void MetroView::addSceneItems()
 	administrateButton->setText( adminMode ? " Meniu " : " Administrare " );
 	administrateButton->setFont( QFont( kFontName, 10 ) );
 	administrateButton->setStyleSheet( kButtonsStyleSheet );
+	administrateButton->adjustSize();
 
 	if( Controller::getUser()->getRole() != User::eAdmin )
 		administrateButton->hide();
@@ -155,23 +158,18 @@ void MetroView::addSceneItems()
 	animations->addAnimation( weekMoveAnimation );
 	animations->addAnimation( weekDateOutAnimation );
 
+	// Move
+	alignButtons();
+
+	if( adminMode )
+		setWeekDateText( weeksView->getWeek( 0 ) );
+
 	// Size	
 	if( allDishesView )
 		this->setMinimumSize( Style::getWeekWidth() + allDishesView->width() + Style::getDishSpacing(), Style::getWindowHeight() );
 	else
 		this->setMinimumSize( Style::getWeekWidth(), Style::getWindowHeight() );
 	this->adjustSize();
-
-	// Move
-	if( Controller::getUser()->getRole() == User::eAdmin )
-	{
-		administrateButton->move( this->width() - administrateButton->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
-		userLabel->move( administrateButton->x() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
-	}
-	else
-	{
-		userLabel->move( this->width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
-	}
 
 	// Scrolling image background
 	background->setMinimumSize( this->size() );
@@ -183,6 +181,9 @@ void MetroView::addSceneItems()
 	connect( weekDateButton, SIGNAL( clicked( bool ) ), this, SLOT( weekDatePressed( bool ) ) );
 	connect( calendar, SIGNAL( selectionChanged() ), this, SLOT( dateSelected() ) );
 	connect( administrateButton, SIGNAL( clicked( bool ) ), parent(), SLOT( switchAdministrate( bool ) ) );
+
+	if( adminMode )
+		connect( publishButton, SIGNAL( clicked( bool ) ), this, SLOT( publishPressed( bool ) ) );
 }
 
 void MetroView::weekArrived( const Week& week )
@@ -229,6 +230,11 @@ void MetroView::dateSelected()
 
 	// Request week based on selected date
 	// TO DO
+}
+
+void MetroView::publishPressed( bool )
+{
+	emit publishWeek( weeksView->getVisibleWeek( ) );
 }
 
 void MetroView::wheelEvent( QWheelEvent* wheelEvent )
@@ -337,15 +343,8 @@ void MetroView::resizeEvent( QResizeEvent * event )
 	if( adminMode && allDishesView )
 		allDishesView->move( this->width() - allDishesView->width() - 2 * Style::getDishSpacing(), weeksView->y() );
 
-	if( Controller::getUser()->getRole() == User::eAdmin )
-	{
-		administrateButton->move( this->width() - administrateButton->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
-		userLabel->move( administrateButton->x() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
-	}
-	else
-	{
-		userLabel->move( this->width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
-	}
+	alignButtons();
+
 }
 
 void MetroView::setWeekDateText( const Week &currentWeek )
@@ -394,4 +393,22 @@ std::vector<Dish> MetroView::getAllDishes()
 		QPixmap("Resources/supa2.png"), 1 ) );
 
 	return dishesVect;
+}
+
+void MetroView::alignButtons()
+{
+	if( Controller::getUser()->getRole() == User::eAdmin )
+	{
+		administrateButton->move( this->width() - administrateButton->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+		userLabel->move( administrateButton->x() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+
+		if( adminMode )
+		{
+			publishButton->move( administrateButton->x() - ( publishButton->width() - administrateButton->width() ) / 2, administrateButton->y() + administrateButton->height() * 1.3f );
+		}
+	}
+	else
+	{
+		userLabel->move( this->width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
+	}
 }
