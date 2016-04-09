@@ -41,9 +41,11 @@ MainWindow::MainWindow( QWidget *parent )
 	this->setMinimumSize( regularMetroView->minimumSize() );
 	this->adjustSize();
 
-	// Dummy data
+	// Request data
 	//controller->sendDummyWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
 	emit controller->requestWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
+	if( Controller::getUser()->getRole() == User::eAdmin )
+		emit controller->requestAllDishes();
 }
 
 MainWindow::~MainWindow()
@@ -261,5 +263,10 @@ void MainWindow::makeConnections()
 	connect( regularMetroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
 
 	if( adminMetroView )
+	{
 		connect( adminMetroView, SIGNAL( publishWeek( const Week& ) ), controller, SLOT( publishWeek( const Week& ) ), Qt::QueuedConnection );
+		connect( adminMetroView, SIGNAL( requestAllDishes() ), controller, SLOT( requestAllDishes() ), Qt::QueuedConnection );
+	
+		connect( controller, SIGNAL( allDishesArrived( std::vector<Dish>& ) ), adminMetroView, SLOT( allDishesArrived( std::vector<Dish>& ) ) );
+	}
 }
