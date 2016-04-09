@@ -130,13 +130,14 @@ void DataTransfer::extractDays(const QJsonArray& json, std::vector<Day>& days)
 			// statistics
 			Dish dish(name, description, pixmap, 0);
 
+			dish.setCourseNum(dishObject["Category"].toString().toInt());
 			QJsonArray statsArray = dishObject["DishStatistics"].toArray();
 			foreach(const QJsonValue& statsValue, statsArray)
 			{
 				QJsonObject statsObj = statsValue.toObject();
 				Dish::EDishRating dishRating = translateRating(statsObj["Rating"].toString());
 				dish.setUserRating(dishRating);
-				dish.setNumHappies(statsObj["RatingCount"].toInt();
+				dish.setNumHappies(statsObj["RatingCount"].toInt());
 			}
 			
 			dishes.push_back(dish);
