@@ -19,6 +19,8 @@ public:
 
 	static	User*		getUser()							{ return user; }
 
+			void		sendDummyData( QDate startDate, QDate endDate );
+
 signals:
 			void		weekArrived( const Week& week );
 
@@ -35,12 +37,12 @@ private:
 			void		requestWeek( QDate startDate, QDate endDate );
 
 private slots:
-			void		dataFinished(const Week& week);
+			void		dataFinished( Week& week );
 
 private:
 	static	User*			user;
 
 			DataTransfer*	dataTransfer;
 
-			void		sendDummyData(QDate startDate, QDate endDate);
+			void		randomizeRatings(std::vector<Dish> &dishesVect);
 };
