@@ -39,13 +39,13 @@ protected:
 			void		run();
 
 private slots:
-			void		dataFinished(const Week& week);
+			void		dataFinished( Week& week );
 
 private:
 	static	User*			user;
 
 			DataTransfer*	dataTransfer;
 
-
 	std::vector<Dish>	getAllDishes();
+	void				randomizeRatings( std::vector<Dish> &dishesVect );
 };

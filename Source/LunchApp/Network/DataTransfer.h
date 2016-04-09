@@ -19,7 +19,7 @@ public:
 	void		getDishCategory();
 	
 signals:
-	void		menuFinished(const Week& week);
+	void		menuFinished(Week& week);
     void        userMenuFinished();
 
 private slots:

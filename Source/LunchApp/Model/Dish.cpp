@@ -30,6 +30,9 @@ Dish::Dish( QByteArray inputBuffer )
 	in >> numMeahs;
 	in >> numYucks;
 
+	in >> numUserOffers;
+	in >> numUserPicks;
+
 	in >> (int&)userRating;
 }
 
@@ -44,6 +47,8 @@ Dish::Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum )
 	, numHappies( 0 )
 	, numMeahs( 0 )
 	, numYucks( 0 )
+	, numUserOffers( 0 )
+	, numUserPicks( 0 )
 	, userRating( eNotRated )
 {
 
@@ -72,6 +77,9 @@ Dish::operator QByteArray() const
 	out << numHappies;
 	out << numMeahs;
 	out << numYucks;
+
+	out << numUserOffers;
+	out << numUserPicks;
 
 	out << userRating;
 

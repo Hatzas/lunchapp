@@ -172,6 +172,7 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Model\Day.cpp" />
     <ClCompile Include="Model\Dish.cpp" />
+    <ClCompile Include="Model\InterestCruncher.cpp" />
     <ClCompile Include="Model\User.cpp" />
     <ClCompile Include="Model\Week.cpp" />
     <ClCompile Include="Network\DataTransfer.cpp" />
@@ -249,6 +250,7 @@
     <ClInclude Include="GeneratedFiles\ui_MainWindow.h" />
     <ClInclude Include="Model\Day.h" />
     <ClInclude Include="Model\Dish.h" />
+    <ClInclude Include="Model\InterestCruncher.h" />
     <ClInclude Include="Model\User.h" />
     <ClInclude Include="Model\Week.h" />
     <CustomBuild Include="View\SelectedEffect.h">
