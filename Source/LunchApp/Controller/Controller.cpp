@@ -53,7 +53,7 @@ void Controller::requestWeekBefore( const Week& week )
 
 void Controller::requestWeek( QDate startDate, QDate endDate )
 {
-	dataTransfer->getMenu(startDate, endDate);		// disabled until better looking images
+	dataTransfer->getUserMenu(startDate, endDate);
 
 	// Dummy data
 	// sendDummyWeek( startDate, endDate );
