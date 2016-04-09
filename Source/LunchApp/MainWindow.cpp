@@ -8,33 +8,83 @@
 #include "View/NotificationWindow.h"
 
 
-MainWindow::MainWindow(QWidget *parent)
-	: QWidget(parent)
+MainWindow::MainWindow( QWidget *parent )
+	: QWidget( parent )
+	, adminMetroView( NULL )
+	, adminMode( false )
 {
-	// UI
-	ui.setupUi(this);
-	metroView = new MetroView( parent );
-	ui.verticalLayout->addWidget( metroView );
-
-	// Tray
-	setupTray();
-	showTrayMessage( "Baga meniul" );
+	// Style
+	Style::init();
 
 	// Controller and connections
 	setupController();
+
+	// UI
+	ui.setupUi(this);
+	regularMetroView = new MetroView( this );
+	ui.verticalLayout->addWidget( regularMetroView );
+
+	if( Controller::getUser()->getRole() == User::eAdmin )
+	{
+		adminMetroView = new MetroView( this, true );
+		adminMetroView->hide();
+	}
+
+	// Size
+	this->setMinimumSize( regularMetroView->minimumSize() );
+	this->adjustSize();
 	
+	// Connections
+	makeConnections();
+
 	// Dummy data
-	sendWeek();
+	controller->sendDummyWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
+
+	// Tray
+	setupTray();
+	showTrayMessage( "Sunt si eu aici" );
 }
 
 MainWindow::~MainWindow()
 {
 }
 
+void MainWindow::switchAdministrate( bool )
+{
+	adminMode = !adminMode;
+
+	if( adminMode )
+	{
+		regularMetroView->hide();
+		ui.verticalLayout->removeWidget( regularMetroView );
+
+		adminMetroView->show();
+		ui.verticalLayout->addWidget( adminMetroView );
+
+		this->setMinimumSize( adminMetroView->minimumSize() );
+	}
+	else
+	{
+		adminMetroView->hide();
+		ui.verticalLayout->removeWidget( adminMetroView );
+
+		regularMetroView->show();
+		ui.verticalLayout->addWidget( regularMetroView );
+
+		this->setMinimumSize( regularMetroView->minimumSize() );
+	}
+
+	this->adjustSize();
+}
+
 void MainWindow::showTrayMessage( const QString& msg )
 {
 	NotificationWindow* customWindow = new NotificationWindow( msg );
 	customWindow->show();
+}
+
+void MainWindow::resizeEvent( QResizeEvent * event )
+{
 }
 
 void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
@@ -53,7 +103,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	showTrayMessage(tr("Aplicatia nu e moarta, se transforma (in tray)"));
 }
 
-void MainWindow::sendWeek()
+void MainWindow::sendDummyWeek()
 {
 	// Dummy data
 	std::vector<Dish> dishesVect;
@@ -75,6 +125,14 @@ void MainWindow::sendWeek()
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap("Resources/supa2.png"), 1 ) );
+
+	// Identifiers
+	dishesVect[0].setIdentifier( "C1" );
+	dishesVect[1].setIdentifier( "M1" );
+	dishesVect[2].setIdentifier( "M2" );
+	dishesVect[3].setIdentifier( "S1" );
+	dishesVect[4].setIdentifier( "S2" );
+	dishesVect[5].setIdentifier( "C2" );
 
 	dishesVect[0].setNumWows( 120 );
 	dishesVect[0].setUserRating( Dish::eWow );
@@ -153,7 +211,7 @@ void MainWindow::sendWeek()
 
 	Week week( monday, friday, daysVect );
 
-	metroView->weekArrived( week );
+	regularMetroView->weekArrived( week );
 }
 
 void MainWindow::setupTray()
@@ -179,13 +237,15 @@ void MainWindow::setupTray()
 void MainWindow::setupController()
 {
 	controller = new Controller();
-
-	connect( controller, SIGNAL( weekArrived( const Week& ) ), metroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
-	
-	connect( metroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
-	connect( metroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) ), Qt::QueuedConnection );
-	connect( metroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
-
 	controller->moveToThread( controller );
 	controller->start();
+}
+
+void MainWindow::makeConnections()
+{
+	connect( controller, SIGNAL( weekArrived( const Week& ) ), regularMetroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
+
+	connect( regularMetroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
+	connect( regularMetroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) ), Qt::QueuedConnection );
+	connect( regularMetroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
 }

@@ -23,6 +23,7 @@ public:
 	};
 
 					Dish();
+					Dish( QByteArray inputBuffer );
 					Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum );
 
 	QString			getName() const										{ return name; }
@@ -39,6 +40,9 @@ public:
 
 	QString			getType()											{ return type; }
 	void			setType( QString dish )								{ this->type = type; }
+
+	QString			getIdentifier()										{ return identifier; }
+	void			setIdentifier( QString identifier )					{ this->identifier = identifier; }
 
 	bool			getUserSelected() const								{ return userSelected; };
 	void			setUserSelected( bool selected )					{ this->userSelected = selected; }
@@ -61,12 +65,15 @@ public:
 	EDishRating		getUserRating()										{ return userRating; }
 	void			setUserRating( EDishRating userRating )				{ this->userRating = userRating; }
 
+	operator		QByteArray() const;
+
 private:
 	QString				name;
 	QString				ingredients;
 	QPixmap				pixmap;
 	int					courseNum;			// 1 == Course 1, 2 == Course 2, etc.
-	QString				type;
+	QString				type;				// Dish type (salad, soup...)
+	QString				identifier;
 
 	bool				userSelected;
 	EUserInterest		userInterest;

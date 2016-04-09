@@ -9,9 +9,10 @@
 static const QString	kDayNames[] = { "Luni", "Marti", "Miercuri", "Joi", "Vineri" };
 
 
-WeekView::WeekView( QWidget *parent, const Week& week  )
+WeekView::WeekView( QWidget *parent, const Week& week, bool editMode /*= false*/ )
 	: QWidget(parent)
 	, week( week )
+	, editMode( editMode )
 {
 	init();
 }
@@ -45,12 +46,14 @@ void WeekView::wheelEvent( QWheelEvent* wheelEvent )
 	return ((AllWeeksView*)this->parent())->wheelEvent( wheelEvent );
 }
 
-void WeekView::mainWindowResized( QResizeEvent* event )
+void WeekView::mainWindowResized( QSize size )
 {
 	for( int i = 0 ; i < dayViewsVect.size() ; i++ )
 	{
-		dayViewsVect[i]->mainWindowResized( event );
+		dayViewsVect[i]->mainWindowResized( size );
 	}
+
+	this->adjustSize();
 }
 
 void WeekView::selectionChangedOn( const Dish& dish )
@@ -82,7 +85,7 @@ void WeekView::showDayMenuNotification()
 	{
 		if( currentDay.getDishes()[i].getUserSelected() )
 		{
-			todayMenu = "Azi ai:\n" + currentDay.getDishes()[i].getName();
+			todayMenu = "Azi ai:\n" + currentDay.getDishes()[i].getName() + " ( " + currentDay.getDishes()[i].getIdentifier() + " )";
 
 			dishesPixmaps.clear();
 			dishesPixmaps.push_back( currentDay.getDishes()[i].getPixmap() );
@@ -97,10 +100,10 @@ void WeekView::AddDays()
 	std::vector<Day>& daysVect = week.getDays();
 	for( size_t i = 0 ; i < daysVect.size() ; i++ )
 	{
-		DayView* dayView = new DayView( this, daysVect[i] );
+		DayView* dayView = new DayView( this, daysVect[i], editMode ? eEditMode : eNormalMode );
 
 		if( i > 0 )
-			dayView->move( dayViewsVect[i-1]->pos().x() + dayViewsVect[i-1]->width() - kDishSpacing + kDaySpacing, 0 );		// "- kDishSpacing" is a temporary patch to fix double spacing between days
+			dayView->move( dayViewsVect[i-1]->pos().x() + dayViewsVect[i-1]->width() - Style::getDishSpacing() + Style::getDaySpacing(), 0 );		// "- Style::getDishSpacing()" is a temporary patch to fix double spacing between days
 
 		dayViewsVect.push_back( dayView );
 	}

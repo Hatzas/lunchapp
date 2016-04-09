@@ -3,6 +3,8 @@
 #include <QGraphicsView>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
+#include <QPushButton>
+#include <QCalendarWidget>
 #include <QLabel>
 
 #include "AllWeeksView.h"
@@ -14,40 +16,52 @@ class MetroView : public QGraphicsView
 	Q_OBJECT
 
 public:
-					MetroView( QWidget *parent );
-					~MetroView();
+							MetroView( QWidget *parent, bool adminMode = false );
+							~MetroView();
 
-	virtual void	wheelEvent( QWheelEvent* event );
+	virtual void			wheelEvent( QWheelEvent* event );
 
 signals:
-		void		requestWeekBefore( const Week& week );
-		void		requestWeekAfter( const Week& week );
+		void				requestWeekBefore( const Week& week );
+		void				requestWeekAfter( const Week& week );
 
-		void		selectionChangedOn( const Dish& dish );
+		void				selectionChangedOn( const Dish& dish );
 
 public slots:
-			void	weekArrived( const Week& week );
-			void	weekAnimationFinished();
+			void			weekArrived( const Week& week );
+			void			weekAnimationFinished();
+			void			weekDatePressed( bool checked );
+			void			dateSelected();
 
 protected:
-	virtual void	resizeEvent( QResizeEvent * event );
+	virtual void			resizeEvent( QResizeEvent * event );
 
 private:
 	QGraphicsScene*				scene;
 
+	bool						adminMode;
+
 	InfiniteBackground*			background;
-	QLabel*						weekDateLabel;
+	QPushButton*				weekDateButton;
 	AllWeeksView*				weeksView;
+	DayView*					allDishesView;
+	QLabel*						userLabel;
+	QPushButton*				administrateButton;
+
+	QCalendarWidget*			calendar;
 
 	QPropertyAnimation*			weekDateOutAnimation;
 	QPropertyAnimation*			weekDateInAnimation;
+	QPropertyAnimation*			calendarFadeAnimation;
 	QPropertyAnimation*			weekMoveAnimation;
 	QPropertyAnimation*			backgroundAnimation;
 
-	QSequentialAnimationGroup*	weekAnimationsQueue;
 	QParallelAnimationGroup*	animations;
 
-	void			init();
-	void			addSceneItems();
-	void			setWeekDateText( const Week &currentWeek );
+	void					init();
+	void					addSceneItems();
+
+	void					setWeekDateText( const Week &currentWeek );
+
+	std::vector<Dish>		getAllDishes();
 };

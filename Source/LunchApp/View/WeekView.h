@@ -11,11 +11,11 @@ class WeekView : public QWidget
 	Q_OBJECT
 
 public:
-							WeekView( QWidget *parent, const Week& week );
+							WeekView( QWidget *parent, const Week& week, bool editMode = false );
 							~WeekView();
 
 	virtual void			wheelEvent( QWheelEvent* event );
-			void			mainWindowResized( QResizeEvent* event );
+			void			mainWindowResized( QSize size );
 
 			void			selectionChangedOn( const Dish& dish );		
 
@@ -27,6 +27,7 @@ public slots:
 private:
 	Week					week;
 	std::vector<DayView*>	dayViewsVect;
+	bool					editMode;
 
 	void					init();
 

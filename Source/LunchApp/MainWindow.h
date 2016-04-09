@@ -13,28 +13,41 @@ class MainWindow : public QWidget
 	Q_OBJECT
 
 public:
-				MainWindow( QWidget *parent = 0 );
-				~MainWindow();
+						MainWindow( QWidget *parent = 0 );
+						~MainWindow();
 	
-	void		showTrayMessage(const QString& msg);
+			void		showTrayMessage( const QString& msg );
+
+public slots:
+			void		switchAdministrate( bool );
+
+signals:
+			void		selectionChangedOn( const Dish& dish );
+
+protected:
+	virtual void		resizeEvent( QResizeEvent * event );
 
 private slots:
-	void		onTrayActivation(QSystemTrayIcon::ActivationReason reason);
-	virtual void	closeEvent(QCloseEvent* event);
-signals:
-	void		SelectionChangedOn( const Dish& dish );
+			void		onTrayActivation( QSystemTrayIcon::ActivationReason reason );
+	virtual void		closeEvent( QCloseEvent* event );
 
 private:
-	Ui::MainWindow		ui;
+			Ui::MainWindow		ui;
 
-	MetroView*			metroView;
-	Controller*			controller;
+			MetroView*			regularMetroView;
+			MetroView*			adminMetroView;
+			Controller*			controller;
 	
-	QSystemTrayIcon*	trayIcon;
-	QMenu*				trayIconMenu;
+			QSystemTrayIcon*	trayIcon;
+			QMenu*				trayIconMenu;
 
-	void				sendWeek();
+			bool				adminMode;
 
-	void				setupTray();
-	void				setupController();
+			void				sendDummyWeek();
+
+			void				setupTray();
+			void				setupController();
+
+			void				makeConnections();
+
 };

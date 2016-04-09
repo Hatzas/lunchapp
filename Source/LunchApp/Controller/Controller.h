@@ -5,7 +5,7 @@
 
 #include "../Model/Dish.h"
 #include "../Model/Week.h"
-
+#include "../Model/User.h"
 
 class DataTransfer;
 
@@ -14,27 +14,33 @@ class Controller : public QThread
 	Q_OBJECT
 
 public:
-				Controller( QObject *parent = 0 );
-				~Controller();
+						Controller( QObject *parent = 0 );
+						~Controller();
+
+	static	User*		getUser()							{ return user; }
+
+			void		sendDummyWeek( QDate startDate, QDate endDate );
 
 signals:
-	void		weekArrived( const Week& week );
+			void		weekArrived( const Week& week );
 
 public slots:
-	void		requestWeekBefore( const Week& week );
-	void		requestWeekAfter( const Week& week );
+			void		requestWeekBefore( const Week& week );
+			void		requestWeekAfter( const Week& week );
 
-	void		selectionChangedOn( const Dish& dish );
+			void		selectionChangedOn( const Dish& dish );
 
 protected:
-	void		run();
+			void		run();
 
 private:
-	void		requestWeek( QDate startDate, QDate endDate );
+			void		requestWeek( QDate startDate, QDate endDate );
 
 private slots:
-	void		dataFinished(const Week& week);
+			void		dataFinished(const Week& week);
 
 private:
-	DataTransfer*	dataTransfer;
+	static	User*			user;
+
+			DataTransfer*	dataTransfer;
 };

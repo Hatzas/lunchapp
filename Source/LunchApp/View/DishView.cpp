@@ -8,19 +8,34 @@
 #include <QPalette>
 #include <QPainter>
 #include <QRubberBand>
+#include <QComboBox>
+#include <QBitmap>
+#include <QPainterPath>
 
 #include "Style.h"
-#include "DayDishesView.h"
+#include "MainWindow.h"
 
-
+static const int			kAtEnd					= 0xffffff;
 static const float			kClickMovement			= 2;
 static const float			kBriefDetailsOffset		= 30;
 
+static const int			kIdentifierFontSize		= 9;
 
-DishView::DishView( QWidget *parent, const Dish& dish  )
+static const float			kPointToPixel			= 2.5f;
+
+DishView::DishView( QWidget *parent )
+	: QWidget( parent )
+	, isPlaceholder( true )
+{
+	initPlaceholder();
+}
+
+DishView::DishView( QWidget *parent, const Dish& dish, bool editMode /*= false*/ )
 	: QWidget( parent )
 	, dish( dish )
 	, disabled( false )
+	, isPlaceholder( false )
+	, editMode( editMode )
 	, mousePressed( false )
 {
 	init();
@@ -33,8 +48,8 @@ DishView::~DishView()
 
 void DishView::init()
 {
-	// Compute scale based on image size and desired dish width
-	float scale = kDishWidth / dish.getPixmap().width();
+	// Compute scale based on image size, desired dish width and screen resolution
+	float scale = Style::getDishWidth() / dish.getPixmap().width();
 	QSize baseWidgetSize = dish.getPixmap().size() * scale;
 
 	// Size
@@ -51,8 +66,8 @@ void DishView::init()
 		}
 	}
 
-	monochromePixmap = QPixmap::fromImage( blackAndWhiteImg );
-	dishPixmap = dish.getPixmap();
+	monochromePixmap = QPixmap::fromImage( blackAndWhiteImg ).scaled( QSize( dish.getPixmap().size() * scale ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+	dishPixmap = dish.getPixmap().scaled( QSize( dish.getPixmap().size() * scale ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
 
 	/* Create objects */
 	imageLabel = new QLabel( this );
@@ -61,13 +76,24 @@ void DishView::init()
 	imageLabel->setAlignment( Qt::AlignCenter );
 	imageLabel->adjustSize();
 
-//	QRubberBand* cropBand = new QRubberBand( QRubberBand::Rectangle, imageLabel );
-//	cropBand->setGeometry( QRect( ( baseWidgetSize.width() - this->width() ) / 2, ( baseWidgetSize.height() - this->height() ) / 2, this->width(), this->height() ) );
-
+	QPixmap ribbonPixmap = getRibbonByCourse( dish.getCourseNum() );
 	ribbonLabel = new QLabel( this );
-	ribbonLabel->setPixmap( getRibbonByCourse( dish.getCourseNum() ) );
+	ribbonLabel->setPixmap( ribbonPixmap );
 	ribbonLabel->adjustSize();
 	ribbonLabel->setScaledContents( true );
+
+// 	QBitmap textMask = ribbonPixmap.createMaskFromColor( Qt::black, Qt::MaskInColor );
+// 	ribbonLabel->setMask( textMask );
+
+	identifierLabel = new QLabel( this );
+	identifierLabel->setText( ""/*dish.getIdentifier()*/ );					// disabled, as might only be relevant when going to lunch
+	identifierLabel->setFont( QFont( kFontName, kIdentifierFontSize ) );
+	identifierLabel->setAlignment( Qt::AlignCenter );
+	identifierLabel->adjustSize();
+
+	QPalette palette = identifierLabel->palette();
+	palette.setColor( identifierLabel->foregroundRole(), kDishIdentifierColor );
+	identifierLabel->setPalette( palette );
 
 	detailsLabel = new QLabel( this );
 	QString text = dish.getName() + " \n\nIngrediente: " + dish.getIngredients();	// Separate ingredients with 2 spaces
@@ -102,11 +128,19 @@ void DishView::init()
 		monochromePixmap = monochromePixmap.scaled( monochromePixmap.size() / 1.5f, Qt::KeepAspectRatio );
 		dishPixmap = dishPixmap.scaled( dishPixmap.size() / 1.5f, Qt::KeepAspectRatio );
 		imageLabel->setPixmap( dishPixmap );
+
+		identifierLabel->setFont( QFont( kFontName, kIdentifierFontSize / 1.5f ) );
+		identifierLabel->adjustSize();
 	}
 
 	/* Move objects */
+	identifierLabel->move( ( ribbonLabel->width() - identifierLabel->width() ) / 2, 0 );
 	ratingView->move( this->width(), this->height() - kBriefDetailsOffset - ratingView->height() - 2 );
-	detailsLabel->move( 0, this->height() );
+
+	if( editMode )
+		detailsLabel->move( 0, this->height() - detailsLabel->font().pointSize() * kPointToPixel );
+	else
+		detailsLabel->move( 0, this->height() );
 
 	/* Properties */
 	this->setMouseTracking( true );
@@ -114,24 +148,90 @@ void DishView::init()
 	detailsLabel->setMouseTracking( true );
 }
 
+void DishView::initPlaceholder()
+{
+	// Size
+	this->setFixedSize( kDishPlaceholderSize * Style::getWindowScale() );
+	this->adjustSize();
+
+	/* Create objects */
+	detailsLabel = new QLabel( this );
+	detailsLabel->setAutoFillBackground( true );
+	detailsLabel->setFixedSize( this->size() );
+	detailsLabel->setStyleSheet( "background-color: rgb(200,200,200)" );
+	detailsLabel->adjustSize();
+
+	QComboBox* allDishesCombo = new QComboBox( this );
+	allDishesCombo->setEditable( true );
+	allDishesCombo->setFont( QFont( kFontName, 10 ) );
+	allDishesCombo->setFixedWidth( this->width() );
+	allDishesCombo->adjustSize();
+
+	allDishesCombo->insertItem( kAtEnd, QPixmap( "Resources/Supa1.png" ), "Supa de ceva fara ceva" );
+	allDishesCombo->insertItem( kAtEnd, QPixmap( "Resources/Mancare1.png" ), "Fajitas cu pui" );
+	allDishesCombo->insertItem( kAtEnd, QPixmap( "Resources/Salata1.png" ), "Salata din gradina ursului" );
+
+	QPixmap plusPixmap( "Resources/plus.png" );
+	QPushButton* plusButton = new QPushButton( this );
+	plusButton->setIcon( plusPixmap );
+	plusButton->setIconSize( plusPixmap.size() );
+	plusButton->setStyleSheet( kButtonsStyleSheet );
+	plusButton->adjustSize();
+
+	/* Move */
+	plusButton->move( ( this->width() - plusButton->width() ) / 2, ( this->height() - plusButton->height() ) / 2 );
+
+	/* Signals and slots */
+	connect( allDishesCombo, SIGNAL( currentIndexChanged( int ) ), this, SLOT( comboSelectionChanged( int ) ) );
+}
+
 QPixmap DishView::getRibbonByCourse( int courseNum )
 {
+	QPixmap pixmap;
 	if( courseNum == 1 )
-		return QPixmap( "Resources//ribbon1.png" );
+		pixmap = QPixmap( "Resources//ribbon1.png" );
 	else if( courseNum == 2 )
-		return QPixmap( "Resources//ribbon2.png" );
+		pixmap = QPixmap( "Resources//ribbon2.png" );
+	else
+		pixmap = QPixmap( "Resources//ribbon3.png" );
 
-	return QPixmap( "Resources//ribbon3.png" );
+	// Text clip path (not working good)
+//	QPixmap bkpPixmap = pixmap;
+
+//	QPainter painter( &pixmap );
+//	painter.eraseRect( pixmap.rect() );
+
+// 	QFont font = QFont( kFontName, kIdentifierFontSize, QFont::Bold );
+// 	font.setKerning( false );
+// 	font.setStrikeOut( false );
+// 	font.setStyleStrategy( QFont::PreferAntialias );
+
+// 	QPainterPath clipTextPath;
+// 	clipTextPath.addText( pixmap.width() / 2 - kIdentifierFontSize, pixmap.height() / 2, font, dish.getIdentifier() );
+
+// 	painter.setFont( font );
+// 	painter.drawText( pixmap.width() / 2 - kIdentifierFontSize, pixmap.height() / 2, dish.getIdentifier() );
+
+// 	painter.setClipPath( clipTextPath );
+// 	painter.drawPixmap( 0, 0, bkpPixmap );
+// 	painter.end();
+
+	return pixmap.scaled( QSize( pixmap.size() * Style::getWindowScale() ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+}
+
+void DishView::comboSelectionChanged( int selection )
+{
+
 }
 
 void DishView::wheelEvent( QWheelEvent* wheelEvent )
 {
-	return ((DayDishesView*)this->parent())->wheelEvent( wheelEvent );
+	return QWidget::wheelEvent( wheelEvent );
 }
 
 void DishView::enterEvent( QEvent* event )
 {
-	if( disabled )
+	if( disabled || isPlaceholder || editMode )
 		return;
 
 	if( detailsAnimation->state() == QAbstractAnimation::Running )
@@ -139,7 +239,7 @@ void DishView::enterEvent( QEvent* event )
 
 	// Start text animation
 	detailsAnimation->setStartValue( detailsLabel->pos() );
-	detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() - kBriefDetailsOffset ) );
+	detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() - detailsLabel->font().pointSize() * kPointToPixel ) );
 
 	detailsAnimation->setDuration( kBirefDishDetailsAnimationTime );
 	detailsAnimation->start();
@@ -147,13 +247,11 @@ void DishView::enterEvent( QEvent* event )
 
 void DishView::leaveEvent( QEvent* event )
 {
-	if( disabled )
+	if( disabled || isPlaceholder )
 		return;
 
-	if( mousePressed )
+	if( mousePressed && !editMode )
 	{
-		mousePressed = false;
-
 		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 	}
 
@@ -161,16 +259,27 @@ void DishView::leaveEvent( QEvent* event )
 		detailsAnimation->stop();
 
 	detailsAnimation->setStartValue( detailsLabel->pos() );
-	detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() ) );
+
+	if( editMode )
+		detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() - detailsLabel->font().pointSize() * kPointToPixel ) );
+	else
+		detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() ) );
 
 	detailsAnimation->setDuration( kBirefDishDetailsAnimationTime );
 	detailsAnimation->start();
+
+	mousePressed = false;
 }
 
 void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 {
-	if( disabled )
+	if( disabled || isPlaceholder )
 		return;
+
+	if( editMode && mousePressed )
+	{
+		return QWidget::mousePressEvent( mouseEvent );
+	}
 
 	// Show full details if mouse over them
 	if( ( this->childAt( mouseEvent->pos() ) == detailsLabel ) && ( detailsAnimation->state() != QAbstractAnimation::Running ) )
@@ -185,27 +294,41 @@ void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 
 void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 {
-	if( disabled || mouseEvent->button() != Qt::LeftButton )
+	if( disabled || isPlaceholder || mouseEvent->button() != Qt::LeftButton )
 		return;
 
 	mousePressed = true;
-
-	this->move( this->pos() + QPoint( kClickMovement, kClickMovement ) );
+	
+	if( editMode )
+	{
+		return QWidget::mousePressEvent( mouseEvent );
+	}
+	else
+	{
+		this->move( this->pos() + QPoint( kClickMovement, kClickMovement ) );
+	}
 }
 
 void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 {
-	if( disabled || !mousePressed || mouseEvent->button() != Qt::LeftButton )
+	if( disabled || isPlaceholder || !mousePressed || mouseEvent->button() != Qt::LeftButton )
 		return;
 
 	mousePressed = false;
 
-	dish.setUserSelected( !dish.getUserSelected() );
-	((DayDishesView*)parent())->selectionChangedOn( dish );
+	if( editMode )
+	{
+		return QWidget::mousePressEvent( mouseEvent );
+	}
+	else
+	{
+		dish.setUserSelected( !dish.getUserSelected() );
+		((DayDishesView*)parent())->selectionChangedOn( dish );
 
-	this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
+		this->move( this->pos() + QPoint( -kClickMovement, -kClickMovement ) );
 
-	setSelected( dish.getUserSelected() );
+		setSelected( dish.getUserSelected() );
+	}
 }
 
 void DishView::setDisabled( bool disabled )
@@ -288,7 +411,7 @@ void DishView::resizeByUserPreference( QSize baseSize )
 	else if( dish.getUserInterest() == Dish::eLow )
 	{
 		// Crop half height
-		QSize newSize = (this->size() - QSize( kDishSpacing, 0 )) / 2;
+		QSize newSize = (this->size() - QSize( Style::getDishSpacing(), 0 )) / 2;
 		this->setFixedSize( newSize );
 		this->adjustSize();
 	}

@@ -6,7 +6,7 @@ class Day
 {
 public:
 							Day();
-							Day( QString name, const std::vector<Dish>& dishesVect );
+							Day( QString name, std::vector<Dish> dishesVect = std::vector<Dish>() );
 
 	void					setName( QString name )								{ this->name = name; }
 	QString					getName()											{ return name; }

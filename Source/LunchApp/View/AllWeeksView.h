@@ -2,6 +2,7 @@
 
 #include <QWidget>
 #include <QAtomicInt>
+#include <QSequentialAnimationGroup>
 
 #include "WeekView.h"
 
@@ -16,13 +17,13 @@ public:
 		eToRightDirection,
 		eToLeftDirection
 	};
-							AllWeeksView(QWidget *parent);
+							AllWeeksView( QWidget *parent, bool editMode = false );
 							~AllWeeksView();
 
 			void			init();
 
 	virtual void			wheelEvent( QWheelEvent* event );
-			void			mainWindowResized( QResizeEvent* event );
+			void			mainWindowResized( QSize size );
 
 			void			selectionChangedOn( const Dish& dish );
 			bool			scrollStarted( EDirection direction );		// Returns true if there are items to show after scroll
@@ -31,14 +32,22 @@ public:
 			Week			getVisibleWeek();
 
 private:
+	bool						editMode;
+	std::vector< Week >			weeksVect;
+
 	std::vector<WeekView*>		weekViewsVect;
 	QLabel*						loadingLabel;
 
-	int							screenWidth;
+	int							windowWidth;
+
+	QSequentialAnimationGroup*	firstLastAnimations;
+	QPropertyAnimation*			forwardAnimation;
+	QPropertyAnimation*			backAnimation;
+
+			void			addEmptyWeek();
 
 			void			increaseSize( EDirection direction );
 			void			centerWeekViews();
 
 			void			showLoadingAnim( bool show, EDirection direction = eToRightDirection );
-
 };
