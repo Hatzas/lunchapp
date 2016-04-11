@@ -1,4 +1,4 @@
-#include "Controller.h"
+﻿#include "Controller.h"
 
 #include <windows.h>
 #include <time.h>
@@ -9,11 +9,21 @@
 
 
 User* Controller::user = NULL;
+std::map<QString, int> Controller::weekDays;
 
 
 Controller::Controller(QObject *parent)
 	: QThread(parent)
 {
+	// If these names change in the database, all hell will brake loose, because of a design flaw
+	weekDays["lu"] = 1;
+	weekDays["ma"] = 2;
+	weekDays["mi"] = 3;
+	weekDays["jo"] = 4;
+	weekDays["vi"] = 5;
+	weekDays["sa"] = 6;
+	weekDays["du"] = 7;
+
 	// The user should be taken from the AD or just username
 	// And the user type from the DB
 	user = new User( "Andi", User::eAdmin );
@@ -88,11 +98,21 @@ void Controller::run()
 
 void Controller::dataFinished( Week& week )
 {
-	// Compute UserInterest in another class
-	// TO DO
+	// Sort week days
+	std::sort( week.getDays().begin(), week.getDays().end(), compareDays );
+
+	// Compute UserInterest
 	InterestCruncher::getInstance()->crunchUserInterest( week );
 
 	emit weekArrived( week );
+}
+
+bool Controller::compareDays( Day first, Day second )
+{
+	if( weekDays[first.getName().toLower().left(2)] < weekDays[second.getName().toLower().left(2)] )
+		return true;
+	else
+		return false;
 }
 
 void Controller::sendDummyWeek(QDate startDate, QDate endDate)
