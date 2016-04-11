@@ -19,20 +19,24 @@ public:
 							MetroView( QWidget *parent, bool adminMode = false );
 							~MetroView();
 
+			void			init();
+
 	virtual void			wheelEvent( QWheelEvent* event );
 
 signals:
-			void				requestWeekBefore( const Week& week );
-			void				requestWeekAfter( const Week& week );
-			void				requestAllDishes();
+			void			requestWeekBefore( const Week& week );
+			void			requestWeekAfter( const Week& week );
+			void			requestWeek( QDate startDate, QDate endDate );
 
-			void				selectionChangedOn( const Dish& dish );
+			void			requestAllDishes();
 
-			void				publishWeek( const Week& week );
+			void			selectionChangedOn( const Dish& dish );
+
+			void			publishWeek( const Week& week );
 
 public slots:
 			void			weekArrived( const Week& week );
-			void			allDishesArrived( std::vector<Dish>& allDishesVect );
+			void			allDishesArrived( Day allDishesVect );
 
 			void			weekAnimationFinished();
 
@@ -50,12 +54,14 @@ private:
 	bool						adminMode;
 
 	InfiniteBackground*			background;
+	QLabel*						weekPrefixLabel;
 	QPushButton*				weekDateButton;
 	AllWeeksView*				weeksView;
 	DayView*					allDishesView;
 	QLabel*						userLabel;
 	QPushButton*				administrateButton;
 	QPushButton*				publishButton;
+	QPushButton*				changeBackgroundButton;
 
 	QCalendarWidget*			calendar;
 
@@ -65,9 +71,8 @@ private:
 	QPropertyAnimation*			weekMoveAnimation;
 	QPropertyAnimation*			backgroundAnimation;
 
-	QParallelAnimationGroup*	animations;
+	QParallelAnimationGroup*	parallelAnimations;
 
-	void					init();
 	void					addSceneItems();
 
 	void					setWeekDateText( const Week &currentWeek );

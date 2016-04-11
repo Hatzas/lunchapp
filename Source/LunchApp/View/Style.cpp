@@ -6,7 +6,8 @@
 
 		float	Style::windowScale			= 1.0f;
 
-const	int		Style::kBaseWindowHeight	= 750;		// pixels
+const	int		Style::kBaseWindowHeight	= 850;		// pixels
+
 const	float	Style::kDishWidth			= 270;		// pixels
 const	float	Style::kDishHeight			= 200;		// pixels
 const	float	Style::kDishSpacing			= 10;		// pixels

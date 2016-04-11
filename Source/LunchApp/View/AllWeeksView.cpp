@@ -47,9 +47,18 @@ void AllWeeksView::init()
 	firstLastAnimations->addAnimation( backAnimation );
 
 	if( editMode )
+	{
 		addEmptyWeek();
+	}
 	else
+	{
+		// Request data
+		QDate startDate = QDate(2016, 4, 11);
+		QDate endDate = QDate(2016, 4, 15);
+		emit ((MetroView*)this->parent())->requestWeek( QDate(2016, 4, 11), QDate(2016, 4, 15) );		// current week
+
 		showLoadingAnim( true, eHere );
+	}
 }
 
 void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
@@ -79,6 +88,20 @@ void AllWeeksView::addWeek( const Week& week )
 {
 	showLoadingAnim( false );
 
+	if( week.isEmpty() )
+	{
+		if( week < weekViewsVect.front()->getWeek() )
+		{
+			weekViewsVect.front()->getWeek().setFirstAvailable( true );
+		}
+		else if( week > weekViewsVect.front()->getWeek() )
+		{
+			weekViewsVect.back()->getWeek().setLastAvailable( true );
+		}
+
+		return;
+	}
+
 	WeekView* weekView = new WeekView( this, week );
 
 	// Position according to date
@@ -107,6 +130,25 @@ void AllWeeksView::addWeek( const Week& week )
 	this->adjustSize();
 
 	centerWeekViews();
+
+	if( weekViewsVect.size() == 1 )
+	{
+		increaseSize( eToRightDirection );
+		showLoadingAnim( true, eToRightDirection );
+
+		QDate nextWeekStartDate = week.getStartDate().addDays( 7 );
+		QDate nextWeekEndDate = week.getEndDate().addDays( 7 );
+		emit ((MetroView*)this->parent())->requestWeek( nextWeekStartDate, nextWeekEndDate );			// next week
+	}
+	else if( weekViewsVect.size() == 2 )
+	{
+		increaseSize( eToLeftDirection );
+		showLoadingAnim( true, eToLeftDirection );
+
+		QDate prevWeekStartDate = weekViewsVect.front()->getWeek().getStartDate().addDays( -7 );
+		QDate prevWeekEndDate = weekViewsVect.front()->getWeek().getEndDate().addDays( -7 );
+		emit ((MetroView*)this->parent())->requestWeek( prevWeekStartDate, prevWeekEndDate );			// previous week
+	}
 }
 
 void AllWeeksView::addEmptyWeek()
@@ -186,12 +228,15 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 		return false;
 
 	WeekView* firstWeek = weekViewsVect[ 0 ];
-	WeekView* lastWeek = weekViewsVect[ weekViewsVect.size()-1 ];
+	WeekView* secondWeek = weekViewsVect[ 1 ];
+	WeekView* preLastWeek = weekViewsVect[ weekViewsVect.size() - 2 ];
+	WeekView* lastWeek = weekViewsVect[ weekViewsVect.size() - 1 ];
 
-	if( direction == eToLeftDirection && firstWeek->visibleRegion().boundingRect().width() == firstWeek->width() )
+	if( direction == eToLeftDirection )
 	{
 		// If no more weeks before
-		if( firstWeek->getWeek().isFirstAvailable() )
+		if( firstWeek->visibleRegion().boundingRect().width() == firstWeek->width() 
+			&& firstWeek->getWeek().isFirstAvailable() )
 		{
 			// Show animation
 			forwardAnimation->setStartValue( this->pos() );
@@ -204,17 +249,21 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 			return false;
 		}
 
-		// Increase view size and reposition to accommodate new view
-		increaseSize( direction );
-		showLoadingAnim( true, direction );
+		if( secondWeek->visibleRegion().boundingRect().width() == secondWeek->width() )
+		{
+			// Increase view size and reposition to accommodate new view
+			increaseSize( direction );
+			showLoadingAnim( true, direction );
 
-		// Request week before the first
-		emit ((MetroView*)this->parent())->requestWeekBefore( weekViewsVect[0]->getWeek() );
+			// Request week before the first
+			emit ((MetroView*)this->parent())->requestWeekBefore( weekViewsVect[0]->getWeek() );
+		}
 	}
-	else if( direction == eToRightDirection && lastWeek->visibleRegion().boundingRect().width() == lastWeek->width() )
+	else if( direction == eToRightDirection )
 	{
 		// If no more weeks after
-		if( lastWeek->getWeek().isLastAvailable() )
+		if( lastWeek->visibleRegion().boundingRect().width() == lastWeek->width()
+			&& lastWeek->getWeek().isLastAvailable() )
 		{
 			// Show animation
 			forwardAnimation->setStartValue( this->pos() );
@@ -227,12 +276,15 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 			return false;
 		}
 
-		// Increase view size and reposition to accommodate new view
-		increaseSize( direction );
-		showLoadingAnim( true, direction );
+		if( preLastWeek->visibleRegion().boundingRect().width() == preLastWeek->width() )
+		{
+			// Increase view size and reposition to accommodate new view
+			increaseSize( direction );
+			showLoadingAnim( true, direction );
 
-		// Request week after the last
-		emit ((MetroView*)this->parent())->requestWeekAfter( weekViewsVect[ weekViewsVect.size()-1 ]->getWeek() );
+			// Request week after the last
+			emit ((MetroView*)this->parent())->requestWeekAfter( weekViewsVect[ weekViewsVect.size()-1 ]->getWeek() );
+		}
 	}
 
 	QRect visibleRect = weekViewsVect[ weekViewsVect.size()-1 ]->visibleRegion().boundingRect();

@@ -32,6 +32,7 @@ public:
 			void			addWeek( const Week& week );
 			Week			getVisibleWeek();
 
+			int				getWeeksNum()								{ return weekViewsVect.size(); }
 			Week			getWeek( int index );
 
 private:

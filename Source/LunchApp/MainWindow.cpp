@@ -37,15 +37,15 @@ MainWindow::MainWindow( QWidget *parent )
 	setupTray();
 	showTrayMessage( "Sunt si eu aici" );
 
+	// Init members
+	regularMetroView->init();
+	adminMetroView->init();
+
 	// Size
 	this->setMinimumSize( regularMetroView->minimumSize() );
 	this->adjustSize();
 
-	// Request data
 	//controller->sendDummyWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
-	emit controller->requestWeek( QDate(2016, 4, 11), QDate(2016, 4, 15) );
-	if( Controller::getUser()->getRole() == User::eAdmin )
-		emit controller->requestAllDishes();
 }
 
 MainWindow::~MainWindow()
@@ -113,7 +113,56 @@ void MainWindow::closeEvent(QCloseEvent* event)
 	hide();
 	event->ignore();
 
-	showTrayMessage(tr("Aplicatia nu e moarta, se transforma (in tray)"));
+	showTrayMessage( tr("Aplicatia nu e moarta, se transforma (in tray)") );
+}
+
+void MainWindow::setupTray()
+{
+	trayIcon = new QSystemTrayIcon(this);
+	trayIcon->setIcon( QPixmap( kAppIconPath ) );
+	trayIcon->setToolTip( tr( "Lunch App\nApasa-l" ) );
+
+	NotificationWindow::setup( trayIcon );
+
+	connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayActivation(QSystemTrayIcon::ActivationReason)));
+
+	trayIconMenu = new QMenu(this);
+	
+	QAction* quitAction = new QAction(tr("Inchide de tot"), trayIconMenu);
+	quitAction->setIcon(QIcon("Resources/quit.png"));
+	quitAction->setShortcut(QKeySequence("Ctrl+Q"));
+	connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+	trayIconMenu->addAction(quitAction);
+	
+	this->addAction(quitAction);
+	trayIcon->setContextMenu(trayIconMenu);
+	trayIcon->show();
+}
+
+void MainWindow::setupController()
+{
+	controller = new Controller();
+	controller->moveToThread( controller );
+	controller->start();
+}
+
+void MainWindow::makeConnections()
+{
+	connect( controller, SIGNAL( weekArrived( const Week& ) ), regularMetroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
+
+	connect( regularMetroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
+	connect( regularMetroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) ), Qt::QueuedConnection );
+	connect( regularMetroView, SIGNAL( requestWeek( QDate, QDate ) ), controller, SLOT( requestWeek( QDate, QDate ) ), Qt::QueuedConnection );
+
+	connect( regularMetroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
+
+	if( adminMetroView )
+	{
+		connect( adminMetroView, SIGNAL( publishWeek( const Week& ) ), controller, SLOT( publishWeek( const Week& ) ), Qt::QueuedConnection );
+		connect( adminMetroView, SIGNAL( requestAllDishes() ), controller, SLOT( requestAllDishes() ), Qt::QueuedConnection );
+	
+		connect( controller, SIGNAL( allDishesArrived( Day ) ), adminMetroView, SLOT( allDishesArrived( Day ) ), Qt::QueuedConnection );
+	}
 }
 
 void MainWindow::sendDummyWeek()
@@ -225,51 +274,4 @@ void MainWindow::sendDummyWeek()
 	Week week( monday, friday, daysVect );
 
 	regularMetroView->weekArrived( week );
-}
-
-void MainWindow::setupTray()
-{
-	trayIcon = new QSystemTrayIcon(this);
-	trayIcon->setIcon( QPixmap( kAppIconPath ) );
-	trayIcon->setToolTip( tr( "Lunch App\nApasa-l" ) );
-
-	NotificationWindow::setup( trayIcon );
-
-	connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(onTrayActivation(QSystemTrayIcon::ActivationReason)));
-
-	trayIconMenu = new QMenu(this);
-	
-	QAction* quitAction = new QAction(tr("Inchide de tot"), trayIconMenu);
-	quitAction->setIcon(QIcon("Resources/quit.png"));
-	quitAction->setShortcut(QKeySequence("Ctrl+Q"));
-	connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
-	trayIconMenu->addAction(quitAction);
-	
-	this->addAction(quitAction);
-	trayIcon->setContextMenu(trayIconMenu);
-	trayIcon->show();
-}
-
-void MainWindow::setupController()
-{
-	controller = new Controller();
-	controller->moveToThread( controller );
-	controller->start();
-}
-
-void MainWindow::makeConnections()
-{
-	connect( controller, SIGNAL( weekArrived( const Week& ) ), regularMetroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
-
-	connect( regularMetroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
-	connect( regularMetroView, SIGNAL( requestWeekAfter( const Week& ) ), controller, SLOT( requestWeekAfter( const Week& ) ), Qt::QueuedConnection );
-	connect( regularMetroView, SIGNAL( selectionChangedOn( const Dish& ) ), controller, SLOT( selectionChangedOn( const Dish& ) ), Qt::QueuedConnection );
-
-	if( adminMetroView )
-	{
-		connect( adminMetroView, SIGNAL( publishWeek( const Week& ) ), controller, SLOT( publishWeek( const Week& ) ), Qt::QueuedConnection );
-		connect( adminMetroView, SIGNAL( requestAllDishes() ), controller, SLOT( requestAllDishes() ), Qt::QueuedConnection );
-	
-		connect( controller, SIGNAL( allDishesArrived( std::vector<Dish>& ) ), adminMetroView, SLOT( allDishesArrived( std::vector<Dish>& ) ) );
-	}
 }

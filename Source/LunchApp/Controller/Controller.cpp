@@ -4,6 +4,12 @@
 #include <time.h>
 #include <QTimer>
 
+#if WIN32
+#	define SECURITY_WIN32
+#	include <Security.h>
+#	pragma comment( lib, "Secur32.lib" )
+#endif
+
 #include "Network/DataTransfer.h"
 #include "Model/InterestCruncher.h"
 
@@ -26,7 +32,19 @@ Controller::Controller(QObject *parent)
 
 	// The user should be taken from the AD or just username
 	// And the user type from the DB
-	user = new User( "Andi", User::eAdmin );
+	QString userName = "Andi";
+
+#if WIN32
+	wchar_t username[256];
+	DWORD username_len = 256;
+	::GetUserNameEx( ::NameDisplay, username, &username_len);
+
+	userName = QString::fromWCharArray( username );
+	userName = userName.left( userName.indexOf( " " ) );
+	userName = userName.left( userName.indexOf( "-" ) );
+#endif
+
+	user = new User( userName, User::eAdmin );
 
 	dataTransfer = new DataTransfer( this );
 
@@ -74,7 +92,7 @@ void Controller::requestAllDishes()
 	// Get all dishes from database
 	// TO DO
 
-	emit allDishesArrived( getAllDishes() );
+	emit allDishesArrived( Day( "Toate", getAllDishes() ) );
 }
 
 void Controller::selectionChangedOn( const Dish& dish )

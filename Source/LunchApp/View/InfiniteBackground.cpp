@@ -45,8 +45,8 @@ void InfiniteBackground::paintEvent( QPaintEvent * event )
 
 	QRect destRect = QRect( 0, 0, this->width(), this->height() );
 
-	float scale = this->width() / pixmap.width();
-	QRect sourceRect = QRect( 0, 0, this->width(), pixmap.height() * scale );
+	float scale = this->height() / pixmap.height();
+	QRect sourceRect = QRect( 0, 0, this->width() * scale, pixmap.height() * scale );
 
 	painter.save();
 	if( internalOffset.x() > 0 )

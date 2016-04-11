@@ -21,7 +21,8 @@
 #include "../Controller/Controller.h"
 
 
-static const QString kWeekDatePrefix		= "Saptamana: ";
+static const QString	kWeekDatePrefix				= " Saptamana: ";
+static const float		kButtonsYSpacingRatio		= 1.3f;
 
 
 MetroView::MetroView( QWidget *parent, bool adminMode /*= false*/ )
@@ -29,7 +30,6 @@ MetroView::MetroView( QWidget *parent, bool adminMode /*= false*/ )
 	, adminMode( adminMode )
 	, allDishesView( NULL )
 {
-	init();
 }
 
 MetroView::~MetroView()
@@ -65,11 +65,17 @@ void MetroView::init()
 
 void MetroView::addSceneItems()
 {
+	/* Data requests */
+	if( adminMode )
+	{
+		emit requestAllDishes();
+	}
+
 	/* Background */
 	background = new InfiniteBackground( QPixmap( "Resources\\background3.bmp" ), this );
 
 	/* Create objects */
-	QLabel* weekPrefixLabel = new QLabel( this );
+	weekPrefixLabel = new QLabel( this );
 	weekPrefixLabel->setText( kWeekDatePrefix );
 	weekPrefixLabel->setFont( QFont( kFontName, 10 ) );
 	weekPrefixLabel->adjustSize();
@@ -85,12 +91,15 @@ void MetroView::addSceneItems()
 
 	if( adminMode )
 	{
-		//emit allDishesArrived( getAllDishes() );
-
 		publishButton = new QPushButton( this );
 		publishButton->setText( " Publicare " );
 		publishButton->setFont( QFont( kFontName, 10 ) );
 		publishButton->setStyleSheet( kButtonsStyleSheet );
+
+		changeBackgroundButton = new QPushButton( this );
+		changeBackgroundButton->setText( " Schimba fundal " );
+		changeBackgroundButton->setFont( QFont( kFontName, 10 ) );
+		changeBackgroundButton->setStyleSheet( kButtonsStyleSheet );
 	}
 
 	userLabel = new QLabel( this );
@@ -149,16 +158,18 @@ void MetroView::addSceneItems()
 	backgroundAnimation = new QPropertyAnimation( background, "offset" );
 	backgroundAnimation->setEasingCurve( QEasingCurve::OutCirc );
 
-	animations = new QParallelAnimationGroup();
-	animations->addAnimation( backgroundAnimation );
-	animations->addAnimation( weekMoveAnimation );
-	animations->addAnimation( weekDateOutAnimation );
+	parallelAnimations = new QParallelAnimationGroup();
+	parallelAnimations->addAnimation( backgroundAnimation );
+	parallelAnimations->addAnimation( weekMoveAnimation );
+	parallelAnimations->addAnimation( weekDateOutAnimation );
 
 	// Move
 	alignButtons();
 
 	if( adminMode )
+	{
 		setWeekDateText( weeksView->getWeek( 0 ) );
+	}
 
 	// Size	
 	if( adminMode )
@@ -179,23 +190,28 @@ void MetroView::addSceneItems()
 	connect( administrateButton, SIGNAL( clicked( bool ) ), parent(), SLOT( switchAdministrate( bool ) ) );
 
 	if( adminMode )
+	{
 		connect( publishButton, SIGNAL( clicked( bool ) ), this, SLOT( publishPressed( bool ) ) );
+	}
 }
 
 void MetroView::weekArrived( const Week& week )
 {
 	weeksView->addWeek( week );
 
-	setWeekDateText( week );
+	if( weeksView->getWeeksNum() == 1 )
+	{
+		setWeekDateText( week );
+	}
 }
 
-void MetroView::allDishesArrived( std::vector<Dish>& allDishesVect )
+void MetroView::allDishesArrived( Day containerDay )
 {
 	if( allDishesView != NULL || !adminMode )
 		return;
 
 	// Add view with all dishes
-	allDishesView = new DayView( this, "Toate", allDishesVect, eBrowseMode );
+	allDishesView = new DayView( this, "Toate", containerDay.getDishes(), eBrowseMode );
 
 	// Move to right of screen
 	allDishesView->move( this->width() - allDishesView->width() - 2 * Style::getDishSpacing(), weeksView->y() );
@@ -273,13 +289,13 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() + scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime );
 
-			animations->start();
+			parallelAnimations->start();
 		}
 		else
 		{
 			return;
 
-			animations->stop();
+			parallelAnimations->stop();
 
 			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
 			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() + scrollDist, weeksView->pos().y() ) );
@@ -291,7 +307,7 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() + scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
-			animations->start();
+			parallelAnimations->start();
 		}
 	} 
 	else if( wheelEvent->delta() < 0 )
@@ -312,13 +328,13 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() - scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime );
 
-			animations->start();
+			parallelAnimations->start();
 		}
 		else
 		{
 			return;
 
-			animations->stop();
+			parallelAnimations->stop();
 
 			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
 			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() - scrollDist, weeksView->pos().y() ) );
@@ -330,7 +346,7 @@ void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() - scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
 			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
 
-			animations->start();
+			parallelAnimations->start();
 		}
 	}
 }
@@ -388,7 +404,8 @@ void MetroView::alignButtons()
 
 		if( adminMode )
 		{
-			publishButton->move( administrateButton->x() - ( publishButton->width() - administrateButton->width() ) / 2, administrateButton->y() + administrateButton->height() * 1.3f );
+			publishButton->move( administrateButton->x() - ( publishButton->width() - administrateButton->width() ) / 2, administrateButton->y() + administrateButton->height() * kButtonsYSpacingRatio );
+			changeBackgroundButton->move( weekPrefixLabel->x(), publishButton->y() );
 		}
 	}
 	else

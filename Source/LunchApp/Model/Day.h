@@ -12,7 +12,7 @@ public:
 	QString					getName()											{ return name; }
 
 	void					setDishes( const std::vector<Dish>& dishesVect )	{ this->dishesVect = dishesVect; }
-	std::vector<Dish>&		getDishes()											{ return dishesVect; }
+	std::vector<Dish>&		getDishes() 										{ return dishesVect; }
 
 private:
 	QString					name;

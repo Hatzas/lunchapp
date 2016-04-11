@@ -5,6 +5,9 @@
 #include "Style.h"
 
 
+static const int kBorderSize = 1;	// pixels
+
+
 DishRatingView::DishRatingView( QWidget *parent, const Dish& dish )
 	: QWidget(parent)
 	, dish( dish )
@@ -57,7 +60,8 @@ void DishRatingView::init()
 // 	yuckButton->adjustSize();
 
 	// Add rating text
-	QFont textFont( kFontName, 6 );
+	QFont textFont( kFontName, 7 );
+//	textFont.setWeight( QFont::DemiBold );
 
 	numWowsLabel = new QLabel( this );
 	numWowsLabel->setText( "____" );
@@ -83,11 +87,18 @@ void DishRatingView::init()
 // 	numYucksLabel->setAlignment( Qt::AlignCenter );
 // 	numYucksLabel->adjustSize();
 
+	QPalette palette = numWowsLabel->palette();
+	palette.setColor( numWowsLabel->foregroundRole(), Qt::black );
+
+	numWowsLabel->setPalette( palette );
+	numHappiesLabel->setPalette( palette );
+	numMeahsLabel->setPalette( palette );
+
 	// Move
-	wowButton->move( 0, 0 );
-	happyButton->move( wowButton->width(), 0 );
-	meahButton->move( happyButton->x() + happyButton->width(), 0 );
-//	yuckButton->move( meahButton->x() + meahButton->width(), 0  );
+	wowButton->move( 0, kBorderSize );
+	happyButton->move( wowButton->width(), kBorderSize );
+	meahButton->move( happyButton->x() + happyButton->width(), kBorderSize );
+//	yuckButton->move( meahButton->x() + meahButton->width(), kBorderSize  );
 
 	numWowsLabel->move( wowButton->x() + wowButton->width() - numWowsLabel->width(), wowButton->y() + wowButton->height() - numWowsLabel->height() );
 	numHappiesLabel->move( happyButton->x() + happyButton->width() - numHappiesLabel->width(), happyButton->y() + happyButton->height() - numHappiesLabel->height() );
@@ -95,6 +106,7 @@ void DishRatingView::init()
 //	numYucksLabel->move( yuckButton->x() + yuckButton->width() - numYucksLabel->width(), yuckButton->y() + yuckButton->height() - numYucksLabel->height() );
 
 	this->adjustSize();
+	this->setMinimumHeight( this->height() + kBorderSize );
 
 	updateCounterLabels();
 	updateRatingButtons();

@@ -19,7 +19,7 @@ public:
 
 			void			selectionChangedOn( const Dish& dish );		
 
-	const Week&				getWeek()										{ return week; }	
+			Week&			getWeek()										{ return week; }	
 
 public slots:
 			void			showDayMenuNotification();

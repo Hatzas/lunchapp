@@ -23,7 +23,7 @@ public:
 
 signals:
 			void				weekArrived( const Week& week );
-			void				allDishesArrived( std::vector<Dish>& allDishesVect );
+			void				allDishesArrived( Day containerDay );
 
 public slots:
 			void				requestWeekBefore( const Week& week );

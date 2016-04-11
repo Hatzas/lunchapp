@@ -29,20 +29,23 @@ static const int		kFullDishDetailsAnimationTime	= 500;		// milliseconds
 static const QString	kDetailsOverlayStyleSheet		= "background-color: rgba(255,255,255,80%)";
 
 static const QString	kButtonsStyleSheet				=  "QPushButton:hover{\
-															background-color: rgba(135,206,250,40%);\
+															border: 2px dashed rgba(173,255,47,80%);\
+															background-color: rgba(173,255,47,80%);\
 															}\
 															\
 															QPushButton {\
-															border: none;\
+															border: 2px solid rgba(0,0,0,0%);\
 															background-color: rgba(0,0,0,0%);\
 															}\
 															\
 															QPushButton:pressed {\
-															background-color: rgba(0,191,255,80%);\
+															border: 2px solid rgba(173,255,47,30%);\
+															background-color: rgba(173,255,47,30%);\
 															}\
 															\
 															QPushButton:checked {\
-															background-color: rgba(0,191,255,80%);\
+															border: 2px solid rgb(173,255,47,80%);\
+															background-color: rgb(173,255,47,80%);\
 															}";
 
 static const QString	kEditableDayStyleSheet			=  "QLabel{\

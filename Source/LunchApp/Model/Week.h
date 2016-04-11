@@ -26,6 +26,8 @@ public:
 	bool					isLastAvailable() const								{ return lastAvailable; }
 	void					setLastAvailable( bool last )						{ lastAvailable = last; }
 
+	bool					isEmpty() const										{ return daysVect.size() == 0; }
+
 private:
 	QDate				startDate;
 	QDate				endDate;
