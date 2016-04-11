@@ -26,14 +26,14 @@ void InterestCruncher::crunchUserInterest( Week& week )
 	qsrand( QTime::currentTime().msec() );
 
 	std::vector<Day>& days = week.getDays();
-	for( int i = 0; i < days.size(); ++i )
+    for( size_t i = 0; i < days.size(); ++i )
 	{
 		grading.clear();
 		minGrade = PERSONAL_RATING_WEIGHT + CHOICE_WEIGHT + EXTERNAL_RATING_WEIGHT;
 		maxGrade = - minGrade;
 
 		std::vector<Dish>& dayDishes = days[i].getDishes();
-		for( int j = 0; j < dayDishes.size(); ++j )
+        for( size_t j = 0; j < dayDishes.size(); ++j )
 		{
 			float grade;
 			Dish& dish = dayDishes[j];
@@ -77,7 +77,7 @@ void InterestCruncher::crunchUserInterest( Week& week )
 		}
 
 		int highs = 0;
-		for( int j = 0; j < dayDishes.size(); ++j )
+        for( size_t j = 0; j < dayDishes.size(); ++j )
 		{
 			Dish& dish = dayDishes[j];
 
@@ -111,7 +111,7 @@ void InterestCruncher::crunchUserInterest( Week& week )
 		// At least one should be high
 		if( highs == 0 )
 		{
-			for( int j = 0; j < dayDishes.size(); ++j )
+            for( size_t j = 0; j < dayDishes.size(); ++j )
 			{
 				if( grading[j] == maxGrade )
 				{

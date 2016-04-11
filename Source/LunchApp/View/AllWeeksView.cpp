@@ -27,7 +27,7 @@ void AllWeeksView::init()
 {
 	// Loading gif
 	loadingLabel = new QLabel( this );
-	loadingLabel->setMovie( new QMovie( "Resources/loader1.gif" ) );
+	loadingLabel->setMovie( new QMovie( RESOURCES_ROOT"loader1.gif" ) );
 	loadingLabel->movie()->setScaledSize( kLoadingAnimSize );
 	loadingLabel->setMinimumSize( kLoadingAnimSize );
 	loadingLabel->adjustSize();
@@ -71,7 +71,7 @@ void AllWeeksView::mainWindowResized( QSize size )
 	windowWidth = qMax<int>( (int)(Style::getWeekWidth() * Style::getWindowScale()), size.width() );
 	centerWeekViews();
 
-	for( int i = 0 ; i < weekViewsVect.size() ; i++ )
+    for( size_t i = 0 ; i < weekViewsVect.size() ; i++ )
 	{
 		weekViewsVect[i]->mainWindowResized( size );
 	}
@@ -202,7 +202,7 @@ void AllWeeksView::addEmptyWeek()
 
 Week AllWeeksView::getVisibleWeek()
 {	
-	for( int i = 0 ; i < weekViewsVect.size() ; i++ )
+    for( size_t i = 0 ; i < weekViewsVect.size() ; i++ )
 	{
 		if( weekViewsVect[i]->visibleRegion().boundingRect().width() == weekViewsVect[i]->width() )
 		{
@@ -215,7 +215,7 @@ Week AllWeeksView::getVisibleWeek()
 
 Week AllWeeksView::getWeek( int index )
 {
-	if( index < weekViewsVect.size() )
+    if( index < (int)weekViewsVect.size() )
 		return weekViewsVect[ index ]->getWeek();
 
 	return Week();
@@ -301,7 +301,7 @@ void AllWeeksView::increaseSize( EDirection direction )
 		this->move( this->x() - windowWidth, this->y() );
 
 		// Reposition all weeks so visually they remain the same
-		for( int i = 0 ; i < weekViewsVect.size() ; i++ )
+        for( size_t i = 0 ; i < weekViewsVect.size() ; i++ )
 		{
 			weekViewsVect[i]->move( weekViewsVect[i]->x() + windowWidth, weekViewsVect[i]->y() );
 		}
@@ -314,7 +314,7 @@ void AllWeeksView::centerWeekViews()
 {
 	// Get visible week
 	int visibleWeekIdx = 0;
-	for( int i = 1 ; i < weekViewsVect.size() ; i++ )
+    for( size_t i = 1 ; i < weekViewsVect.size() ; i++ )
 	{
 		if( weekViewsVect[i]->visibleRegion().boundingRect().width() == weekViewsVect[i]->width() )
 		{
@@ -327,7 +327,7 @@ void AllWeeksView::centerWeekViews()
 	this->adjustSize();
 
 	// Re-position weeks taking into account new spacing
-	for( int i = 0 ; i < weekViewsVect.size() ; i++ )
+    for( size_t i = 0 ; i < weekViewsVect.size() ; i++ )
 	{
 		int centerX = ( windowWidth - weekViewsVect[i]->width() ) / 2;
 		weekViewsVect[i]->move( windowWidth * i + centerX, 0 );

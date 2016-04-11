@@ -10,6 +10,7 @@
 #	pragma comment( lib, "Secur32.lib" )
 #endif
 
+#include "View/Style.h"
 #include "Network/DataTransfer.h"
 #include "Model/InterestCruncher.h"
 
@@ -61,9 +62,6 @@ void Controller::requestWeekAfter( const Week& week )
 	QDate startDate = week.getStartDate().addDays( 7 );					// ! This will not work is the week does not start with Monday !
 	QDate endDate = startDate.addDays( 4 );								// ! Use dayOfWeek() to rectify !/
 
-	int startDay = startDate.day();
-	int endDay = endDate.day();
-
 	requestWeek( startDate, endDate );
 }
 
@@ -72,9 +70,6 @@ void Controller::requestWeekBefore( const Week& week )
 	// Compute DateTime before week startDate
 	QDate startDate = week.getStartDate().addDays( -7 );				// ! This will not work is the week does not start with Monday !
 	QDate endDate = startDate.addDays( 4 );								// ! Use dayOfWeek() to rectify !/
-
-	int startDay = startDate.day();
-	int endDay = endDate.day();
 
 	requestWeek( startDate, endDate );
 }
@@ -95,13 +90,13 @@ void Controller::requestAllDishes()
 	emit allDishesArrived( Day( "Toate", getAllDishes() ) );
 }
 
-void Controller::selectionChangedOn( const Dish& dish )
+void Controller::selectionChangedOn( const Dish& /* dish */ )
 {
 	// Store selection in database
 	// TO DO
 }
 
-void Controller::publishWeek( const Week& week )
+void Controller::publishWeek( const Week& /* week */ )
 {
 	// Store week in database
 	// TO DO
@@ -140,22 +135,22 @@ void Controller::sendDummyWeek(QDate startDate, QDate endDate)
 	std::vector<Dish> dishesVect;
 	dishesVect.push_back( Dish( "Ciorba de varza",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa3.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa3.png"), 1 ) );
 	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare5.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare5.png"), 2 ) );
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare1.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare1.png"), 2 ) );
 	dishesVect.push_back( Dish( "Salata din gradina ursului",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata1.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata1.png"), 3 ) );
 	dishesVect.push_back( Dish( "Salata din gradina bunicii",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata2.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata2.png"), 3 ) );
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa4.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa4.png"), 1 ) );
 
 	dishesVect[0].setNumHappies( rand() % 250 );
 	dishesVect[1].setNumMeahs( rand() % 250 );
@@ -251,22 +246,22 @@ std::vector<Dish> Controller::getAllDishes()
 	std::vector<Dish> dishesVect;
 	dishesVect.push_back( Dish( "Ciorba de varza",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa1.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa1.png"), 1 ) );
 	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare2.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare2.png"), 2 ) );
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare3.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare3.png"), 2 ) );
 	dishesVect.push_back( Dish( "Salata din gradina bunicii",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata3.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata3.png"), 3 ) );
 	dishesVect.push_back( Dish( "Salata din gradina ursului",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata4.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata4.png"), 3 ) );
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa2.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa2.png"), 1 ) );
 
 	return dishesVect;
 }

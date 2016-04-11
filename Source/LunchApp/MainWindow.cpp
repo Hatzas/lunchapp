@@ -4,7 +4,7 @@
 #include <QMenu>
 #include <QCloseEvent>
 
-#include "Style.h"
+#include "View/Style.h"
 #include "View/NotificationWindow.h"
 
 
@@ -78,8 +78,6 @@ void MainWindow::switchAdministrate( bool )
 		regularMetroView->show();
 		ui.verticalLayout->addWidget( regularMetroView );
 
-		int previousWidth = this->width();
-
  		if( this->width() < regularMetroView->minimumWidth() )
 		{
  			this->setMinimumWidth( regularMetroView->minimumWidth() );
@@ -96,7 +94,7 @@ void MainWindow::showTrayMessage( const QString& msg )
 	customWindow->show();
 }
 
-void MainWindow::resizeEvent( QResizeEvent * event )
+void MainWindow::resizeEvent( QResizeEvent* /*event*/ )
 {
 }
 
@@ -129,7 +127,7 @@ void MainWindow::setupTray()
 	trayIconMenu = new QMenu(this);
 	
 	QAction* quitAction = new QAction(tr("Inchide de tot"), trayIconMenu);
-	quitAction->setIcon(QIcon("Resources/quit.png"));
+	quitAction->setIcon(QIcon("quit.png"));
 	quitAction->setShortcut(QKeySequence("Ctrl+Q"));
 	connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 	trayIconMenu->addAction(quitAction);
@@ -171,22 +169,22 @@ void MainWindow::sendDummyWeek()
 	std::vector<Dish> dishesVect;
 	dishesVect.push_back( Dish( "Ciorba de varza",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa1.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa1.png"), 1 ) );
 	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare2.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare2.png"), 2 ) );
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare3.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare3.png"), 2 ) );
 	dishesVect.push_back( Dish( "Salata din gradina bunicii",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata3.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata3.png"), 3 ) );
 	dishesVect.push_back( Dish( "Salata din gradina ursului",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata4.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata4.png"), 3 ) );
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa2.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa2.png"), 1 ) );
 
 	// Identifiers
 	dishesVect[0].setIdentifier( "C1" );
@@ -267,9 +265,6 @@ void MainWindow::sendDummyWeek()
 
 	QDate monday = QDate::currentDate();
 	QDate friday = monday.addDays( 4 );
-
-	int startDay = monday.day();
-	int endDay = friday.day();
 
 	Week week( monday, friday, daysVect );
 

@@ -48,7 +48,7 @@ void WeekView::wheelEvent( QWheelEvent* wheelEvent )
 
 void WeekView::mainWindowResized( QSize size )
 {
-	for( int i = 0 ; i < dayViewsVect.size() ; i++ )
+    for( size_t i = 0 ; i < dayViewsVect.size() ; i++ )
 	{
 		dayViewsVect[i]->mainWindowResized( size );
 	}
@@ -64,7 +64,7 @@ void WeekView::selectionChangedOn( const Dish& dish )
 void WeekView::showDayMenuNotification()
 {
 	int day = QDate::currentDate().dayOfWeek() - 1;
-	if( week.getDays().size() <= day )				// not all days have menus
+    if( week.getDays().size() <= (size_t)day )				// not all days have menus
 		return;
 
 	Day currentDay;
@@ -81,7 +81,7 @@ void WeekView::showDayMenuNotification()
 
 	std::vector<QPixmap> dishesPixmaps;
 	QString todayMenu;
-	for( int i = 0 ; i < currentDay.getDishes().size() ; i++ )
+    for( size_t i = 0 ; i < currentDay.getDishes().size() ; i++ )
 	{
 		if( currentDay.getDishes()[i].getUserSelected() )
 		{

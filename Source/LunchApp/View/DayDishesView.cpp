@@ -97,10 +97,10 @@ void DayDishesView::mainWindowResized( QSize size )
 	{
 		QRect visibleRect = this->visibleRegion().boundingRect();
 
-		if( visibleRect.height() >= this->size().height() );
+        if( visibleRect.height() >= this->size().height() )
 		{
 			int deltaY = -dishViewsVect[0]->y();
-			for( int i = 0 ; i < dishViewsVect.size() ; i++ )
+            for( size_t i = 0 ; i < dishViewsVect.size() ; i++ )
 			{
 				dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
 			}
@@ -165,7 +165,7 @@ bool DayDishesView::event( QEvent* event )
 			QPointF scrollPos = -se->contentPos() - se->overshootDistance();
 
 			int deltaY = scrollPos.y() - dishViewsVect[0]->y();
-			for( int i = 0 ; i < dishViewsVect.size() ; i++ )
+            for( size_t i = 0 ; i < dishViewsVect.size() ; i++ )
 			{
 				dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
 			}
@@ -234,7 +234,7 @@ void DayDishesView::mousePressEvent( QMouseEvent* mouseEvent )
 		drag->setPixmap( selectedDishView->getScaledPixmap() );
 		drag->setHotSpot( mouseEvent->pos() - child->pos() );
 
-		Qt::DropAction dropAction = drag->exec();
+        drag->exec();
 	}
 }
 
@@ -247,7 +247,7 @@ void DayDishesView::dragEnterEvent( QDragEnterEvent* event )
 	}
 }
 
-void DayDishesView::dragLeaveEvent( QDragLeaveEvent* event )
+void DayDishesView::dragLeaveEvent( QDragLeaveEvent* /* event */ )
 {
 	editBackgroundLabel->setStyleSheet( kEditableDayStyleSheet );
 }
@@ -335,7 +335,6 @@ void DayDishesView::stackDishViews()
 		int lastXCoord = lastPlaced->x() + lastPlaced->width() + Style::getDishSpacing();
 		int lastYCoord = lastPlaced->y() + lastPlaced->height() + Style::getDishSpacing();
 
-		int currentWidth = current->width();
 		if( lastXCoord + current->width() <= width )
 		{
 			// Place besides

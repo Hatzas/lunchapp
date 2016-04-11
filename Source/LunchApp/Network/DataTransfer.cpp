@@ -65,7 +65,6 @@ void DataTransfer::getDishCategory()
 
 void DataTransfer::onRequestFinished(const NetEntity& entity)
 {
-	bool ok;
 	QJsonDocument jsonDoc = QJsonDocument::fromJson(entity.getResult().toUtf8());
 	QJsonArray jsonArray;
 	std::vector<Day> vdays;

@@ -3,7 +3,7 @@
 #include <QWidget>
 
 #include "ui_MainWindow.h"
-#include "MetroView.h"
+#include "View/MetroView.h"
 #include "Controller/Controller.h"
 #include <QSystemTrayIcon>
 

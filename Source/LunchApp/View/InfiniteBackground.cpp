@@ -39,7 +39,7 @@ void InfiniteBackground::setOffset( QPoint offset )
 	update();
 }
 
-void InfiniteBackground::paintEvent( QPaintEvent * event )
+void InfiniteBackground::paintEvent( QPaintEvent* /*event*/ )
 {
 	QPainter painter( this );
 

@@ -23,7 +23,7 @@ DishRatingView::~DishRatingView()
 void DishRatingView::init()
 {
 	// Add buttons
-	QPixmap wowPixmap = QPixmap( "Resources/wow.png" );
+	QPixmap wowPixmap = QPixmap( RESOURCES_ROOT"wow.png" );
 	wowButton = new QPushButton( this );
 	wowButton->setCheckable( true );
 	wowButton->setAutoExclusive( true );
@@ -32,7 +32,7 @@ void DishRatingView::init()
 	wowButton->setIconSize( wowPixmap.size() );
 	wowButton->adjustSize();
 
-	QPixmap happyPixmap = QPixmap( "Resources/happy.png" );
+	QPixmap happyPixmap = QPixmap( RESOURCES_ROOT"happy.png" );
 	happyButton = new QPushButton( this );
 	happyButton->setCheckable( true );
 	happyButton->setAutoExclusive( true );
@@ -41,7 +41,7 @@ void DishRatingView::init()
 	happyButton->setIconSize( happyPixmap.size() );
 	happyButton->adjustSize();
 
-	QPixmap meahPixmap = QPixmap( "Resources/meah.png" );
+	QPixmap meahPixmap = QPixmap( RESOURCES_ROOT"meah.png" );
 	meahButton = new QPushButton( this );
 	meahButton->setCheckable( true );
 	meahButton->setAutoExclusive( true );
@@ -50,7 +50,7 @@ void DishRatingView::init()
 	meahButton->setIconSize( meahPixmap.size() );
 	meahButton->adjustSize();
 
-// 	QPixmap yuckPixmap = QPixmap( "Resources/yuck.png" );		// disabled so no negative feedback
+// 	QPixmap yuckPixmap = QPixmap( RESOURCES_ROOT"yuck.png" );		// disabled so no negative feedback
 // 	yuckButton = new QPushButton( this );
 // 	yuckButton->setCheckable( true );
 // 	yuckButton->setAutoExclusive( true );

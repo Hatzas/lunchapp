@@ -60,7 +60,6 @@ void DishView::init()
 	}
 
 	// Compute scale based on image size, desired dish width and screen resolution
-	int w = dishPixmap.width();
 	float scale = Style::getDishWidth() / dishPixmap.width();
 	QSize baseWidgetSize = dishPixmap.size() * scale;
 
@@ -179,11 +178,11 @@ void DishView::initPlaceholder()
 	allDishesCombo->setFixedWidth( this->width() );
 	allDishesCombo->adjustSize();
 
-	allDishesCombo->insertItem( kAtEnd, QPixmap( "Resources/Supa1.png" ), "Supa de ceva fara ceva" );
-	allDishesCombo->insertItem( kAtEnd, QPixmap( "Resources/Mancare1.png" ), "Fajitas cu pui" );
-	allDishesCombo->insertItem( kAtEnd, QPixmap( "Resources/Salata1.png" ), "Salata din gradina ursului" );
+	allDishesCombo->insertItem( kAtEnd, QPixmap( RESOURCES_ROOT"Supa1.png" ), "Supa de ceva fara ceva" );
+	allDishesCombo->insertItem( kAtEnd, QPixmap( RESOURCES_ROOT"Mancare1.png" ), "Fajitas cu pui" );
+	allDishesCombo->insertItem( kAtEnd, QPixmap( RESOURCES_ROOT"Salata1.png" ), "Salata din gradina ursului" );
 
-	QPixmap plusPixmap( "Resources/plus.png" );
+	QPixmap plusPixmap( RESOURCES_ROOT"plus.png" );
 	QPushButton* plusButton = new QPushButton( this );
 	plusButton->setIcon( plusPixmap );
 	plusButton->setIconSize( plusPixmap.size() );
@@ -201,11 +200,11 @@ QPixmap DishView::getRibbonByCourse( int courseNum )
 {
 	QPixmap pixmap;
 	if( courseNum == 1 )
-		pixmap = QPixmap( "Resources//ribbon1.png" );
+		pixmap = QPixmap( RESOURCES_ROOT"/ribbon1.png" );
 	else if( courseNum == 2 )
-		pixmap = QPixmap( "Resources//ribbon2.png" );
+		pixmap = QPixmap( RESOURCES_ROOT"/ribbon2.png" );
 	else
-		pixmap = QPixmap( "Resources//ribbon3.png" );
+		pixmap = QPixmap( RESOURCES_ROOT"/ribbon3.png" );
 
 	// Text clip path (not working good)
 //	QPixmap bkpPixmap = pixmap;
@@ -231,7 +230,7 @@ QPixmap DishView::getRibbonByCourse( int courseNum )
 	return pixmap.scaled( QSize( pixmap.size() * Style::getWindowScale() ), Qt::KeepAspectRatio, Qt::SmoothTransformation );
 }
 
-void DishView::comboSelectionChanged( int selection )
+void DishView::comboSelectionChanged( int /*selection*/ )
 {
 
 }
@@ -241,7 +240,7 @@ void DishView::wheelEvent( QWheelEvent* wheelEvent )
 	return QWidget::wheelEvent( wheelEvent );
 }
 
-void DishView::enterEvent( QEvent* event )
+void DishView::enterEvent( QEvent* /*event*/ )
 {
 	if( disabled || isPlaceholder || editMode )
 		return;
@@ -257,7 +256,7 @@ void DishView::enterEvent( QEvent* event )
 	detailsAnimation->start();
 }
 
-void DishView::leaveEvent( QEvent* event )
+void DishView::leaveEvent( QEvent* /*event*/ )
 {
 	if( disabled || isPlaceholder )
 		return;

@@ -6,8 +6,11 @@
 #include <QSize>
 #include <QTime>
 
+#define RESOURCES_ROOT		":/Resources/"
+#define UNUSED				RESOURCES_ROOT
+
 static const QString	kAppName						= "Lunch App";
-static const QString	kAppIconPath					= "Resources/icon.png";
+static const QString	kAppIconPath					= RESOURCES_ROOT"icon.png";
 
 static const int		kBaseScreenWidth				= 1920;		// pixels
 

@@ -72,7 +72,7 @@ void MetroView::addSceneItems()
 	}
 
 	/* Background */
-	background = new InfiniteBackground( QPixmap( "Resources\\background3.bmp" ), this );
+	background = new InfiniteBackground( QPixmap( RESOURCES_ROOT"background3.bmp" ), this );
 
 	/* Create objects */
 	weekPrefixLabel = new QLabel( this );
@@ -229,7 +229,7 @@ void MetroView::weekAnimationFinished()
 	setWeekDateText( currentWeek );
 }
 
-void MetroView::weekDatePressed( bool checked )
+void MetroView::weekDatePressed( bool /*checked*/ )
 {
 	calendar->move( weekDateButton->x() + weekDateButton->width(), weekDateButton->y() + weekDateButton->height() );
 

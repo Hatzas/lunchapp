@@ -51,7 +51,7 @@ void NotificationWindow::init()
 
 	/* Create objects */
 	QLabel* iconLabel = NULL;
-	for( int i = 0 ; i < iconsVect.size() ; i++ )
+    for( size_t i = 0 ; i < iconsVect.size() ; i++ )
 	{
 		iconLabel = new QLabel( this );
 		iconLabel->setPixmap( iconsVect[i].scaled( kNotificationSize - QSize( 20, 20 ), Qt::KeepAspectRatio ) );
@@ -93,7 +93,7 @@ void NotificationWindow::init()
 	moveIn();
 }
 
-void NotificationWindow::paintEvent( QPaintEvent * event )
+void NotificationWindow::paintEvent( QPaintEvent* event )
 {
 	QPainter painter( this );
 	painter.fillRect( rect(), QBrush( Qt::white ) );
@@ -101,12 +101,12 @@ void NotificationWindow::paintEvent( QPaintEvent * event )
 	QWidget::paintEvent( event );
 }
 
-void NotificationWindow::mousePressEvent( QMouseEvent * event )
+void NotificationWindow::mousePressEvent( QMouseEvent* /*event*/ )
 {
 	mousePressed = true;
 }
 
-void NotificationWindow::mouseReleaseEvent( QMouseEvent * event )
+void NotificationWindow::mouseReleaseEvent( QMouseEvent* /*event*/ )
 {
 	if( mousePressed )
 	{
