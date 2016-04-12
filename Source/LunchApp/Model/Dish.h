@@ -39,7 +39,7 @@ public:
 	void			setCourseNum( int courseNum )						{ this->courseNum = courseNum; }
 
 	QString			getType()											{ return type; }
-	void			setType( QString dish )								{ this->type = type; }
+    void			setType( QString type )								{ this->type = type; }
 
 	QString			getIdentifier()										{ return identifier; }
 	void			setIdentifier( QString identifier )					{ this->identifier = identifier; }

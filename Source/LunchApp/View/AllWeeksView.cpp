@@ -55,7 +55,7 @@ void AllWeeksView::init()
 		// Request data
 		QDate startDate = QDate(2016, 4, 11);
 		QDate endDate = QDate(2016, 4, 15);
-		emit ((MetroView*)this->parent())->requestWeek( QDate(2016, 4, 11), QDate(2016, 4, 15) );		// current week
+        emit ((MetroView*)this->parent())->requestWeek( startDate, endDate );		// current week
 
 		showLoadingAnim( true, eHere );
 	}
@@ -287,7 +287,7 @@ bool AllWeeksView::scrollStarted( EDirection direction )
 		}
 	}
 
-	QRect visibleRect = weekViewsVect[ weekViewsVect.size()-1 ]->visibleRegion().boundingRect();
+    weekViewsVect[ weekViewsVect.size()-1 ]->visibleRegion().boundingRect();
 
 	return true;
 }

@@ -127,7 +127,7 @@ void MainWindow::setupTray()
 	trayIconMenu = new QMenu(this);
 	
 	QAction* quitAction = new QAction(tr("Inchide de tot"), trayIconMenu);
-	quitAction->setIcon(QIcon("quit.png"));
+	quitAction->setIcon(QIcon(RESOURCES_ROOT"quit.png"));
 	quitAction->setShortcut(QKeySequence("Ctrl+Q"));
 	connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 	trayIconMenu->addAction(quitAction);

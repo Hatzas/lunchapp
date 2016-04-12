@@ -171,7 +171,6 @@ void NotificationWindow::moveIn()
 void NotificationWindow::moveOut()
 {
 	auto desktopRect = QApplication::desktop()->screenGeometry();
-	auto trayIconRect = trayIcon->geometry();
 
 	moveAnimation->setStartValue( this->pos() );
 	moveAnimation->setEndValue( QPoint( desktopRect.width(), this->y() ) );

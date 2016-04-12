@@ -1,10 +1,10 @@
 ﻿#include "Controller.h"
 
-#include <windows.h>
 #include <time.h>
 #include <QTimer>
 
 #if WIN32
+#   include <windows.h>
 #	define SECURITY_WIN32
 #	include <Security.h>
 #	pragma comment( lib, "Secur32.lib" )

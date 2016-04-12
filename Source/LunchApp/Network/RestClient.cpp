@@ -52,6 +52,8 @@ void RestClient::pushRequest(const NetEntity& entity)
 			reply = networkManager->post(request, entity.getJsonRequest().toUtf8());
 			break;
 		}
+     default:
+        break;
 	}
 
 	listMutex.lock();

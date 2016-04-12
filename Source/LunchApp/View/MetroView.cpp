@@ -248,11 +248,11 @@ void MetroView::dateSelected()
 {
 	calendar->setVisible( false );
 
-	QDate date = calendar->selectedDate();
+//	QDate date = calendar->selectedDate();
 
 	// Determine week based selected date
-	QDate startDate = date.addDays( -date.dayOfWeek() + 1 );
-	QDate endDate = date.addDays( 5 - date.dayOfWeek() );
+//	QDate startDate = date.addDays( -date.dayOfWeek() + 1 );
+//	QDate endDate = date.addDays( 5 - date.dayOfWeek() );
 
 	// Request week based on selected date
 	// TO DO
