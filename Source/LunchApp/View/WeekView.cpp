@@ -24,6 +24,9 @@ WeekView::~WeekView()
 
 void WeekView::init()
 {
+    /* Properties */
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
+
 	/* Create objects */
 	AddDays();
 

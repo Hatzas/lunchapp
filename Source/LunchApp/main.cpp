@@ -13,6 +13,7 @@
 int main( int argc, char* argv[] )
 {
 	QApplication app( argc, argv );
+	app.setAttribute( Qt::AA_DontCreateNativeWidgetSiblings );
 	
 	// Register meta-types
 	qRegisterMetaType<Week>();
@@ -25,8 +26,12 @@ int main( int argc, char* argv[] )
 	MainWindow mainWindow;
 	mainWindow.setWindowTitle( kAppName );
 
-	//mainWindow.showFullScreen();
-	mainWindow.show();
+#ifdef Q_OS_ANDROID
+    //mainWindow.show();
+    mainWindow.showFullScreen();
+#else
+    mainWindow.show();
+#endif
 
 	return app.exec();
 }

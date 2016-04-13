@@ -53,3 +53,8 @@ SOURCES += ./main.cpp \
     ./Network/RestClient.cpp
 FORMS += ./Froms/MainWindow.ui
 RESOURCES += lunchapp.qrc
+
+DISTFILES += \
+    $$PWD/QML/camera.qml \
+    $$PWD/QML/PhotoPreview.qml \
+    $$PWD/QML/test.qml

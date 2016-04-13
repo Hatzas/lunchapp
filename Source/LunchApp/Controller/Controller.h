@@ -35,6 +35,8 @@ public slots:
 
 			void				publishWeek( const Week& week );
 
+			void				uploadPicture( QPixmap pixmap );
+
 protected:
 			void				run();
 

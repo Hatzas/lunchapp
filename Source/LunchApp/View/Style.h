@@ -6,6 +6,8 @@
 #include <QSize>
 #include <QTime>
 
+//#define Q_OS_ANDROID
+
 #define RESOURCES_ROOT		":/Resources/"
 #define UNUSED				RESOURCES_ROOT
 

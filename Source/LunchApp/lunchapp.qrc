@@ -36,5 +36,9 @@
         <file>Resources/supa4.png</file>
         <file>Resources/wow.png</file>
         <file>Resources/yuck.png</file>
+        <file>QML/camera.qml</file>
+        <file>QML/PhotoPreview.qml</file>
+        <file>QML/test.qml</file>
+        <file>Resources/gallery.jpg</file>
     </qresource>
 </RCC>

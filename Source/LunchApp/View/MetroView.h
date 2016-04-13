@@ -34,6 +34,8 @@ signals:
 
 			void			publishWeek( const Week& week );
 
+			void			uploadPicture( QPixmap pixmap );
+
 public slots:
 			void			weekArrived( const Week& week );
 			void			allDishesArrived( Day allDishesVect );
@@ -44,6 +46,7 @@ public slots:
 			void			dateSelected();
 
 			void			publishPressed( bool );
+			void			uploadImagePressed( bool );
 
 protected:
 	virtual void			resizeEvent( QResizeEvent * event );
@@ -62,6 +65,7 @@ private:
 	QPushButton*				administrateButton;
 	QPushButton*				publishButton;
 	QPushButton*				changeBackgroundButton;
+	QPushButton*				largeImageButton;
 
 	QCalendarWidget*			calendar;
 
@@ -77,5 +81,9 @@ private:
 
 	void					setWeekDateText( const Week &currentWeek );
 
-	void					alignButtons();
+	void					alignControls();
+
+	QPixmap					takePicture( bool fromCamera );
+
+	void					addCameraWidget();
 };

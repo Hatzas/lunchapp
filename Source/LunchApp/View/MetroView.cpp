@@ -14,6 +14,16 @@
 #include <QScroller>
 #include <QScroller>
 #include <QLocale>
+#include <QDesktopWidget>
+#include <QCamera>
+#include <QCameraViewfinder>
+#include <QCameraImageCapture>
+#include <QCameraInfo>
+#include <QQuickView>
+#ifdef Q_OS_ANDROID
+#	include <QtAndroidExtras>
+#   include <android/log.h>
+#endif
 
 #include "Style.h"
 #include "InfiniteBackground.h"
@@ -22,7 +32,39 @@
 
 
 static const QString	kWeekDatePrefix				= " Saptamana: ";
-static const float		kButtonsYSpacingRatio		= 1.3f;
+static const float		kButtonsYSpacingRatio		= 1.1f;
+static const float		kLargeDishScale				= 3.f;
+
+#ifdef Q_OS_ANDROID
+static const int		kFontSize					= 13;
+#else
+static const int		kFontSize					= 10;
+#endif
+
+//////////////////////////
+// JNI code for Android //
+//////////////////////////
+#ifdef Q_OS_ANDROID
+QString selectedFileName;
+
+#	ifdef __cplusplus
+extern "C" {
+#	endif
+
+	JNIEXPORT void JNICALL
+        Java_org_qtproject_LunchApp_LunchApp_fileSelected(JNIEnv */*env*/,
+		jobject /*obj*/,
+		jstring results)
+	{
+        selectedFileName = QAndroidJniObject(results).toString();
+
+        __android_log_print( ANDROID_LOG_VERBOSE, "LunchApp", "fileSelected: %s", selectedFileName.toStdString().c_str() );
+	}
+
+#	ifdef __cplusplus
+}
+#	endif
+#endif
 
 
 MetroView::MetroView( QWidget *parent, bool adminMode /*= false*/ )
@@ -30,6 +72,7 @@ MetroView::MetroView( QWidget *parent, bool adminMode /*= false*/ )
 	, adminMode( adminMode )
 	, allDishesView( NULL )
 {
+//	addCameraWidget();
 }
 
 MetroView::~MetroView()
@@ -51,11 +94,13 @@ void MetroView::init()
 	this->setViewport( openGLWidget );
 #endif
 
+    // Properties
 	this->setRenderHint( QPainter::Antialiasing );
 	this->setRenderHint( QPainter::SmoothPixmapTransform );
 	this->setCacheMode( QGraphicsView::CacheBackground );
 	this->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 	this->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	scene = new QGraphicsScene( this );
 	this->setScene( scene );
@@ -77,44 +122,61 @@ void MetroView::addSceneItems()
 	/* Create objects */
 	weekPrefixLabel = new QLabel( this );
 	weekPrefixLabel->setText( kWeekDatePrefix );
-	weekPrefixLabel->setFont( QFont( kFontName, 10 ) );
+	weekPrefixLabel->setFont( QFont( kFontName, kFontSize ) );
 	weekPrefixLabel->adjustSize();
 	weekPrefixLabel->move( kDateUsernameSideOffset, kDateUsernameTopOffset );
 
 	weekDateButton = new QPushButton( this );
-	weekDateButton->setFont( QFont( kFontName, 10 ) );
+	weekDateButton->setFont( QFont( kFontName, kFontSize ) );
 	weekDateButton->setStyleSheet( kButtonsStyleSheet );
 	weekDateButton->move( weekPrefixLabel->x() + weekPrefixLabel->width(), 30 );
 
 	weeksView = new AllWeeksView( this, adminMode );
 	weeksView->move( 0, kWeekTopOffset );
 
-	if( adminMode )
-	{
-		publishButton = new QPushButton( this );
-		publishButton->setText( " Publicare " );
-		publishButton->setFont( QFont( kFontName, 10 ) );
-		publishButton->setStyleSheet( kButtonsStyleSheet );
+    if( adminMode )
+    {
+        publishButton = new QPushButton( this );
+        publishButton->setText( " Publicare " );
+        publishButton->setFont( QFont( kFontName, kFontSize ) );
+        publishButton->setStyleSheet( kButtonsStyleSheet );
 
-		changeBackgroundButton = new QPushButton( this );
-		changeBackgroundButton->setText( " Schimba fundal " );
-		changeBackgroundButton->setFont( QFont( kFontName, 10 ) );
-		changeBackgroundButton->setStyleSheet( kButtonsStyleSheet );
-	}
+        changeBackgroundButton = new QPushButton( this );
+        changeBackgroundButton->setText( " Schimba fundal " );
+        changeBackgroundButton->setFont( QFont( kFontName, kFontSize ) );
+        changeBackgroundButton->setStyleSheet( kButtonsStyleSheet );
+
+		largeImageButton = new QPushButton( this );
+		largeImageButton->setStyleSheet( kButtonsStyleSheet );
+		largeImageButton->setMinimumSize( Style::getDayWidth() * kLargeDishScale , Style::getDishHeight() * kLargeDishScale );
+		largeImageButton->setIcon( QIcon( QPixmap( RESOURCES_ROOT"gallery.jpg" ) ) );
+		largeImageButton->setIconSize( largeImageButton->size() / 2 );
+		largeImageButton->adjustSize();
+
+#ifdef Q_OS_ANDROID
+        weeksView->hide();
+        publishButton->hide();
+		changeBackgroundButton->hide();
+#else
+		largeImageButton->hide();
+#endif
+    }
 
 	userLabel = new QLabel( this );
 	userLabel->setText( Controller::getUser()->getUsername() );
-	userLabel->setFont( QFont( kFontName, 10 ) );
+	userLabel->setFont( QFont( kFontName, kFontSize ) );
 	userLabel->adjustSize();
 
 	administrateButton = new QPushButton( this );
 	administrateButton->setText( adminMode ? " Meniu " : " Administrare " );
-	administrateButton->setFont( QFont( kFontName, 10 ) );
+	administrateButton->setFont( QFont( kFontName, kFontSize ) );
 	administrateButton->setStyleSheet( kButtonsStyleSheet );
 	administrateButton->adjustSize();
 
 	if( Controller::getUser()->getRole() != User::eAdmin )
+    {
 		administrateButton->hide();
+    }
 
 	calendar = new QCalendarWidget( this );
 	calendar->hide();
@@ -164,18 +226,27 @@ void MetroView::addSceneItems()
 	parallelAnimations->addAnimation( weekDateOutAnimation );
 
 	// Move
-	alignButtons();
+	alignControls();
 
 	if( adminMode )
 	{
 		setWeekDateText( weeksView->getWeek( 0 ) );
 	}
 
-	// Size	
+    // Size
+#ifdef Q_OS_ANDROID
+    QRect windowRect = QApplication::desktop()->screenGeometry();
+    this->setMinimumSize( QSize( windowRect.width(), windowRect.height() ) );
+#else
 	if( adminMode )
+    {
 		this->setMinimumSize( Style::getWeekWidth() + Style::getDishWidth() + 3 * Style::getDishSpacing(), Style::getWindowHeight() );
-	else
+    }
+    else
+    {
 		this->setMinimumSize( Style::getWeekWidth(), Style::getWindowHeight() );
+    }
+#endif
 	this->adjustSize();
 
 	// Scrolling image background
@@ -192,6 +263,7 @@ void MetroView::addSceneItems()
 	if( adminMode )
 	{
 		connect( publishButton, SIGNAL( clicked( bool ) ), this, SLOT( publishPressed( bool ) ) );
+		connect( largeImageButton, SIGNAL( clicked( bool ) ), this, SLOT( uploadImagePressed( bool ) ) );
 	}
 }
 
@@ -261,6 +333,38 @@ void MetroView::dateSelected()
 void MetroView::publishPressed( bool )
 {
 	emit publishWeek( weeksView->getVisibleWeek( ) );
+}
+
+void MetroView::uploadImagePressed( bool )
+{
+	bool fromCamera = true;
+	QPixmap pixmap = takePicture( fromCamera );
+	if( pixmap.width() == 0 )
+		return;
+
+	// Set thumbnail
+	QPixmap croppedPixmap;
+	if( pixmap.width() > pixmap.height() )
+	{
+		int newWidth = largeImageButton->rect().width() * (float)pixmap.height() / (float)largeImageButton->height();
+		int margin = ( pixmap.width() - newWidth ) / 2;
+
+		QRect cropRect = QRect( margin, 0, pixmap.width() - 2 * margin, pixmap.height());
+		croppedPixmap = pixmap.copy( cropRect ).scaled( largeImageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+	}
+	else
+	{
+		int newHeight = largeImageButton->rect().height() * (float)pixmap.width() / (float)largeImageButton->width();
+		int margin = ( pixmap.height() - newHeight ) / 2;
+
+		QRect cropRect = QRect( 0, margin, pixmap.width(), pixmap.height() - 2 * margin );
+		croppedPixmap = pixmap.copy( cropRect ).scaled( largeImageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+	}
+
+	largeImageButton->setIcon( QIcon( croppedPixmap ) );
+	largeImageButton->setIconSize( largeImageButton->size() );
+
+	emit uploadPicture( pixmap );
 }
 
 void MetroView::wheelEvent( QWheelEvent* wheelEvent )
@@ -369,8 +473,7 @@ void MetroView::resizeEvent( QResizeEvent * event )
 	if( adminMode && allDishesView )
 		allDishesView->move( this->width() - allDishesView->width() - 2 * Style::getDishSpacing(), weeksView->y() );
 
-	alignButtons();
-
+	alignControls();
 }
 
 void MetroView::setWeekDateText( const Week &currentWeek )
@@ -395,7 +498,7 @@ void MetroView::setWeekDateText( const Week &currentWeek )
 	weekDateInAnimation->start();
 }
 
-void MetroView::alignButtons()
+void MetroView::alignControls()
 {
 	if( Controller::getUser()->getRole() == User::eAdmin )
 	{
@@ -406,10 +509,93 @@ void MetroView::alignButtons()
 		{
 			publishButton->move( administrateButton->x() - ( publishButton->width() - administrateButton->width() ) / 2, administrateButton->y() + administrateButton->height() * kButtonsYSpacingRatio );
 			changeBackgroundButton->move( weekPrefixLabel->x(), publishButton->y() );
+
+			largeImageButton->move( ( this->width() - Style::getDayWidth() - largeImageButton->width() ) / 2.f, ( this->height() - largeImageButton->height() ) / 2.f );
 		}
 	}
 	else
 	{
 		userLabel->move( this->width() - userLabel->width() - kDateUsernameSideOffset, kDateUsernameTopOffset );
 	}
+}
+
+QPixmap MetroView::takePicture( bool fromCamera )
+{
+	QPixmap pixmap;
+#ifdef Q_OS_ANDROID
+    __android_log_print( ANDROID_LOG_VERBOSE, "LunchApp", "takePicture()" );
+
+	selectedFileName = "#";
+
+	if( fromCamera )
+	{
+		QAndroidJniObject::callStaticMethod<void>("org/qtproject/LunchApp/LunchApp",
+			"takePicture",
+			"()V");
+	}
+	else
+	{
+		QAndroidJniObject::callStaticMethod<void>("org/qtproject/LunchApp/LunchApp",
+			"openAnImage",
+			"()V");
+	}
+
+	while(selectedFileName == "#")
+		qApp->processEvents();
+
+    __android_log_print( ANDROID_LOG_VERBOSE, "LunchApp", "%s", selectedFileName.toStdString().c_str() );
+
+	if( QFile( selectedFileName ).exists() )
+	{
+		pixmap = QPixmap( selectedFileName );
+
+		__android_log_print( ANDROID_LOG_VERBOSE, "LunchApp", "file ok" );
+	}
+	else
+	{
+		__android_log_print( ANDROID_LOG_VERBOSE, "LunchApp", "file doesn't exist" );
+	}
+#else
+	pixmap = QPixmap( "C:/Users/a.f.dascalu/Desktop/Android Backgrounds/Grand_Canyon_of_the_Colorado_2560x1600.jpg" );
+#endif
+
+	return pixmap;
+}
+
+void MetroView::addCameraWidget()
+{
+	/* QML approach */
+	this->setAttribute( Qt::WA_DontCreateNativeAncestors );
+
+	QQuickView *view = new QQuickView();
+
+	QWidget *container = QWidget::createWindowContainer( view, this );
+	container->setMinimumSize( 200, 200 );
+	container->setMaximumSize( 200, 200 );
+	container->setFocusPolicy( Qt::TabFocus );
+	container->move( 300, 300 );
+
+	view->setSource( QUrl("qrc:///QML/test.qml") );
+
+	container->show();
+
+	/* C++ approach */
+	// 	if( QCameraInfo::availableCameras().count() == 0 )
+	// 	{
+	// 		return;
+	// 	}
+
+	// Take picture
+	//	QCamera* camera = new QCamera( QCamera::BackFace );
+
+	// 	QCameraViewfinder* viewfinder = new QCameraViewfinder();
+	// 	viewfinder->move( selectedDishLargeImage->pos() );
+	// 	viewfinder->show();
+
+	//     camera->setViewfinder( viewfinder );
+	//
+	//     QCameraImageCapture* imageCapture = new QCameraImageCapture( camera );
+	//
+	//     camera->setCaptureMode( QCamera::CaptureStillImage );
+	// 	camera->start();
 }

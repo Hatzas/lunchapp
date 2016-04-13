@@ -90,6 +90,11 @@ void MainWindow::switchAdministrate( bool )
 
 void MainWindow::showTrayMessage( const QString& msg )
 {
+#ifdef Q_OS_ANDROID
+	// TO DO
+	return;
+#endif
+
 	NotificationWindow* customWindow = new NotificationWindow( msg );
 	customWindow->show();
 }
@@ -108,10 +113,14 @@ void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
+#ifdef Q_OS_ANDROID
+    event->accept();
+#else
 	hide();
 	event->ignore();
 
 	showTrayMessage( tr("Aplicatia nu e moarta, se transforma (in tray)") );
+#endif
 }
 
 void MainWindow::setupTray()
@@ -156,8 +165,9 @@ void MainWindow::makeConnections()
 
 	if( adminMetroView )
 	{
-		connect( adminMetroView, SIGNAL( publishWeek( const Week& ) ), controller, SLOT( publishWeek( const Week& ) ), Qt::QueuedConnection );
 		connect( adminMetroView, SIGNAL( requestAllDishes() ), controller, SLOT( requestAllDishes() ), Qt::QueuedConnection );
+		connect( adminMetroView, SIGNAL( publishWeek( const Week& ) ), controller, SLOT( publishWeek( const Week& ) ), Qt::QueuedConnection );
+		connect( adminMetroView, SIGNAL( uploadPicture( QPixmap ) ), controller, SLOT( uploadPicture( QPixmap ) ), Qt::QueuedConnection );
 	
 		connect( controller, SIGNAL( allDishesArrived( Day ) ), adminMetroView, SLOT( allDishesArrived( Day ) ), Qt::QueuedConnection );
 	}

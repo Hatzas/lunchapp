@@ -25,6 +25,9 @@ AllWeeksView::~AllWeeksView()
 
 void AllWeeksView::init()
 {
+    /* Properties */
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
+
 	// Loading gif
 	loadingLabel = new QLabel( this );
 	loadingLabel->setMovie( new QMovie( RESOURCES_ROOT"loader1.gif" ) );
@@ -358,7 +361,7 @@ void AllWeeksView::showLoadingAnim( bool show, EDirection direction )
 	}
 	else
 	{
-		loadingLabel->move( windowWidth / 2 - loadingLabel->width() / 2, parentSize.height() / 3 );
+		loadingLabel->move( windowWidth / 2 - loadingLabel->width() / 2, parentSize.height() / 2 );
 	}
 
 	loadingLabel->show();

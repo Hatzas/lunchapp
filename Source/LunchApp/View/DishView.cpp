@@ -11,6 +11,7 @@
 #include <QComboBox>
 #include <QBitmap>
 #include <QPainterPath>
+#include <QDebug>
 
 #include "Style.h"
 #include "MainWindow.h"
@@ -19,9 +20,15 @@ static const int			kAtEnd					= 0xffffff;
 static const float			kClickMovement			= 2;
 static const float			kBriefDetailsOffset		= 30;
 
+#ifdef Q_OS_ANDROID
+static const int			kIdentifierFontSize		= 5;
+static const int			kDetailsFontSize		= 10;
+static const float			kPointToPixel			= 7.f;
+#else
 static const int			kIdentifierFontSize		= 10;
-
+static const int			kDetailsFontSize		= 10;
 static const float			kPointToPixel			= 2.5f;
+#endif
 
 DishView::DishView( QWidget *parent )
 	: QWidget( parent )
@@ -48,6 +55,9 @@ DishView::~DishView()
 
 void DishView::init()
 {
+    // Properties
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
+
 	// If dish has no image
 	if( dish.getPixmap().isNull() )
 	{
@@ -92,6 +102,7 @@ void DishView::init()
 	ribbonLabel->setPixmap( ribbonPixmap );
 	ribbonLabel->adjustSize();
 	ribbonLabel->setScaledContents( true );
+    ribbonLabel->setAttribute( Qt::WA_NoSystemBackground, true );
 
 // 	QBitmap textMask = ribbonPixmap.createMaskFromColor( Qt::black, Qt::MaskInColor );
 // 	ribbonLabel->setMask( textMask );
@@ -101,6 +112,7 @@ void DishView::init()
 	identifierLabel->setFont( QFont( kFontName, kIdentifierFontSize ) );
 	identifierLabel->setAlignment( Qt::AlignCenter );
 	identifierLabel->adjustSize();
+    identifierLabel->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	QPalette palette = identifierLabel->palette();
 	palette.setColor( identifierLabel->foregroundRole(), Qt::white );
@@ -110,12 +122,12 @@ void DishView::init()
 	QString text = dish.getName() + " \n\nIngrediente: " + dish.getIngredients();	// Separate ingredients with 2 spaces
 	detailsLabel->setText( text );
 	detailsLabel->setWordWrap( true );
-	detailsLabel->setFont( QFont( kFontName, 10 ) );
+    detailsLabel->setFont( QFont( kFontName, kDetailsFontSize ) );
 	detailsLabel->setAutoFillBackground( true );
 	detailsLabel->setFixedSize( this->size() );
 	detailsLabel->setAlignment( Qt::AlignTop );
 	detailsLabel->setStyleSheet( kDetailsOverlayStyleSheet );
-	detailsLabel->adjustSize();
+    detailsLabel->adjustSize();
 
 	ratingView = new DishRatingView( this, dish );
 
@@ -235,6 +247,11 @@ void DishView::comboSelectionChanged( int /*selection*/ )
 
 }
 
+bool DishView::event( QEvent* event )
+{
+	return QWidget::event( event );
+}
+
 void DishView::wheelEvent( QWheelEvent* wheelEvent )
 {
 	return QWidget::wheelEvent( wheelEvent );
@@ -305,6 +322,10 @@ void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 
 void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 {
+#ifdef Q_OS_ANDROID
+    return QWidget::mousePressEvent( mouseEvent );
+#endif
+
 	if( disabled || isPlaceholder || mouseEvent->button() != Qt::LeftButton )
 		return;
 
@@ -322,6 +343,10 @@ void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 
 void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 {
+#ifdef Q_OS_ANDROID
+    return  QWidget::mouseReleaseEvent( mouseEvent );
+#endif
+
 	if( disabled || isPlaceholder || !mousePressed || mouseEvent->button() != Qt::LeftButton )
 		return;
 
@@ -340,6 +365,25 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 
 		setSelected( dish.getUserSelected() );
 	}
+}
+
+void DishView::mouseDoubleClickEvent( QMouseEvent * event )
+{
+#ifdef Q_OS_ANDROID
+	qDebug() << "double click";
+
+	if( editMode )
+	{
+		return QWidget::mouseDoubleClickEvent( event );
+	}
+
+	dish.setUserSelected( !dish.getUserSelected() );
+	((DayDishesView*)parent())->selectionChangedOn( dish );
+
+	setSelected( dish.getUserSelected() );
+#else
+	return QWidget::mouseDoubleClickEvent( event );
+#endif
 }
 
 void DishView::setDisabled( bool disabled )

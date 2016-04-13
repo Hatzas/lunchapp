@@ -36,7 +36,8 @@ DayView::~DayView()
 
 void DayView::init()
 {
-//	QScroller::grabGesture( this, QScroller::LeftMouseButtonGesture );
+    // Properties
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	/* Create objects */
 	if( mode == eBrowseMode )

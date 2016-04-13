@@ -40,7 +40,11 @@ DayDishesView::~DayDishesView()
 void DayDishesView::init()
 {
 	// Properties
-	//QScroller::grabGesture( this, QScroller::MiddleMouseButtonGesture );
+#ifdef Q_OS_ANDROID
+    QScroller::grabGesture( this, QScroller::LeftMouseButtonGesture );
+#endif
+
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	if( mode == eEditMode )
 	{
@@ -154,7 +158,7 @@ bool DayDishesView::event( QEvent* event )
 
 			QScrollPrepareEvent *se = static_cast<QScrollPrepareEvent *>( event );
 			se->setViewportSize( QSize( this->width(), visibleRect.height() ) );
-			se->setContentPosRange( QRectF( 0, 0, size.width(), size.height() - visibleRect.height() ) );
+            se->setContentPosRange( QRectF( 0, -Style::getDishSpacing(), size.width(), size.height() - visibleRect.height() ) );
 			se->setContentPos( -dishViewsVect[0]->pos() );
 			se->accept();
 			return true;

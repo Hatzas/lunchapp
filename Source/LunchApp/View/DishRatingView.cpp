@@ -7,6 +7,12 @@
 
 static const int kBorderSize = 1;	// pixels
 
+#ifdef Q_OS_ANDROID
+static const int			kCounterFontSize		= 4;
+#else
+static const int			kCounterFontSize		= 7;
+#endif
+
 
 DishRatingView::DishRatingView( QWidget *parent, const Dish& dish )
 	: QWidget(parent)
@@ -22,6 +28,9 @@ DishRatingView::~DishRatingView()
 
 void DishRatingView::init()
 {
+    // Properties
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
+
 	// Add buttons
 	QPixmap wowPixmap = QPixmap( RESOURCES_ROOT"wow.png" );
 	wowButton = new QPushButton( this );
@@ -60,7 +69,7 @@ void DishRatingView::init()
 // 	yuckButton->adjustSize();
 
 	// Add rating text
-	QFont textFont( kFontName, 7 );
+    QFont textFont( kFontName, kCounterFontSize );
 //	textFont.setWeight( QFont::DemiBold );
 
 	numWowsLabel = new QLabel( this );
@@ -68,18 +77,21 @@ void DishRatingView::init()
 	numWowsLabel->setFont( textFont );
 	numWowsLabel->setAlignment( Qt::AlignCenter );
 	numWowsLabel->adjustSize();
+    numWowsLabel->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	numHappiesLabel = new QLabel( this );
 	numHappiesLabel->setText( "____" );
 	numHappiesLabel->setFont( textFont );
 	numHappiesLabel->setAlignment( Qt::AlignCenter );
 	numHappiesLabel->adjustSize();
+    numHappiesLabel->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	numMeahsLabel = new QLabel( this );
 	numMeahsLabel->setText( "____" );
 	numMeahsLabel->setFont( textFont );
 	numMeahsLabel->setAlignment( Qt::AlignCenter );
 	numMeahsLabel->adjustSize();
+    numMeahsLabel->setAttribute( Qt::WA_NoSystemBackground, true );
 
 // 	numYucksLabel = new QLabel( this );
 // 	numYucksLabel->setText( "____" );

@@ -57,6 +57,9 @@
       <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
       <Extensions>ui</Extensions>
     </Filter>
+    <Filter Include="QML">
+      <UniqueIdentifier>{2dd9581a-4118-4d5b-bbad-8cb10fb7fb81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -295,6 +298,15 @@
   <ItemGroup>
     <None Include="Froms\MainWindow.ui">
       <Filter>Form Files</Filter>
+    </None>
+    <None Include="QML\camera.qml">
+      <Filter>QML</Filter>
+    </None>
+    <None Include="QML\PhotoPreview.qml">
+      <Filter>QML</Filter>
+    </None>
+    <None Include="QML\test.qml">
+      <Filter>QML</Filter>
     </None>
   </ItemGroup>
 </Project>
