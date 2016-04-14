@@ -39,7 +39,7 @@ void DataTransfer::getUserMenu(const QDate& startDate, const QDate& endDate)
 {
 	NetEntity entity;
 	entity.setMethodType(eGetMethod);
-	entity.setMethodUrl("usermenu");
+	entity.setMethodUrl( "menu"/*"usermenu"*/);
 	entity.setDates(startDate, endDate);
 	
 	restClient->pushRequest(entity);

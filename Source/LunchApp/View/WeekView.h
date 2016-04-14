@@ -31,6 +31,6 @@ private:
 
 	void					init();
 
-	void					AddDays();
+	void					addDays();
 
 };

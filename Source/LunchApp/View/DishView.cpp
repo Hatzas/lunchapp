@@ -59,7 +59,7 @@ void DishView::init()
     this->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	// If dish has no image
-	if( dish.getPixmap().isNull() )
+    if( dish.getPixmap().isNull() || dish.getPixmap().width() == 0 )
 	{
 		dishPixmap = QPixmap( Style::getDishWidth(), Style::getDishHeight() );
 		dishPixmap.fill( Qt::darkRed );

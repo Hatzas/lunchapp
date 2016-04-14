@@ -8,7 +8,13 @@
 #include "MetroView.h"
 
 
-static const float		kScrollOwershootRatio		= 1 / 8.f;
+static const float		kScrollOwershootRatio           = 1 / 8.f;
+
+#ifdef Q_OS_ANDROID
+static const QSize		kLoadingAnimSize				= QSize( 48, 48 );
+#else
+static const QSize		kLoadingAnimSize				= QSize( 24, 24 );
+#endif
 
 
 AllWeeksView::AllWeeksView( QWidget *parent, bool editMode /*= false*/ )
@@ -34,6 +40,7 @@ void AllWeeksView::init()
 	loadingLabel->movie()->setScaledSize( kLoadingAnimSize );
 	loadingLabel->setMinimumSize( kLoadingAnimSize );
 	loadingLabel->adjustSize();
+	loadingLabel->setAttribute( Qt::WA_NoSystemBackground, true );
 	loadingLabel->hide();
 
 	// Animations
@@ -93,6 +100,11 @@ void AllWeeksView::addWeek( const Week& week )
 
 	if( week.isEmpty() )
 	{
+		if( weekViewsVect.size() == 0 )
+		{
+			return;
+		}
+
 		if( week < weekViewsVect.front()->getWeek() )
 		{
 			weekViewsVect.front()->getWeek().setFirstAvailable( true );

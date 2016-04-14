@@ -102,7 +102,7 @@ void Controller::publishWeek( const Week& /* week */ )
 	// TO DO
 }
 
-void Controller::uploadPicture( QPixmap pixmap )
+void Controller::uploadPicture( QPixmap /* pixmap */ )
 {
 	// Store week in database
 	// TO DO

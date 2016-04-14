@@ -28,7 +28,7 @@ void WeekView::init()
     this->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	/* Create objects */
-	AddDays();
+	addDays();
 
 	this->adjustSize();
 
@@ -98,9 +98,10 @@ void WeekView::showDayMenuNotification()
 	}
 }
 
-void WeekView::AddDays()
+void WeekView::addDays()
 {
-	std::vector<Day>& daysVect = week.getDays();
+    std::vector<Day>& daysVect = week.getDays();
+
 	for( size_t i = 0 ; i < daysVect.size() ; i++ )
 	{
 		DayView* dayView = new DayView( this, daysVect[i], editMode ? eEditMode : eNormalMode );

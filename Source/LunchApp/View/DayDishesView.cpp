@@ -192,7 +192,7 @@ void DayDishesView::wheelEvent( QWheelEvent* wheelEvent )
 
 	if( wheelEvent->delta() > 0 )
 	{
-		if( dishViewsVect.front()->visibleRegion().boundingRect().height() == dishViewsVect.front()->height() )
+		if( dishViewsVect.front()->visibleRegion().boundingRect().height() >= dishViewsVect.front()->height() )
 			return;
 
 		scrollAnimation->setStartValue( internalContentOffset );
@@ -201,7 +201,7 @@ void DayDishesView::wheelEvent( QWheelEvent* wheelEvent )
 	}
 	else if( wheelEvent->delta() < 0 )
 	{
-		if( dishViewsVect.back()->visibleRegion().boundingRect().height() == dishViewsVect.back()->height() )
+		if( dishViewsVect.back()->visibleRegion().boundingRect().height() >= dishViewsVect.back()->height() )
 			return;
 
 		scrollAnimation->setStartValue( internalContentOffset );

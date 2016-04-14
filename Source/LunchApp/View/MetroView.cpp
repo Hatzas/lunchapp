@@ -21,7 +21,7 @@
 #include <QCameraInfo>
 #include <QQuickView>
 #ifdef Q_OS_ANDROID
-#	include <QtAndroidExtras>
+#   include <QtAndroidExtras>
 #   include <android/log.h>
 #endif
 
@@ -146,19 +146,19 @@ void MetroView::addSceneItems()
         changeBackgroundButton->setFont( QFont( kFontName, kFontSize ) );
         changeBackgroundButton->setStyleSheet( kButtonsStyleSheet );
 
-		largeImageButton = new QPushButton( this );
-		largeImageButton->setStyleSheet( kButtonsStyleSheet );
-		largeImageButton->setMinimumSize( Style::getDayWidth() * kLargeDishScale , Style::getDishHeight() * kLargeDishScale );
-		largeImageButton->setIcon( QIcon( QPixmap( RESOURCES_ROOT"gallery.jpg" ) ) );
-		largeImageButton->setIconSize( largeImageButton->size() / 2 );
-		largeImageButton->adjustSize();
+        photoButton = new QPushButton( this );
+        photoButton->setStyleSheet( kButtonsStyleSheet );
+        photoButton->setMinimumSize( Style::getDayWidth() * kLargeDishScale , Style::getDishHeight() * kLargeDishScale );
+        photoButton->setIcon( QIcon( QPixmap( RESOURCES_ROOT"gallery.jpg" ) ) );
+        photoButton->setIconSize( photoButton->size() / 2 );
+        photoButton->adjustSize();
 
 #ifdef Q_OS_ANDROID
         weeksView->hide();
         publishButton->hide();
 		changeBackgroundButton->hide();
 #else
-		largeImageButton->hide();
+		photoButton->hide();
 #endif
     }
 
@@ -263,7 +263,7 @@ void MetroView::addSceneItems()
 	if( adminMode )
 	{
 		connect( publishButton, SIGNAL( clicked( bool ) ), this, SLOT( publishPressed( bool ) ) );
-		connect( largeImageButton, SIGNAL( clicked( bool ) ), this, SLOT( uploadImagePressed( bool ) ) );
+        connect( photoButton, SIGNAL( clicked( bool ) ), this, SLOT( uploadImagePressed( bool ) ) );
 	}
 }
 
@@ -279,7 +279,7 @@ void MetroView::weekArrived( const Week& week )
 
 void MetroView::allDishesArrived( Day containerDay )
 {
-	if( allDishesView != NULL || !adminMode )
+    if( allDishesView != NULL || !adminMode )
 		return;
 
 	// Add view with all dishes
@@ -346,23 +346,23 @@ void MetroView::uploadImagePressed( bool )
 	QPixmap croppedPixmap;
 	if( pixmap.width() > pixmap.height() )
 	{
-		int newWidth = largeImageButton->rect().width() * (float)pixmap.height() / (float)largeImageButton->height();
+        int newWidth = photoButton->rect().width() * (float)pixmap.height() / (float)photoButton->height();
 		int margin = ( pixmap.width() - newWidth ) / 2;
 
 		QRect cropRect = QRect( margin, 0, pixmap.width() - 2 * margin, pixmap.height());
-		croppedPixmap = pixmap.copy( cropRect ).scaled( largeImageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+        croppedPixmap = pixmap.copy( cropRect ).scaled( photoButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation );
 	}
 	else
 	{
-		int newHeight = largeImageButton->rect().height() * (float)pixmap.width() / (float)largeImageButton->width();
+        int newHeight = photoButton->rect().height() * (float)pixmap.width() / (float)photoButton->width();
 		int margin = ( pixmap.height() - newHeight ) / 2;
 
 		QRect cropRect = QRect( 0, margin, pixmap.width(), pixmap.height() - 2 * margin );
-		croppedPixmap = pixmap.copy( cropRect ).scaled( largeImageButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation );
+        croppedPixmap = pixmap.copy( cropRect ).scaled( photoButton->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation );
 	}
 
-	largeImageButton->setIcon( QIcon( croppedPixmap ) );
-	largeImageButton->setIconSize( largeImageButton->size() );
+    photoButton->setIcon( QIcon( croppedPixmap ) );
+    photoButton->setIconSize( photoButton->size() );
 
 	emit uploadPicture( pixmap );
 }
@@ -510,7 +510,7 @@ void MetroView::alignControls()
 			publishButton->move( administrateButton->x() - ( publishButton->width() - administrateButton->width() ) / 2, administrateButton->y() + administrateButton->height() * kButtonsYSpacingRatio );
 			changeBackgroundButton->move( weekPrefixLabel->x(), publishButton->y() );
 
-			largeImageButton->move( ( this->width() - Style::getDayWidth() - largeImageButton->width() ) / 2.f, ( this->height() - largeImageButton->height() ) / 2.f );
+            photoButton->move( ( this->width() - Style::getDayWidth() - photoButton->width() ) / 2.f, ( this->height() - photoButton->height() ) / 2.f );
 		}
 	}
 	else

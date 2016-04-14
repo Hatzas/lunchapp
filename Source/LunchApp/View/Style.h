@@ -8,8 +8,11 @@
 
 //#define Q_OS_ANDROID
 
-#define RESOURCES_ROOT		":/Resources/"
-#define UNUSED				RESOURCES_ROOT
+#ifdef Q_OS_ANDROID
+#	define RESOURCES_ROOT		":/Resources/"
+#else
+#	define RESOURCES_ROOT		"Resources/"
+#endif
 
 static const QString	kAppName						= "Lunch App";
 static const QString	kAppIconPath					= RESOURCES_ROOT"icon.png";
@@ -78,9 +81,6 @@ static const QColor		kDishIdentifierColor			= QColor( 255, 255, 0, 255 );
 static const QSize		kDishPlaceholderSize			= QSize( 300, 200 );
 
 static const float		kBackgroundScrollRatio			= 0.2f;
-
-static const QSize		kLoadingAnimSize				= QSize( 24, 24 );
-static const int		kLoadingAnimOffset				= 300;
 
 class Style
 {

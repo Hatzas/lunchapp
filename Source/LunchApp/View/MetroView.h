@@ -65,7 +65,7 @@ private:
 	QPushButton*				administrateButton;
 	QPushButton*				publishButton;
 	QPushButton*				changeBackgroundButton;
-	QPushButton*				largeImageButton;
+	QPushButton*				photoButton;
 
 	QCalendarWidget*			calendar;
 
