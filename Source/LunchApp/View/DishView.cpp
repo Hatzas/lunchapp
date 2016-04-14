@@ -301,12 +301,16 @@ void DishView::leaveEvent( QEvent* /*event*/ )
 
 void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 {
+#ifdef Q_OS_ANDROID
+	return  QWidget::mouseReleaseEvent( mouseEvent );
+#endif
+
 	if( disabled || isPlaceholder )
-		return;
+		return QWidget::mouseMoveEvent( mouseEvent );
 
 	if( editMode && mousePressed )
 	{
-		return QWidget::mousePressEvent( mouseEvent );
+		return QWidget::mouseMoveEvent( mouseEvent );
 	}
 
 	// Show full details if mouse over them
@@ -318,6 +322,8 @@ void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 		detailsAnimation->setDuration( kFullDishDetailsAnimationTime );
 		detailsAnimation->start();
 	}
+
+	QWidget::mouseMoveEvent( mouseEvent );
 }
 
 void DishView::mousePressEvent( QMouseEvent* mouseEvent )
@@ -327,7 +333,7 @@ void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 #endif
 
 	if( disabled || isPlaceholder || mouseEvent->button() != Qt::LeftButton )
-		return;
+		return QWidget::mousePressEvent( mouseEvent );;
 
 	mousePressed = true;
 	
@@ -339,6 +345,8 @@ void DishView::mousePressEvent( QMouseEvent* mouseEvent )
 	{
 		this->move( this->pos() + QPoint( kClickMovement, kClickMovement ) );
 	}
+
+	QWidget::mousePressEvent( mouseEvent );
 }
 
 void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
@@ -348,13 +356,13 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 #endif
 
 	if( disabled || isPlaceholder || !mousePressed || mouseEvent->button() != Qt::LeftButton )
-		return;
+		return QWidget::mouseReleaseEvent( mouseEvent );
 
 	mousePressed = false;
 
 	if( editMode )
 	{
-		return QWidget::mousePressEvent( mouseEvent );
+		return QWidget::mouseReleaseEvent( mouseEvent );
 	}
 	else
 	{
@@ -365,6 +373,8 @@ void DishView::mouseReleaseEvent( QMouseEvent* mouseEvent )
 
 		setSelected( dish.getUserSelected() );
 	}
+
+	QWidget::mouseReleaseEvent( mouseEvent );
 }
 
 void DishView::mouseDoubleClickEvent( QMouseEvent * event )

@@ -161,7 +161,7 @@ bool DayDishesView::event( QEvent* event )
             se->setContentPosRange( QRectF( 0, -Style::getDishSpacing(), size.width(), size.height() - visibleRect.height() ) );
 			se->setContentPos( -dishViewsVect[0]->pos() );
 			se->accept();
-			return true;
+			return QWidget::event( event );
 		}
 	case QEvent::Scroll: 
 		{
@@ -174,7 +174,7 @@ bool DayDishesView::event( QEvent* event )
 				dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
 			}
 
-			return true;
+			return QWidget::event( event );
 		}
 	default:
 		break;

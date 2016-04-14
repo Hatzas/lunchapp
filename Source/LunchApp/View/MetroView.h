@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QCalendarWidget>
 #include <QLabel>
+#include <QGestureEvent>
 
 #include "AllWeeksView.h"
 #include "InfiniteBackground.h"
@@ -21,8 +22,11 @@ public:
 
 			void			init();
 
+protected:
+	virtual	bool			event( QEvent *event );
 	virtual void			wheelEvent( QWheelEvent* event );
 
+			bool			gestureEvent( QGestureEvent *event );
 signals:
 			void			requestWeekBefore( const Week& week );
 			void			requestWeekAfter( const Week& week );
@@ -84,6 +88,7 @@ private:
 	void					alignControls();
 
 	QPixmap					takePicture( bool fromCamera );
-
 	void					addCameraWidget();
+
+	void					scrollWeeks( AllWeeksView::EDirection direction );
 };

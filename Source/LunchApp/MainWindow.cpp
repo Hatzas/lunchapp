@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <QMenu>
 #include <QCloseEvent>
+#ifdef Q_OS_ANDROID
+#   include<QtAndroidExtras>
+#endif
 
 #include "View/Style.h"
 #include "View/NotificationWindow.h"
@@ -35,7 +38,7 @@ MainWindow::MainWindow( QWidget *parent )
 
 	// Tray
 	setupTray();
-	showTrayMessage( "Sunt si eu aici" );
+	showNotification( "Sunt si eu aici" );
 
 	// Init members
 	regularMetroView->init();
@@ -88,15 +91,47 @@ void MainWindow::switchAdministrate( bool )
 	
 }
 
-void MainWindow::showTrayMessage( const QString& msg )
+void MainWindow::showNotification( const QString& msg )
 {
 #ifdef Q_OS_ANDROID
-	// TO DO
-	return;
-#endif
 
-	NotificationWindow* customWindow = new NotificationWindow( msg );
+    QAndroidJniObject javaNotification = QAndroidJniObject::fromString( msg );
+    QAndroidJniObject::callStaticMethod<void>("org/qtproject/LunchApp/LunchApp",
+                                       "notify",
+                                       "(Ljava/lang/String;)V",
+                                       javaNotification.object<jstring>());
+
+#else
+
+	NotificationWindow* customWindow = new NotificationWindow( this, msg );
 	customWindow->show();
+
+#endif
+}
+
+void MainWindow::showNotification( const QString& msg, const QPixmap& pixmap )
+{
+#ifdef Q_OS_ANDROID
+
+	// Call method and pass icon
+	// TO DO
+
+	QAndroidJniObject javaNotification = QAndroidJniObject::fromString( msg );
+	QAndroidJniObject::callStaticMethod<void>("org/qtproject/LunchApp/LunchApp",
+		"notify",
+		"(Ljava/lang/String;)V",
+		javaNotification.object<jstring>());
+
+#else
+
+	std::vector<QPixmap> dishesPixmaps;
+	dishesPixmaps.clear();
+	dishesPixmaps.push_back( pixmap );
+
+	NotificationWindow* customWindow = new NotificationWindow( this, msg, dishesPixmaps, kMenuNotificationShowTime );
+	customWindow->show();
+
+#endif
 }
 
 void MainWindow::resizeEvent( QResizeEvent* /*event*/ )
@@ -105,10 +140,12 @@ void MainWindow::resizeEvent( QResizeEvent* /*event*/ )
 
 void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
 {
-	if(reason == QSystemTrayIcon::Context)
+	if( reason == QSystemTrayIcon::Context )
+	{
 		return;
+	}
 
-	show();
+	this->show();
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -116,15 +153,21 @@ void MainWindow::closeEvent(QCloseEvent* event)
 #ifdef Q_OS_ANDROID
     event->accept();
 #else
-	hide();
+
 	event->ignore();
 
-	showTrayMessage( tr("Aplicatia nu e moarta, se transforma (in tray)") );
+	showNotification( tr("Aplicatia nu e moarta, se transforma (in tray)") );
+
+	this->hide();
 #endif
 }
 
 void MainWindow::setupTray()
 {
+#ifdef Q_OS_ANDROID
+	return;
+#endif
+
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setIcon( QPixmap( kAppIconPath ) );
 	trayIcon->setToolTip( tr( "Lunch App\nApasa-l" ) );
@@ -155,6 +198,8 @@ void MainWindow::setupController()
 
 void MainWindow::makeConnections()
 {
+	connect( controller, SIGNAL( notify( const QString&, const QPixmap& ) ), this, SLOT( showNotification( const QString&, const QPixmap& ) ) );
+
 	connect( controller, SIGNAL( weekArrived( const Week& ) ), regularMetroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
 
 	connect( regularMetroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );

@@ -15,11 +15,12 @@ class MainWindow : public QWidget
 public:
 						MainWindow( QWidget *parent = 0 );
 						~MainWindow();
-	
-			void		showTrayMessage( const QString& msg );
 
 public slots:
 			void		switchAdministrate( bool );
+
+			void		showNotification( const QString& msg );
+			void		showNotification( const QString& msg, const QPixmap& pixmap );
 
 signals:
 			void		selectionChangedOn( const Dish& dish );

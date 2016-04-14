@@ -17,6 +17,7 @@ allprojects {
 apply plugin: 'com.android.application'
 
 dependencies {
+    compile "com.android.support:view-v4:10.0.+"
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 

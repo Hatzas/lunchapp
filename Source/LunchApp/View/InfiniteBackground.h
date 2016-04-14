@@ -20,6 +20,8 @@ signals:
 			void		offsetChanged();
 
 protected:
+	virtual	bool		event( QEvent *event );
+
 	virtual	void		paintEvent( QPaintEvent * event );
 
 	virtual	void		resizeEvent( QResizeEvent * event );

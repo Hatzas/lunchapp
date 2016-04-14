@@ -15,15 +15,14 @@ public:
 	enum EDirection
 	{
 		eHere,
-		eToRightDirection,
-		eToLeftDirection
+		eRightDirection,
+		eLeftDirection
 	};
 							AllWeeksView( QWidget *parent, bool editMode = false );
 							~AllWeeksView();
 
 			void			init();
 
-	virtual void			wheelEvent( QWheelEvent* event );
 			void			mainWindowResized( QSize size );
 
 			void			selectionChangedOn( const Dish& dish );
@@ -34,6 +33,10 @@ public:
 
 			int				getWeeksNum()								{ return weekViewsVect.size(); }
 			Week			getWeek( int index );
+
+protected:
+		virtual	bool		event( QEvent *event );
+		virtual void		wheelEvent( QWheelEvent* event );
 
 private:
 	bool						editMode;
@@ -53,5 +56,5 @@ private:
 			void			increaseSize( EDirection direction );
 			void			centerWeekViews();
 
-			void			showLoadingAnim( bool show, EDirection direction = eToRightDirection );
+			void			showLoadingAnim( bool show, EDirection direction = eRightDirection );
 };

@@ -64,9 +64,15 @@ void DayView::init()
 // 	this->adjustSize();
 }
 
+bool DayView::event( QEvent *event )
+{
+	return QWidget::event( event );
+}
+
+
 void DayView::wheelEvent( QWheelEvent* wheelEvent )
 {
-	return ((WeekView*)this->parent())->wheelEvent( wheelEvent );
+	return QWidget::wheelEvent( wheelEvent );
 }
 
 void DayView::mainWindowResized( QSize size )

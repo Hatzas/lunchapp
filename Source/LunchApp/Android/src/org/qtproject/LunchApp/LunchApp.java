@@ -15,6 +15,12 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
+import android.view.MotionEvent;
+//import android.support.v4.view.GestureDetectorCompat;
+import android.app.Notification;
+import android.app.NotificationManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,17 +29,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class LunchApp extends QtActivity
+public class LunchApp extends QtActivity implements GestureDetector.OnGestureListener
 {
     static final int REQUEST_OPEN_IMAGE = 1;
     static final int REQUEST_TAKE_PHOTO = 2;
 
-    public static native void fileSelected(String fileName);
+    static final String DEBUG_TAG = "LunchApp";
 
     private static LunchApp m_instance;
+//    private GestureDetectorCompat mDetector;
+    private static NotificationManager m_notificationManager;
+    private static Notification.Builder m_builder;
+    private static int mCounter = 0;
+
 
     String mCurrentPhotoPath;
 
+    public static native void fileSelected(String fileName);
 
     public LunchApp()
     {
@@ -45,12 +57,32 @@ public class LunchApp extends QtActivity
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate( savedInstanceState );
+
+        // Instantiate the gesture detector with the
+        // application context and an implementation of
+        // GestureDetector.OnGestureListener
+//        mDetector = new GestureDetectorCompat( this, this );
     }
 
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
+    }
+
+    public static void notify( String s )
+    {
+        if( m_notificationManager == null )
+        {
+            m_notificationManager = (NotificationManager)m_instance.getSystemService(Context.NOTIFICATION_SERVICE);
+
+            m_builder = new Notification.Builder( m_instance );
+            m_builder.setSmallIcon( R.drawable.icon );
+            m_builder.setContentTitle( "Lunch App" );
+        }
+
+        m_builder.setContentText(s);
+        m_notificationManager.notify( ++mCounter, m_builder.build() );
     }
 
     static void openAnImage()
@@ -96,6 +128,55 @@ public class LunchApp extends QtActivity
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+//        this.mDetector.onTouchEvent( event );
+
+        // Be sure to call the superclass implementation
+        return super.onTouchEvent( event );
+    }
+
+    @Override
+    public boolean onDown(MotionEvent event)
+    {
+        Log.d(DEBUG_TAG,"onDown: " + event.toString());
+        return true;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY)
+    {
+        Log.d( "LunchApp", "onFling: " + event1.toString()+event2.toString() );
+        return true;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
+    {
+        Log.d( "LunchApp", "onScroll: " + e1.toString()+e2.toString() );
+        return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent event)
+    {
+        Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
+    }
+
+    @Override
+    public void onLongPress(MotionEvent event)
+    {
+        Log.d(DEBUG_TAG, "onLongPress: " + event.toString());
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent event)
+    {
+        Log.d(DEBUG_TAG, "onSingleTapUp: " + event.toString());
+        return true;
     }
 
     private void dispatchOpenGallery()

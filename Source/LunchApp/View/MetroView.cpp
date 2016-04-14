@@ -98,9 +98,15 @@ void MetroView::init()
 	this->setRenderHint( QPainter::Antialiasing );
 	this->setRenderHint( QPainter::SmoothPixmapTransform );
 	this->setCacheMode( QGraphicsView::CacheBackground );
+
 	this->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 	this->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
-    this->setAttribute( Qt::WA_NoSystemBackground, true );
+    
+	this->setAttribute( Qt::WA_NoSystemBackground);
+	this->setAttribute( Qt::WA_AcceptTouchEvents );
+
+	this->grabGesture( Qt::SwipeGesture );
+	this->grabGesture( Qt::PanGesture );
 
 	scene = new QGraphicsScene( this );
 	this->setScene( scene );
@@ -367,92 +373,80 @@ void MetroView::uploadImagePressed( bool )
 	emit uploadPicture( pixmap );
 }
 
+bool MetroView::event( QEvent *event )
+{
+	if ( event->type() == QEvent::Gesture )
+	{
+		return gestureEvent(static_cast<QGestureEvent*>(event));
+	}
+	else
+	{
+		return QWidget::event( event );
+	}
+}
+
 void MetroView::wheelEvent( QWheelEvent* wheelEvent )
 {
+    if( adminMode )		// Scrolling through weeks disabled for now
+        return;
+
 	calendar->setVisible( false );
 
-	if( adminMode )		// Scrolling through weeks disabled for now
-		return;
+    scrollWeeks( wheelEvent->delta() < 0 ? AllWeeksView::eRightDirection : AllWeeksView::eLeftDirection );
+}
 
-	int scrollDist = this->width() /*Style::getDayWidth()*/;	// Scroll one column or the whole week
-	if( wheelEvent->delta() > 0 )
+bool MetroView::gestureEvent( QGestureEvent *event )
+{
+#ifdef Q_OS_ANDROID
+    __android_log_print( ANDROID_LOG_VERBOSE, "LunchApp", "gestureEvent" );
+#endif
+
+	if( QGesture *swipe = event->gesture( Qt::SwipeGesture ) )
 	{
-		if( weekMoveAnimation->state() != QAbstractAnimation::Running )
+#ifdef Q_OS_ANDROID
+		__android_log_print( ANDROID_LOG_VERBOSE, "LunchApp", "SwipeGesture" );
+#endif
+		QSwipeGesture* gesture = static_cast<QSwipeGesture *>( swipe );
+		if( gesture->state() == Qt::GestureFinished )
 		{
-			// Notify week of scroll and check if not already loading
-			bool canScroll = weeksView->scrollStarted( AllWeeksView::eToLeftDirection );
-			if( !canScroll )
-				return;
-
-			// Update animations
-			weekMoveAnimation->setStartValue( weeksView->pos() );
-			weekMoveAnimation->setEndValue( QPointF( weeksView->pos().x() + scrollDist, weeksView->pos().y() ) );
-			weekMoveAnimation->setDuration( kWeekAnimationTime );
-
-			backgroundAnimation->setStartValue( background->getOffset() );
-			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() + scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
-			backgroundAnimation->setDuration( kWeekAnimationTime );
-
-			parallelAnimations->start();
+			if( gesture->horizontalDirection() == QSwipeGesture::Left )
+			{
+				scrollWeeks( AllWeeksView::eLeftDirection );
+			}
+			else if( gesture->horizontalDirection() == QSwipeGesture::Right )
+			{
+				scrollWeeks( AllWeeksView::eRightDirection );
+			}
 		}
-		else
-		{
-			return;
 
-			parallelAnimations->stop();
-
-			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
-			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() + scrollDist, weeksView->pos().y() ) );
-
-			int numDays = (int)((weekMoveAnimation->endValue().toPointF().x() - weekMoveAnimation->startValue().toPointF().x()) / Style::getDayWidth());
-			weekMoveAnimation->setDuration( kWeekAnimationTime * numDays/2 );
-
-			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
-			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() + scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
-			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
-
-			parallelAnimations->start();
-		}
-	} 
-	else if( wheelEvent->delta() < 0 )
-	{
-		if( weekMoveAnimation->state() != QAbstractAnimation::Running )
-		{
-			// Notify week of scroll and check if not already loading
-			bool canScroll = weeksView->scrollStarted( AllWeeksView::eToRightDirection );
-			if( !canScroll )
-				return;
-
-			// Update animations
-			weekMoveAnimation->setStartValue( weeksView->pos() );
-			weekMoveAnimation->setEndValue( QPointF( weeksView->pos().x() - scrollDist, weeksView->pos().y() ) );
-			weekMoveAnimation->setDuration( kWeekAnimationTime );
-
-			backgroundAnimation->setStartValue( background->getOffset() );
-			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() - scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
-			backgroundAnimation->setDuration( kWeekAnimationTime );
-
-			parallelAnimations->start();
-		}
-		else
-		{
-			return;
-
-			parallelAnimations->stop();
-
-			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
-			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() - scrollDist, weeksView->pos().y() ) );
-
-			int numDays = (int)((weekMoveAnimation->startValue().toPointF().x() - weekMoveAnimation->endValue().toPointF().x()) / Style::getDayWidth());
-			weekMoveAnimation->setDuration( kWeekAnimationTime * numDays/2 );
-
-			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
-			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() - scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
-			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
-
-			parallelAnimations->start();
-		}
+		return true;
 	}
+	else if( QGesture *swipe = event->gesture( Qt::PanGesture ) )
+	{
+#ifdef Q_OS_ANDROID
+		__android_log_print( ANDROID_LOG_VERBOSE, "LunchApp", "PanGesture" );
+#endif
+		QPanGesture* gesture = static_cast<QPanGesture *>( swipe );
+		if( gesture->state() == Qt::GestureFinished )
+		{
+			QPointF delta = gesture->delta();
+#ifdef Q_OS_ANDROID
+            __android_log_print( ANDROID_LOG_VERBOSE, "LunchApp", "delta: %f", delta.x() );
+#endif
+			if( delta.x() < 0 )
+			{
+				scrollWeeks( AllWeeksView::eRightDirection );
+			}
+			else if( delta.x() > 0  )
+			{
+				scrollWeeks( AllWeeksView::eLeftDirection );
+			}
+		}
+	
+		return true;
+	}
+
+	return false;
 }
 
 void MetroView::resizeEvent( QResizeEvent * event )
@@ -598,4 +592,87 @@ void MetroView::addCameraWidget()
 	//
 	//     camera->setCaptureMode( QCamera::CaptureStillImage );
 	// 	camera->start();
+}
+
+void MetroView::scrollWeeks( AllWeeksView::EDirection direction )
+{
+	int scrollDist = this->width() /*Style::getDayWidth()*/;	// Scroll one column or the whole week
+	if( direction == AllWeeksView::eLeftDirection )
+	{
+		if( weekMoveAnimation->state() != QAbstractAnimation::Running )
+		{
+			// Notify week of scroll and check if not already loading
+			bool canScroll = weeksView->scrollStarted( direction );
+			if( !canScroll )
+				return;
+
+			// Update animations
+			weekMoveAnimation->setStartValue( weeksView->pos() );
+			weekMoveAnimation->setEndValue( QPointF( weeksView->pos().x() + scrollDist, weeksView->pos().y() ) );
+			weekMoveAnimation->setDuration( kWeekAnimationTime );
+
+			backgroundAnimation->setStartValue( background->getOffset() );
+			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() + scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setDuration( kWeekAnimationTime );
+
+			parallelAnimations->start();
+		}
+		else
+		{
+			return;
+
+			parallelAnimations->stop();
+
+			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
+			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() + scrollDist, weeksView->pos().y() ) );
+
+			int numDays = (int)((weekMoveAnimation->endValue().toPointF().x() - weekMoveAnimation->startValue().toPointF().x()) / Style::getDayWidth());
+			weekMoveAnimation->setDuration( kWeekAnimationTime * numDays/2 );
+
+			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
+			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() + scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
+
+			parallelAnimations->start();
+		}
+	} 
+	else if( direction == AllWeeksView::eRightDirection )
+	{
+		if( weekMoveAnimation->state() != QAbstractAnimation::Running )
+		{
+			// Notify week of scroll and check if not already loading
+			bool canScroll = weeksView->scrollStarted( direction );
+			if( !canScroll )
+				return;
+
+			// Update animations
+			weekMoveAnimation->setStartValue( weeksView->pos() );
+			weekMoveAnimation->setEndValue( QPointF( weeksView->pos().x() - scrollDist, weeksView->pos().y() ) );
+			weekMoveAnimation->setDuration( kWeekAnimationTime );
+
+			backgroundAnimation->setStartValue( background->getOffset() );
+			backgroundAnimation->setEndValue( QPointF( background->getOffset().x() - scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setDuration( kWeekAnimationTime );
+
+			parallelAnimations->start();
+		}
+		else
+		{
+			return;
+
+			parallelAnimations->stop();
+
+			weekMoveAnimation->setStartValue( weekMoveAnimation->currentValue().toPointF() );
+			weekMoveAnimation->setEndValue( QPointF( weekMoveAnimation->endValue().toPointF().x() - scrollDist, weeksView->pos().y() ) );
+
+			int numDays = (int)((weekMoveAnimation->startValue().toPointF().x() - weekMoveAnimation->endValue().toPointF().x()) / Style::getDayWidth());
+			weekMoveAnimation->setDuration( kWeekAnimationTime * numDays/2 );
+
+			backgroundAnimation->setStartValue( backgroundAnimation->currentValue().toPointF() );
+			backgroundAnimation->setEndValue( QPointF( backgroundAnimation->endValue().toPointF().x() - scrollDist * kBackgroundScrollRatio, background->getOffset().y() ) );
+			backgroundAnimation->setDuration( kWeekAnimationTime * numDays/2 );
+
+			parallelAnimations->start();
+		}
+	}
 }

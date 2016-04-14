@@ -15,12 +15,15 @@
 #include "Model/InterestCruncher.h"
 
 
+static const int		kTimeCheckInterval	= 10000;	// milliseconds
+static const QString	kDayNames[]			= { "lu", "ma", "mi", "jo", "vi" };
+
 User* Controller::user = NULL;
 std::map<QString, int> Controller::weekDays;
 
 
 Controller::Controller(QObject *parent)
-	: QThread(parent)
+	: QThread( parent )
 {
 	// If these names change in the database, all hell will brake loose, because of a design flaw
 	weekDays["lu"] = 1;
@@ -34,7 +37,6 @@ Controller::Controller(QObject *parent)
 	// The user should be taken from the AD or just username
 	// And the user type from the DB
 	QString userName = "Andi";
-
 #if WIN32
 	wchar_t username[256];
 	DWORD username_len = 256;
@@ -44,12 +46,16 @@ Controller::Controller(QObject *parent)
 	userName = userName.left( userName.indexOf( " " ) );
 	userName = userName.left( userName.indexOf( "-" ) );
 #endif
-
 	user = new User( userName, User::eAdmin );
 
 	dataTransfer = new DataTransfer( this );
-
 	connect( dataTransfer, SIGNAL( menuFinished( Week& ) ), this, SLOT( dataFinished( Week& ) ) );
+
+	timeChecker = new QTimer( this );
+	connect( timeChecker, SIGNAL( timeout() ), this, SLOT( onTimeCheck() ) );
+	timeChecker->start( kTimeCheckInterval );
+
+	lastShownMenuDate = QDate::currentDate().addDays( -1 );
 }
 
 Controller::~Controller()
@@ -108,6 +114,15 @@ void Controller::uploadPicture( QPixmap /* pixmap */ )
 	// TO DO
 }
 
+void Controller::onTimeCheck()
+{
+	if( ( lastShownMenuDate != QDate::currentDate() ) && ( QTime::currentTime() > kDayMenuNotificationTime ) )
+	{
+		notifyDayMenu();
+		lastShownMenuDate = QDate::currentDate();
+	}
+}
+
 void Controller::run()
 {
 	// Could check for notifications here
@@ -124,6 +139,11 @@ void Controller::dataFinished( Week& week )
 	InterestCruncher::getInstance()->crunchUserInterest( week );
 
 	emit weekArrived( week );
+
+	if( QDate::currentDate() >= week.getStartDate() && QDate::currentDate() <= week.getEndDate() && !week.isEmpty() )
+	{
+		currentWeek = week;
+	}
 }
 
 bool Controller::compareDays( Day first, Day second )
@@ -132,6 +152,45 @@ bool Controller::compareDays( Day first, Day second )
 		return true;
 	else
 		return false;
+}
+
+void Controller::notifyDayMenu()
+{
+	if( currentWeek.isEmpty() )
+	{
+		return;
+	}
+
+	int day = QDate::currentDate().dayOfWeek() - 1;
+	if( currentWeek.getDays().size() <= (size_t)day )				// not all days have menus
+		return;
+
+	Day currentDay;
+	for( int i = 0 ; i < 5 ; i++ )
+	{
+		QString dayName = currentWeek.getDays()[ i ].getName();
+		if( currentWeek.getDays()[ i ].getName().toLower().contains( kDayNames[ day ] ) )
+		{
+			currentDay = currentWeek.getDays()[ i ];
+			break;
+		}
+	}
+	if( currentDay.getDishes().size() == 0  )		// current day doesn't have a menu
+		return;
+
+	// ! Only for debug purposes !
+	currentDay.getDishes()[0].setUserSelected( true );
+	currentDay.getDishes()[1].setUserSelected( true );
+
+	for( size_t i = 0 ; i < currentDay.getDishes().size() ; i++ )
+	{
+		if( currentDay.getDishes()[i].getUserSelected() )
+		{
+			QString todayMenu = "Azi ai:\n" + currentDay.getDishes()[i].getName() + " ( " + currentDay.getDishes()[i].getIdentifier() + " )";
+
+			emit notify( todayMenu, currentDay.getDishes()[i].getPixmap() );
+		}
+	}
 }
 
 void Controller::sendDummyWeek(QDate startDate, QDate endDate)
