@@ -136,8 +136,8 @@ bool NotificationWindow::close()
 		return true;
 
     auto i = windows.indexOf( this );
-
-    Q_ASSERT( i >= 0 );
+	if( i < 0 )
+		return true;
 
     windows.remove( i );
     if( windows.empty() )

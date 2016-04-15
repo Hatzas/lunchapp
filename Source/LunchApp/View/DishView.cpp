@@ -301,10 +301,6 @@ void DishView::leaveEvent( QEvent* /*event*/ )
 
 void DishView::mouseMoveEvent( QMouseEvent* mouseEvent )
 {
-#ifdef Q_OS_ANDROID
-	return  QWidget::mouseReleaseEvent( mouseEvent );
-#endif
-
 	if( disabled || isPlaceholder )
 		return QWidget::mouseMoveEvent( mouseEvent );
 

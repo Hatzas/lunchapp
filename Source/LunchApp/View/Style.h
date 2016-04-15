@@ -23,7 +23,7 @@ static const int		kNotificationShowTime			= 6000;		// milliseconds
 static const int		kMenuNotificationShowTime		= 1800000;	// milliseconds (30 minutes)
 static const int		kNotificationAnimationTime		= 450;		// milliseconds
 
-static const QTime		kDayMenuNotificationTime		= QTime( 12, 10 );	// 12h 10min
+static const QTime		kDayMenuNotificationTime		= QTime( 9, 0 ); /*QTime( 12, 10 );*/	// 12h 10min
 
 static const float		kDateUsernameTopOffset			= 30;		// pixels ( spacing from top of view )
 static const float		kDateUsernameSideOffset			= 40;		// pixels ( spacing from top of view )
