@@ -18,10 +18,14 @@ public:
 						DayView( QWidget *parent, QString name, std::vector<Dish>& dishes, EMode mode = eNormalMode );		// only intended for editing
 						~DayView();
 
-	virtual void		wheelEvent( QWheelEvent* event );
+	
 			void		mainWindowResized( QSize size );
 
 			void		selectionChangedOn( const Dish& dish );		
+
+protected:
+	virtual	bool		event( QEvent *event );
+	virtual void		wheelEvent( QWheelEvent* event );
 
 private:
 	Day							day;

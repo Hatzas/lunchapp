@@ -36,7 +36,8 @@ DayView::~DayView()
 
 void DayView::init()
 {
-//	QScroller::grabGesture( this, QScroller::LeftMouseButtonGesture );
+    // Properties
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	/* Create objects */
 	if( mode == eBrowseMode )
@@ -63,9 +64,15 @@ void DayView::init()
 // 	this->adjustSize();
 }
 
+bool DayView::event( QEvent *event )
+{
+	return QWidget::event( event );
+}
+
+
 void DayView::wheelEvent( QWheelEvent* wheelEvent )
 {
-	return ((WeekView*)this->parent())->wheelEvent( wheelEvent );
+	return QWidget::wheelEvent( wheelEvent );
 }
 
 void DayView::mainWindowResized( QSize size )

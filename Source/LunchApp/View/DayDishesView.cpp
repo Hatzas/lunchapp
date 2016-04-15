@@ -40,7 +40,11 @@ DayDishesView::~DayDishesView()
 void DayDishesView::init()
 {
 	// Properties
-	//QScroller::grabGesture( this, QScroller::MiddleMouseButtonGesture );
+#ifdef Q_OS_ANDROID
+    QScroller::grabGesture( this, QScroller::LeftMouseButtonGesture );
+#endif
+
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	if( mode == eEditMode )
 	{
@@ -97,10 +101,10 @@ void DayDishesView::mainWindowResized( QSize size )
 	{
 		QRect visibleRect = this->visibleRegion().boundingRect();
 
-		if( visibleRect.height() >= this->size().height() );
+        if( visibleRect.height() >= this->size().height() )
 		{
 			int deltaY = -dishViewsVect[0]->y();
-			for( int i = 0 ; i < dishViewsVect.size() ; i++ )
+            for( size_t i = 0 ; i < dishViewsVect.size() ; i++ )
 			{
 				dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
 			}
@@ -154,10 +158,10 @@ bool DayDishesView::event( QEvent* event )
 
 			QScrollPrepareEvent *se = static_cast<QScrollPrepareEvent *>( event );
 			se->setViewportSize( QSize( this->width(), visibleRect.height() ) );
-			se->setContentPosRange( QRectF( 0, 0, size.width(), size.height() - visibleRect.height() ) );
+            se->setContentPosRange( QRectF( 0, -Style::getDishSpacing(), size.width(), size.height() - visibleRect.height() ) );
 			se->setContentPos( -dishViewsVect[0]->pos() );
 			se->accept();
-			return true;
+			return QWidget::event( event );
 		}
 	case QEvent::Scroll: 
 		{
@@ -165,12 +169,12 @@ bool DayDishesView::event( QEvent* event )
 			QPointF scrollPos = -se->contentPos() - se->overshootDistance();
 
 			int deltaY = scrollPos.y() - dishViewsVect[0]->y();
-			for( int i = 0 ; i < dishViewsVect.size() ; i++ )
+            for( size_t i = 0 ; i < dishViewsVect.size() ; i++ )
 			{
 				dishViewsVect[i]->move( dishViewsVect[i]->x(), dishViewsVect[i]->y() + deltaY );
 			}
 
-			return true;
+			return QWidget::event( event );
 		}
 	default:
 		break;
@@ -188,7 +192,7 @@ void DayDishesView::wheelEvent( QWheelEvent* wheelEvent )
 
 	if( wheelEvent->delta() > 0 )
 	{
-		if( dishViewsVect.front()->visibleRegion().boundingRect().height() == dishViewsVect.front()->height() )
+		if( dishViewsVect.front()->visibleRegion().boundingRect().height() >= dishViewsVect.front()->height() )
 			return;
 
 		scrollAnimation->setStartValue( internalContentOffset );
@@ -197,7 +201,7 @@ void DayDishesView::wheelEvent( QWheelEvent* wheelEvent )
 	}
 	else if( wheelEvent->delta() < 0 )
 	{
-		if( dishViewsVect.back()->visibleRegion().boundingRect().height() == dishViewsVect.back()->height() )
+		if( dishViewsVect.back()->visibleRegion().boundingRect().height() >= dishViewsVect.back()->height() )
 			return;
 
 		scrollAnimation->setStartValue( internalContentOffset );
@@ -234,7 +238,7 @@ void DayDishesView::mousePressEvent( QMouseEvent* mouseEvent )
 		drag->setPixmap( selectedDishView->getScaledPixmap() );
 		drag->setHotSpot( mouseEvent->pos() - child->pos() );
 
-		Qt::DropAction dropAction = drag->exec();
+        drag->exec();
 	}
 }
 
@@ -247,7 +251,7 @@ void DayDishesView::dragEnterEvent( QDragEnterEvent* event )
 	}
 }
 
-void DayDishesView::dragLeaveEvent( QDragLeaveEvent* event )
+void DayDishesView::dragLeaveEvent( QDragLeaveEvent* /* event */ )
 {
 	editBackgroundLabel->setStyleSheet( kEditableDayStyleSheet );
 }
@@ -335,7 +339,6 @@ void DayDishesView::stackDishViews()
 		int lastXCoord = lastPlaced->x() + lastPlaced->width() + Style::getDishSpacing();
 		int lastYCoord = lastPlaced->y() + lastPlaced->height() + Style::getDishSpacing();
 
-		int currentWidth = current->width();
 		if( lastXCoord + current->width() <= width )
 		{
 			// Place besides

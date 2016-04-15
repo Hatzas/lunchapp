@@ -39,7 +39,7 @@ void DataTransfer::getUserMenu(const QDate& startDate, const QDate& endDate)
 {
 	NetEntity entity;
 	entity.setMethodType(eGetMethod);
-	entity.setMethodUrl("usermenu");
+	entity.setMethodUrl( "menu"/*"usermenu"*/);
 	entity.setDates(startDate, endDate);
 	
 	restClient->pushRequest(entity);
@@ -65,7 +65,6 @@ void DataTransfer::getDishCategory()
 
 void DataTransfer::onRequestFinished(const NetEntity& entity)
 {
-	bool ok;
 	QJsonDocument jsonDoc = QJsonDocument::fromJson(entity.getResult().toUtf8());
 	QJsonArray jsonArray;
 	std::vector<Day> vdays;

@@ -6,8 +6,16 @@
 #include <QSize>
 #include <QTime>
 
+//#define Q_OS_ANDROID
+
+#ifdef Q_OS_ANDROID
+#	define RESOURCES_ROOT		":/Resources/"
+#else
+#	define RESOURCES_ROOT		"Resources/"
+#endif
+
 static const QString	kAppName						= "Lunch App";
-static const QString	kAppIconPath					= "Resources/icon.png";
+static const QString	kAppIconPath					= RESOURCES_ROOT"icon.png";
 
 static const int		kBaseScreenWidth				= 1920;		// pixels
 
@@ -15,7 +23,7 @@ static const int		kNotificationShowTime			= 6000;		// milliseconds
 static const int		kMenuNotificationShowTime		= 1800000;	// milliseconds (30 minutes)
 static const int		kNotificationAnimationTime		= 450;		// milliseconds
 
-static const QTime		kDayMenuNotificationTime		= QTime( 12, 10 );	// 12h 10min
+static const QTime		kDayMenuNotificationTime		= QTime( 9, 0 ); /*QTime( 12, 10 );*/	// 12h 10min
 
 static const float		kDateUsernameTopOffset			= 30;		// pixels ( spacing from top of view )
 static const float		kDateUsernameSideOffset			= 40;		// pixels ( spacing from top of view )
@@ -73,9 +81,6 @@ static const QColor		kDishIdentifierColor			= QColor( 255, 255, 0, 255 );
 static const QSize		kDishPlaceholderSize			= QSize( 300, 200 );
 
 static const float		kBackgroundScrollRatio			= 0.2f;
-
-static const QSize		kLoadingAnimSize				= QSize( 24, 24 );
-static const int		kLoadingAnimOffset				= 300;
 
 class Style
 {

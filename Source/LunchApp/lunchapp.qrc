@@ -1,3 +1,45 @@
 <RCC>
-    <qresource prefix="/"/>
+    <qresource prefix="/">
+        <file>Resources/background1.jpg</file>
+        <file>Resources/background2.bmp</file>
+        <file>Resources/background3.bmp</file>
+        <file>Resources/background4.bmp</file>
+        <file>Resources/happy.png</file>
+        <file>Resources/loader1.gif</file>
+        <file>Resources/loader2.gif</file>
+        <file>Resources/loader3.gif</file>
+        <file>Resources/mancare1.png</file>
+        <file>Resources/mancare2.png</file>
+        <file>Resources/mancare3.png</file>
+        <file>Resources/mancare4.png</file>
+        <file>Resources/mancare5.png</file>
+        <file>Resources/meah.png</file>
+        <file>Resources/plus.png</file>
+        <file>Resources/prajitura1.png</file>
+        <file>Resources/prajitura2.png</file>
+        <file>Resources/prajitura3.png</file>
+        <file>Resources/prajitura4.png</file>
+        <file>Resources/quit.png</file>
+        <file>Resources/quit2.png</file>
+        <file>Resources/quit3.png</file>
+        <file>Resources/ribbon1.png</file>
+        <file>Resources/ribbon2.png</file>
+        <file>Resources/ribbon3.png</file>
+        <file>Resources/salata1.png</file>
+        <file>Resources/salata2.png</file>
+        <file>Resources/salata3.png</file>
+        <file>Resources/salata4.png</file>
+        <file>Resources/supa1.png</file>
+        <file>Resources/supa2.png</file>
+        <file>Resources/supa3.png</file>
+        <file>Resources/supa4.png</file>
+        <file>Resources/wow.png</file>
+        <file>Resources/yuck.png</file>
+        <file>Resources/gallery.jpg</file>
+        <file>QML/camera.qml</file>
+        <file>QML/PhotoPreview.qml</file>
+        <file>QML/test.qml</file>
+        <file>Resources/icon.png</file>
+        <file>Resources/close.png</file>
+    </qresource>
 </RCC>

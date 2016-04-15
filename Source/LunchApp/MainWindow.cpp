@@ -3,8 +3,11 @@
 #include <algorithm>
 #include <QMenu>
 #include <QCloseEvent>
+#ifdef Q_OS_ANDROID
+#   include<QtAndroidExtras>
+#endif
 
-#include "Style.h"
+#include "View/Style.h"
 #include "View/NotificationWindow.h"
 
 
@@ -35,7 +38,7 @@ MainWindow::MainWindow( QWidget *parent )
 
 	// Tray
 	setupTray();
-	showTrayMessage( "Sunt si eu aici" );
+//	showNotification( "Sunt si eu aici" );
 
 	// Init members
 	regularMetroView->init();
@@ -78,8 +81,6 @@ void MainWindow::switchAdministrate( bool )
 		regularMetroView->show();
 		ui.verticalLayout->addWidget( regularMetroView );
 
-		int previousWidth = this->width();
-
  		if( this->width() < regularMetroView->minimumWidth() )
 		{
  			this->setMinimumWidth( regularMetroView->minimumWidth() );
@@ -90,34 +91,83 @@ void MainWindow::switchAdministrate( bool )
 	
 }
 
-void MainWindow::showTrayMessage( const QString& msg )
+void MainWindow::showNotification( const QString& msg )
 {
-	NotificationWindow* customWindow = new NotificationWindow( msg );
+#ifdef Q_OS_ANDROID
+
+    QAndroidJniObject javaNotification = QAndroidJniObject::fromString( msg );
+    QAndroidJniObject::callStaticMethod<void>("org/qtproject/LunchApp/LunchApp",
+                                       "notify",
+                                       "(Ljava/lang/String;)V",
+                                       javaNotification.object<jstring>());
+
+#else
+
+	NotificationWindow* customWindow = new NotificationWindow( this, msg );
 	customWindow->show();
+
+#endif
 }
 
-void MainWindow::resizeEvent( QResizeEvent * event )
+void MainWindow::showNotification( const QString& msg, const QPixmap& pixmap )
+{
+#ifdef Q_OS_ANDROID
+
+	// Call method and pass icon
+	// TO DO
+
+	QAndroidJniObject javaNotification = QAndroidJniObject::fromString( msg );
+	QAndroidJniObject::callStaticMethod<void>("org/qtproject/LunchApp/LunchApp",
+		"notify",
+		"(Ljava/lang/String;)V",
+		javaNotification.object<jstring>());
+
+#else
+
+	std::vector<QPixmap> dishesPixmaps;
+	dishesPixmaps.clear();
+	dishesPixmaps.push_back( pixmap );
+
+	NotificationWindow* customWindow = new NotificationWindow( this, msg, dishesPixmaps, kMenuNotificationShowTime );
+	customWindow->show();
+
+#endif
+}
+
+void MainWindow::resizeEvent( QResizeEvent* /*event*/ )
 {
 }
 
 void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
 {
-	if(reason == QSystemTrayIcon::Context)
+	if( reason == QSystemTrayIcon::Context )
+	{
 		return;
+	}
 
-	show();
+	this->show();
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-	hide();
+#ifdef Q_OS_ANDROID
+    event->accept();
+#else
+
 	event->ignore();
 
-	showTrayMessage( tr("Aplicatia nu e moarta, se transforma (in tray)") );
+	showNotification( tr("Aplicatia nu e moarta, se transforma (in tray)") );
+
+	this->hide();
+#endif
 }
 
 void MainWindow::setupTray()
 {
+#ifdef Q_OS_ANDROID
+	return;
+#endif
+
 	trayIcon = new QSystemTrayIcon(this);
 	trayIcon->setIcon( QPixmap( kAppIconPath ) );
 	trayIcon->setToolTip( tr( "Lunch App\nApasa-l" ) );
@@ -129,7 +179,7 @@ void MainWindow::setupTray()
 	trayIconMenu = new QMenu(this);
 	
 	QAction* quitAction = new QAction(tr("Inchide de tot"), trayIconMenu);
-	quitAction->setIcon(QIcon("Resources/quit.png"));
+	quitAction->setIcon(QIcon(RESOURCES_ROOT"quit.png"));
 	quitAction->setShortcut(QKeySequence("Ctrl+Q"));
 	connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 	trayIconMenu->addAction(quitAction);
@@ -148,6 +198,8 @@ void MainWindow::setupController()
 
 void MainWindow::makeConnections()
 {
+	connect( controller, SIGNAL( notify( const QString&, const QPixmap& ) ), this, SLOT( showNotification( const QString&, const QPixmap& ) ) );
+
 	connect( controller, SIGNAL( weekArrived( const Week& ) ), regularMetroView, SLOT( weekArrived( const Week& ) ), Qt::QueuedConnection );
 
 	connect( regularMetroView, SIGNAL( requestWeekBefore( const Week& ) ), controller, SLOT( requestWeekBefore( const Week& ) ), Qt::QueuedConnection );
@@ -158,8 +210,9 @@ void MainWindow::makeConnections()
 
 	if( adminMetroView )
 	{
-		connect( adminMetroView, SIGNAL( publishWeek( const Week& ) ), controller, SLOT( publishWeek( const Week& ) ), Qt::QueuedConnection );
 		connect( adminMetroView, SIGNAL( requestAllDishes() ), controller, SLOT( requestAllDishes() ), Qt::QueuedConnection );
+		connect( adminMetroView, SIGNAL( publishWeek( const Week& ) ), controller, SLOT( publishWeek( const Week& ) ), Qt::QueuedConnection );
+		connect( adminMetroView, SIGNAL( uploadPicture( QPixmap ) ), controller, SLOT( uploadPicture( QPixmap ) ), Qt::QueuedConnection );
 	
 		connect( controller, SIGNAL( allDishesArrived( Day ) ), adminMetroView, SLOT( allDishesArrived( Day ) ), Qt::QueuedConnection );
 	}
@@ -171,22 +224,22 @@ void MainWindow::sendDummyWeek()
 	std::vector<Dish> dishesVect;
 	dishesVect.push_back( Dish( "Ciorba de varza",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa1.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa1.png"), 1 ) );
 	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare2.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare2.png"), 2 ) );
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare3.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare3.png"), 2 ) );
 	dishesVect.push_back( Dish( "Salata din gradina bunicii",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata3.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata3.png"), 3 ) );
 	dishesVect.push_back( Dish( "Salata din gradina ursului",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata4.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata4.png"), 3 ) );
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa2.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa2.png"), 1 ) );
 
 	// Identifiers
 	dishesVect[0].setIdentifier( "C1" );
@@ -267,9 +320,6 @@ void MainWindow::sendDummyWeek()
 
 	QDate monday = QDate::currentDate();
 	QDate friday = monday.addDays( 4 );
-
-	int startDay = monday.day();
-	int endDay = friday.day();
 
 	Week week( monday, friday, daysVect );
 

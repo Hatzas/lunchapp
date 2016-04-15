@@ -4,6 +4,15 @@
 
 
 Dish::Dish()
+    : numWows( 0 )
+    , numHappies( 0 )
+    , numMeahs( 0 )
+    , numYucks( 0 )
+    , numUserOffers( 0 )
+    , numUserPicks( 0 )
+    , userRating( eNotRated )
+    , userSelected( false )
+    , userInterest( eHigh )
 {
 
 }
@@ -40,9 +49,7 @@ Dish::Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum )
 	: name( name )
 	, ingredients( ingredients )
 	, pixmap( pixmap )
-	, courseNum( courseNum )
-	, userSelected( false )
-	, userInterest( eHigh )
+    , courseNum( courseNum )
 	, numWows( 0 )
 	, numHappies( 0 )
 	, numMeahs( 0 )
@@ -50,6 +57,8 @@ Dish::Dish( QString name, QString ingredients, QPixmap pixmap, int courseNum )
 	, numUserOffers( 0 )
 	, numUserPicks( 0 )
 	, userRating( eNotRated )
+    , userSelected( false )
+    , userInterest( eHigh )
 {
 
 }

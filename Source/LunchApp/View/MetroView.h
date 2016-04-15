@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <QCalendarWidget>
 #include <QLabel>
+#include <QGestureEvent>
 
 #include "AllWeeksView.h"
 #include "InfiniteBackground.h"
@@ -21,8 +22,11 @@ public:
 
 			void			init();
 
+protected:
+	virtual	bool			event( QEvent *event );
 	virtual void			wheelEvent( QWheelEvent* event );
 
+			bool			gestureEvent( QGestureEvent *event );
 signals:
 			void			requestWeekBefore( const Week& week );
 			void			requestWeekAfter( const Week& week );
@@ -34,6 +38,8 @@ signals:
 
 			void			publishWeek( const Week& week );
 
+			void			uploadPicture( QPixmap pixmap );
+
 public slots:
 			void			weekArrived( const Week& week );
 			void			allDishesArrived( Day allDishesVect );
@@ -44,6 +50,7 @@ public slots:
 			void			dateSelected();
 
 			void			publishPressed( bool );
+			void			uploadImagePressed( bool );
 
 protected:
 	virtual void			resizeEvent( QResizeEvent * event );
@@ -62,6 +69,7 @@ private:
 	QPushButton*				administrateButton;
 	QPushButton*				publishButton;
 	QPushButton*				changeBackgroundButton;
+	QPushButton*				photoButton;
 
 	QCalendarWidget*			calendar;
 
@@ -77,5 +85,10 @@ private:
 
 	void					setWeekDateText( const Week &currentWeek );
 
-	void					alignButtons();
+	void					alignControls();
+
+	QPixmap					takePicture( bool fromCamera );
+	void					addCameraWidget();
+
+	void					scrollWeeks( AllWeeksView::EDirection direction );
 };

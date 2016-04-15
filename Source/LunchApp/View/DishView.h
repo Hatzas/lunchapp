@@ -33,6 +33,7 @@ public slots:
 			void				comboSelectionChanged( int selection );
 
 protected:
+	virtual bool				event( QEvent* event );
 	virtual void				wheelEvent( QWheelEvent* event );
 	
 	virtual void				enterEvent( QEvent* event );
@@ -41,6 +42,8 @@ protected:
 	virtual void				mouseMoveEvent( QMouseEvent* event );
 	virtual void				mousePressEvent( QMouseEvent* event );
 	virtual void				mouseReleaseEvent( QMouseEvent* event );
+
+	virtual void				mouseDoubleClickEvent( QMouseEvent* event );
 
 private:
 			Dish						dish;

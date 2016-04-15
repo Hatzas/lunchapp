@@ -13,7 +13,7 @@ SelectedEffect::~SelectedEffect()
 {
 }
 
-QRectF SelectedEffect::boundingRectFor( const QRectF & rect ) const
+QRectF SelectedEffect::boundingRectFor( const QRectF& /*rect*/ ) const
 {
 	return sourceBoundingRect();
 
@@ -41,7 +41,7 @@ void SelectedEffect::draw( QPainter* painter )
 	painter->restore();
 }
 
-void SelectedEffect::sourceChanged( ChangeFlags flags )
+void SelectedEffect::sourceChanged( ChangeFlags /*flags*/ )
 {
 	updateBoundingRect();
 

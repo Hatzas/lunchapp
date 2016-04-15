@@ -8,16 +8,18 @@
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QTimer>
+#include <QPushButton>
 
 #include "Style.h"
 
+class MainWindow;
 
 class NotificationWindow : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit					NotificationWindow( const QString &text, 
+	explicit					NotificationWindow( MainWindow* mainWindow, const QString &text, 
 									const std::vector<QPixmap>& iconsVect = std::vector<QPixmap>( 1, QPixmap( kAppIconPath ) ),
 									const int duration = kNotificationShowTime );
 
@@ -35,13 +37,15 @@ public slots:
 private:
 	static	QVector<NotificationWindow *>	windows;
 	static	int								lastIdx;
+	static	QSystemTrayIcon*				appIcon;
 
-	static	QSystemTrayIcon*				trayIcon;
+			MainWindow*						mainWindow;
 
 			QString							text;
 	const	std::vector<QPixmap>&			iconsVect;
 	
 			QLabel*							textLabel;
+			QPushButton*					closeButton;
 
 			QPropertyAnimation*				moveAnimation;
 
@@ -52,4 +56,6 @@ private:
 			void				init();
 
 			void				moveIn();
+
+			void				showApp();
 };

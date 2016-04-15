@@ -14,15 +14,15 @@ public:
 							WeekView( QWidget *parent, const Week& week, bool editMode = false );
 							~WeekView();
 
-	virtual void			wheelEvent( QWheelEvent* event );
 			void			mainWindowResized( QSize size );
 
 			void			selectionChangedOn( const Dish& dish );		
 
 			Week&			getWeek()										{ return week; }	
 
-public slots:
-			void			showDayMenuNotification();
+protected:
+	virtual	bool			event( QEvent *event );
+	virtual void			wheelEvent( QWheelEvent* event );
 
 private:
 	Week					week;
@@ -31,6 +31,6 @@ private:
 
 	void					init();
 
-	void					AddDays();
+	void					addDays();
 
 };

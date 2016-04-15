@@ -1,25 +1,29 @@
 ﻿#include "Controller.h"
 
-#include <windows.h>
 #include <time.h>
 #include <QTimer>
 
 #if WIN32
+#   include <windows.h>
 #	define SECURITY_WIN32
 #	include <Security.h>
 #	pragma comment( lib, "Secur32.lib" )
 #endif
 
+#include "View/Style.h"
 #include "Network/DataTransfer.h"
 #include "Model/InterestCruncher.h"
 
+
+static const int		kTimeCheckInterval	= 10000;	// milliseconds
+static const QString	kDayNames[]			= { "lu", "ma", "mi", "jo", "vi" };
 
 User* Controller::user = NULL;
 std::map<QString, int> Controller::weekDays;
 
 
 Controller::Controller(QObject *parent)
-	: QThread(parent)
+	: QThread( parent )
 {
 	// If these names change in the database, all hell will brake loose, because of a design flaw
 	weekDays["lu"] = 1;
@@ -33,7 +37,6 @@ Controller::Controller(QObject *parent)
 	// The user should be taken from the AD or just username
 	// And the user type from the DB
 	QString userName = "Andi";
-
 #if WIN32
 	wchar_t username[256];
 	DWORD username_len = 256;
@@ -43,12 +46,16 @@ Controller::Controller(QObject *parent)
 	userName = userName.left( userName.indexOf( " " ) );
 	userName = userName.left( userName.indexOf( "-" ) );
 #endif
-
 	user = new User( userName, User::eAdmin );
 
 	dataTransfer = new DataTransfer( this );
-
 	connect( dataTransfer, SIGNAL( menuFinished( Week& ) ), this, SLOT( dataFinished( Week& ) ) );
+
+	timeChecker = new QTimer( this );
+	connect( timeChecker, SIGNAL( timeout() ), this, SLOT( onTimeCheck() ) );
+	timeChecker->start( kTimeCheckInterval );
+
+	lastShownMenuDate = QDate::currentDate().addDays( -1 );
 }
 
 Controller::~Controller()
@@ -61,9 +68,6 @@ void Controller::requestWeekAfter( const Week& week )
 	QDate startDate = week.getStartDate().addDays( 7 );					// ! This will not work is the week does not start with Monday !
 	QDate endDate = startDate.addDays( 4 );								// ! Use dayOfWeek() to rectify !/
 
-	int startDay = startDate.day();
-	int endDay = endDate.day();
-
 	requestWeek( startDate, endDate );
 }
 
@@ -72,9 +76,6 @@ void Controller::requestWeekBefore( const Week& week )
 	// Compute DateTime before week startDate
 	QDate startDate = week.getStartDate().addDays( -7 );				// ! This will not work is the week does not start with Monday !
 	QDate endDate = startDate.addDays( 4 );								// ! Use dayOfWeek() to rectify !/
-
-	int startDay = startDate.day();
-	int endDay = endDate.day();
 
 	requestWeek( startDate, endDate );
 }
@@ -95,16 +96,31 @@ void Controller::requestAllDishes()
 	emit allDishesArrived( Day( "Toate", getAllDishes() ) );
 }
 
-void Controller::selectionChangedOn( const Dish& dish )
+void Controller::selectionChangedOn( const Dish& /* dish */ )
 {
 	// Store selection in database
 	// TO DO
 }
 
-void Controller::publishWeek( const Week& week )
+void Controller::publishWeek( const Week& /* week */ )
 {
 	// Store week in database
 	// TO DO
+}
+
+void Controller::uploadPicture( QPixmap /* pixmap */ )
+{
+	// Store week in database
+	// TO DO
+}
+
+void Controller::onTimeCheck()
+{
+	if( ( lastShownMenuDate != QDate::currentDate() ) && ( QTime::currentTime() > kDayMenuNotificationTime ) )
+	{
+		notifyDayMenu();
+		lastShownMenuDate = QDate::currentDate();
+	}
 }
 
 void Controller::run()
@@ -123,6 +139,11 @@ void Controller::dataFinished( Week& week )
 	InterestCruncher::getInstance()->crunchUserInterest( week );
 
 	emit weekArrived( week );
+
+	if( QDate::currentDate() >= week.getStartDate() && QDate::currentDate() <= week.getEndDate() && !week.isEmpty() )
+	{
+		currentWeek = week;
+	}
 }
 
 bool Controller::compareDays( Day first, Day second )
@@ -133,6 +154,52 @@ bool Controller::compareDays( Day first, Day second )
 		return false;
 }
 
+void Controller::notifyDayMenu()
+{
+	if( currentWeek.isEmpty() )
+	{
+		return;
+	}
+
+	int day = QDate::currentDate().dayOfWeek() - 1;
+	if( currentWeek.getDays().size() <= (size_t)day )				// not all days have menus
+		return;
+
+	Day currentDay;
+	for( int i = 0 ; i < 5 ; i++ )
+	{
+		QString dayName = currentWeek.getDays()[ i ].getName();
+		if( currentWeek.getDays()[ i ].getName().toLower().contains( kDayNames[ day ] ) )
+		{
+			currentDay = currentWeek.getDays()[ i ];
+			break;
+		}
+	}
+	if( currentDay.getDishes().size() == 0  )		// current day doesn't have a menu
+		return;
+
+	// ! Only for debug purposes !
+	currentDay.getDishes()[0].setUserSelected( true );
+	for( size_t i = 1 ; i < currentDay.getDishes().size() ; i++ )
+	{
+		if( currentDay.getDishes()[i].getCourseNum() != currentDay.getDishes()[0].getCourseNum() )
+		{	
+			currentDay.getDishes()[i].setUserSelected( true );
+			break;
+		}
+	}
+
+	for( size_t i = 0 ; i < currentDay.getDishes().size() ; i++ )
+	{
+		if( currentDay.getDishes()[i].getUserSelected() )
+		{
+			QString todayMenu = "Azi ai:\n" + currentDay.getDishes()[i].getName() + " ( " + currentDay.getDishes()[i].getIdentifier() + " )";
+
+			emit notify( todayMenu, currentDay.getDishes()[i].getPixmap() );
+		}
+	}
+}
+
 void Controller::sendDummyWeek(QDate startDate, QDate endDate)
 {
 //	Sleep( 500 );
@@ -140,22 +207,22 @@ void Controller::sendDummyWeek(QDate startDate, QDate endDate)
 	std::vector<Dish> dishesVect;
 	dishesVect.push_back( Dish( "Ciorba de varza",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa3.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa3.png"), 1 ) );
 	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare5.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare5.png"), 2 ) );
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare1.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare1.png"), 2 ) );
 	dishesVect.push_back( Dish( "Salata din gradina ursului",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata1.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata1.png"), 3 ) );
 	dishesVect.push_back( Dish( "Salata din gradina bunicii",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata2.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata2.png"), 3 ) );
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa4.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa4.png"), 1 ) );
 
 	dishesVect[0].setNumHappies( rand() % 250 );
 	dishesVect[1].setNumMeahs( rand() % 250 );
@@ -251,22 +318,22 @@ std::vector<Dish> Controller::getAllDishes()
 	std::vector<Dish> dishesVect;
 	dishesVect.push_back( Dish( "Ciorba de varza",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa1.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa1.png"), 1 ) );
 	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare2.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare2.png"), 2 ) );
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/mancare3.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare3.png"), 2 ) );
 	dishesVect.push_back( Dish( "Salata din gradina bunicii",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata3.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata3.png"), 3 ) );
 	dishesVect.push_back( Dish( "Salata din gradina ursului",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/salata4.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata4.png"), 3 ) );
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap("Resources/supa2.png"), 1 ) );
+		QPixmap(RESOURCES_ROOT"supa2.png"), 1 ) );
 
 	return dishesVect;
 }

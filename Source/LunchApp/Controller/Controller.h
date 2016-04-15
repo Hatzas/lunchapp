@@ -24,6 +24,7 @@ public:
 signals:
 			void				weekArrived( const Week& week );
 			void				allDishesArrived( Day containerDay );
+			void				notify( const QString& msg, const QPixmap& pixmap );
 
 public slots:
 			void				requestWeekBefore( const Week& week );
@@ -34,6 +35,10 @@ public slots:
 			void				selectionChangedOn( const Dish& dish );
 
 			void				publishWeek( const Week& week );
+
+			void				uploadPicture( QPixmap pixmap );
+
+			void				onTimeCheck();
 
 protected:
 			void				run();
@@ -48,9 +53,16 @@ private:
 
 			DataTransfer*				dataTransfer;
 
+			QTimer*						timeChecker;
+			QDate						lastShownMenuDate;
+
+			Week						currentWeek;
+
 			std::vector<Dish>	getAllDishes();
 
 	static	bool				compareDays( Day first, Day second );
+
+			void				notifyDayMenu();
 
 			void				randomizeRatings( std::vector<Dish> &dishesVect );
 };

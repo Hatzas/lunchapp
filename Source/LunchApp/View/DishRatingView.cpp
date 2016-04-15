@@ -7,6 +7,12 @@
 
 static const int kBorderSize = 1;	// pixels
 
+#ifdef Q_OS_ANDROID
+static const int			kCounterFontSize		= 4;
+#else
+static const int			kCounterFontSize		= 7;
+#endif
+
 
 DishRatingView::DishRatingView( QWidget *parent, const Dish& dish )
 	: QWidget(parent)
@@ -22,8 +28,11 @@ DishRatingView::~DishRatingView()
 
 void DishRatingView::init()
 {
+    // Properties
+    this->setAttribute( Qt::WA_NoSystemBackground, true );
+
 	// Add buttons
-	QPixmap wowPixmap = QPixmap( "Resources/wow.png" );
+	QPixmap wowPixmap = QPixmap( RESOURCES_ROOT"wow.png" );
 	wowButton = new QPushButton( this );
 	wowButton->setCheckable( true );
 	wowButton->setAutoExclusive( true );
@@ -32,7 +41,7 @@ void DishRatingView::init()
 	wowButton->setIconSize( wowPixmap.size() );
 	wowButton->adjustSize();
 
-	QPixmap happyPixmap = QPixmap( "Resources/happy.png" );
+	QPixmap happyPixmap = QPixmap( RESOURCES_ROOT"happy.png" );
 	happyButton = new QPushButton( this );
 	happyButton->setCheckable( true );
 	happyButton->setAutoExclusive( true );
@@ -41,7 +50,7 @@ void DishRatingView::init()
 	happyButton->setIconSize( happyPixmap.size() );
 	happyButton->adjustSize();
 
-	QPixmap meahPixmap = QPixmap( "Resources/meah.png" );
+	QPixmap meahPixmap = QPixmap( RESOURCES_ROOT"meah.png" );
 	meahButton = new QPushButton( this );
 	meahButton->setCheckable( true );
 	meahButton->setAutoExclusive( true );
@@ -50,7 +59,7 @@ void DishRatingView::init()
 	meahButton->setIconSize( meahPixmap.size() );
 	meahButton->adjustSize();
 
-// 	QPixmap yuckPixmap = QPixmap( "Resources/yuck.png" );		// disabled so no negative feedback
+// 	QPixmap yuckPixmap = QPixmap( RESOURCES_ROOT"yuck.png" );		// disabled so no negative feedback
 // 	yuckButton = new QPushButton( this );
 // 	yuckButton->setCheckable( true );
 // 	yuckButton->setAutoExclusive( true );
@@ -60,7 +69,7 @@ void DishRatingView::init()
 // 	yuckButton->adjustSize();
 
 	// Add rating text
-	QFont textFont( kFontName, 7 );
+    QFont textFont( kFontName, kCounterFontSize );
 //	textFont.setWeight( QFont::DemiBold );
 
 	numWowsLabel = new QLabel( this );
@@ -68,18 +77,21 @@ void DishRatingView::init()
 	numWowsLabel->setFont( textFont );
 	numWowsLabel->setAlignment( Qt::AlignCenter );
 	numWowsLabel->adjustSize();
+    numWowsLabel->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	numHappiesLabel = new QLabel( this );
 	numHappiesLabel->setText( "____" );
 	numHappiesLabel->setFont( textFont );
 	numHappiesLabel->setAlignment( Qt::AlignCenter );
 	numHappiesLabel->adjustSize();
+    numHappiesLabel->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	numMeahsLabel = new QLabel( this );
 	numMeahsLabel->setText( "____" );
 	numMeahsLabel->setFont( textFont );
 	numMeahsLabel->setAlignment( Qt::AlignCenter );
 	numMeahsLabel->adjustSize();
+    numMeahsLabel->setAttribute( Qt::WA_NoSystemBackground, true );
 
 // 	numYucksLabel = new QLabel( this );
 // 	numYucksLabel->setText( "____" );

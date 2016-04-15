@@ -3,7 +3,7 @@
 #include <QWidget>
 
 #include "ui_MainWindow.h"
-#include "MetroView.h"
+#include "View/MetroView.h"
 #include "Controller/Controller.h"
 #include <QSystemTrayIcon>
 
@@ -15,11 +15,12 @@ class MainWindow : public QWidget
 public:
 						MainWindow( QWidget *parent = 0 );
 						~MainWindow();
-	
-			void		showTrayMessage( const QString& msg );
 
 public slots:
 			void		switchAdministrate( bool );
+
+			void		showNotification( const QString& msg );
+			void		showNotification( const QString& msg, const QPixmap& pixmap );
 
 signals:
 			void		selectionChangedOn( const Dish& dish );

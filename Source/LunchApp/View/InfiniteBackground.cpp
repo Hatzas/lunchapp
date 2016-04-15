@@ -3,8 +3,6 @@
 #include <QPainter>
 #include <QPaintEvent>
 
-#include "MetroView.h"
-
 
 InfiniteBackground::InfiniteBackground( const QPixmap & pixmap, QWidget * parent /* = 0 */ )
 	: QWidget( parent )
@@ -39,7 +37,12 @@ void InfiniteBackground::setOffset( QPoint offset )
 	update();
 }
 
-void InfiniteBackground::paintEvent( QPaintEvent * event )
+bool InfiniteBackground::event( QEvent *event )
+{
+	return QWidget::event( event );
+}
+
+void InfiniteBackground::paintEvent( QPaintEvent* /*event*/ )
 {
 	QPainter painter( this );
 
@@ -90,5 +93,5 @@ void InfiniteBackground::resizeEvent( QResizeEvent * event )
 
 void InfiniteBackground::wheelEvent( QWheelEvent* wheelEvent )
 {
-	return ((MetroView*)this->parent())->wheelEvent( wheelEvent );
+	return QWidget::wheelEvent( wheelEvent );
 }

@@ -6,26 +6,28 @@
 #include <QDesktopWidget>
 #include <QPainter>
 
+#include "../MainWindow.h"
 
 QVector<NotificationWindow *>		NotificationWindow::windows;
 int									NotificationWindow::lastIdx		= 0;
-QSystemTrayIcon*					NotificationWindow::trayIcon	= NULL;
+QSystemTrayIcon*					NotificationWindow::appIcon	= NULL;
 
 static const QSize					kNotificationSize				= QSize( 400, 100 );
 static const int					kNotificationOffsetY			= 20;
 
 
-NotificationWindow::NotificationWindow( const QString &text, const std::vector<QPixmap>& iconsVect, const int duration )
+NotificationWindow::NotificationWindow( MainWindow* mainWindow, const QString &text, const std::vector<QPixmap>& iconsVect, const int duration )
     : QWidget( 0,
               Qt::Tool |
               Qt::FramelessWindowHint |
               Qt::WindowSystemMenuHint |
               Qt::WindowStaysOnTopHint )
+	, mainWindow( mainWindow )
 	, text( text )
 	, iconsVect( iconsVect )
 	, mousePressed( false )
 {
-	if( trayIcon == NULL )
+	if( appIcon == NULL )
 		return;
 
 	init();
@@ -42,7 +44,7 @@ NotificationWindow::NotificationWindow( const QString &text, const std::vector<Q
 
 void NotificationWindow::setup( QSystemTrayIcon* trayIcon )
 {
-	NotificationWindow::trayIcon = trayIcon;
+	NotificationWindow::appIcon = trayIcon;
 }
 
 void NotificationWindow::init()
@@ -51,7 +53,7 @@ void NotificationWindow::init()
 
 	/* Create objects */
 	QLabel* iconLabel = NULL;
-	for( int i = 0 ; i < iconsVect.size() ; i++ )
+    for( size_t i = 0 ; i < iconsVect.size() ; i++ )
 	{
 		iconLabel = new QLabel( this );
 		iconLabel->setPixmap( iconsVect[i].scaled( kNotificationSize - QSize( 20, 20 ), Qt::KeepAspectRatio ) );
@@ -78,6 +80,13 @@ void NotificationWindow::init()
 	textLabel->setFixedWidth( kNotificationSize.width() - iconLabel->width() );
 	textLabel->adjustSize();
 
+	QPixmap closePixmap = QPixmap( RESOURCES_ROOT"close.png" );
+	closeButton = new QPushButton( this );
+	closeButton->setStyleSheet( kButtonsStyleSheet );
+	closeButton->setIcon( closePixmap );
+	closeButton->setFixedSize( closePixmap.size() );
+	closeButton->adjustSize();
+
 	/* Animations */
 	moveAnimation = new QPropertyAnimation( this, "pos" );
 	moveAnimation->setEasingCurve( QEasingCurve::OutCirc );
@@ -86,14 +95,18 @@ void NotificationWindow::init()
 	/* Move and resize */
 	titleLabel->move( iconLabel->x() + iconLabel->width(), 0 );
 	textLabel->move( titleLabel->x(), titleLabel->y() + titleLabel->height() );
+	closeButton->move( kNotificationSize.width() - closeButton->width() * 1.7f, closeButton->height() * 0.5f );
 
 //	setFixedSize( kNotificationSize );
 	adjustSize();
 
+	/* Signals & Slots */
+	connect( closeButton, SIGNAL( clicked() ), this, SLOT( moveOut() ) );
+
 	moveIn();
 }
 
-void NotificationWindow::paintEvent( QPaintEvent * event )
+void NotificationWindow::paintEvent( QPaintEvent* event )
 {
 	QPainter painter( this );
 	painter.fillRect( rect(), QBrush( Qt::white ) );
@@ -101,17 +114,19 @@ void NotificationWindow::paintEvent( QPaintEvent * event )
 	QWidget::paintEvent( event );
 }
 
-void NotificationWindow::mousePressEvent( QMouseEvent * event )
+void NotificationWindow::mousePressEvent( QMouseEvent* /*event*/ )
 {
 	mousePressed = true;
 }
 
-void NotificationWindow::mouseReleaseEvent( QMouseEvent * event )
+void NotificationWindow::mouseReleaseEvent( QMouseEvent* /*event*/ )
 {
 	if( mousePressed )
 	{
 		timer->stop();
-		moveOut();
+
+		showApp();
+		//moveOut();
 	}
 }
 
@@ -121,8 +136,8 @@ bool NotificationWindow::close()
 		return true;
 
     auto i = windows.indexOf( this );
-
-    Q_ASSERT( i >= 0 );
+	if( i < 0 )
+		return true;
 
     windows.remove( i );
     if( windows.empty() )
@@ -134,7 +149,7 @@ bool NotificationWindow::close()
 void NotificationWindow::moveIn()
 {
 	auto desktopRect = QApplication::desktop()->screenGeometry();
-	auto trayIconRect = trayIcon->geometry();
+	auto trayIconRect = appIcon->geometry();
 
 	// Compute Y position according to the taskbar position
 	int posY = 0;
@@ -171,11 +186,18 @@ void NotificationWindow::moveIn()
 void NotificationWindow::moveOut()
 {
 	auto desktopRect = QApplication::desktop()->screenGeometry();
-	auto trayIconRect = trayIcon->geometry();
 
 	moveAnimation->setStartValue( this->pos() );
 	moveAnimation->setEndValue( QPoint( desktopRect.width(), this->y() ) );
 	moveAnimation->start();
 
 	connect( moveAnimation, SIGNAL( finished() ), this, SLOT( close() ) );
+}
+
+void NotificationWindow::showApp()
+{
+	if( mainWindow->isHidden() )
+	{
+		mainWindow->show();
+	}
 }
