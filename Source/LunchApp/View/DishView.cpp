@@ -25,7 +25,7 @@ static const int			kIdentifierFontSize		= 5;
 static const int			kDetailsFontSize		= 10;
 static const float			kPointToPixel			= 7.f;
 #else
-static const int			kIdentifierFontSize		= 10;
+static const int			kIdentifierFontSize		= 9;
 static const int			kDetailsFontSize		= 10;
 static const float			kPointToPixel			= 2.5f;
 #endif
@@ -108,7 +108,7 @@ void DishView::init()
 // 	ribbonLabel->setMask( textMask );
 
 	identifierLabel = new QLabel( this );
-	identifierLabel->setText( dish.getIdentifier() );					// disabled, as might only be relevant when going to lunch
+	identifierLabel->setText( dish.getIdentifier() );
 	identifierLabel->setFont( QFont( kFontName, kIdentifierFontSize ) );
 	identifierLabel->setAlignment( Qt::AlignCenter );
 	identifierLabel->adjustSize();
@@ -157,7 +157,7 @@ void DishView::init()
 	}
 
 	/* Move objects */
-	identifierLabel->move( identifierLabel->width() / 2, 0 );
+	identifierLabel->move( identifierLabel->width() / 5, 0 );
 	ratingView->move( this->width(), this->height() - kBriefDetailsOffset - ratingView->height() - 2 );
 
 	if( editMode )
@@ -215,8 +215,10 @@ QPixmap DishView::getRibbonByCourse( int courseNum )
 		pixmap = QPixmap( RESOURCES_ROOT"/ribbon1.png" );
 	else if( courseNum == 2 )
 		pixmap = QPixmap( RESOURCES_ROOT"/ribbon2.png" );
-	else
+	else if( courseNum == 3 )
 		pixmap = QPixmap( RESOURCES_ROOT"/ribbon3.png" );
+	else if( courseNum == 4 )
+		pixmap = QPixmap( RESOURCES_ROOT"/ribbon4.png" );
 
 	// Text clip path (not working good)
 //	QPixmap bkpPixmap = pixmap;

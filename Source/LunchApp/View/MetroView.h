@@ -63,11 +63,12 @@ private:
 	InfiniteBackground*			background;
 	QLabel*						weekPrefixLabel;
 	QPushButton*				weekDateButton;
+	QPushButton*				publishSelectionButton;
 	AllWeeksView*				weeksView;
 	DayView*					allDishesView;
 	QLabel*						userLabel;
 	QPushButton*				administrateButton;
-	QPushButton*				publishButton;
+	QPushButton*				publishMenuButton;
 	QPushButton*				changeBackgroundButton;
 	QPushButton*				photoButton;
 

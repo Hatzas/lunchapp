@@ -142,10 +142,10 @@ void MetroView::addSceneItems()
 
     if( adminMode )
     {
-        publishButton = new QPushButton( this );
-        publishButton->setText( " Publicare " );
-        publishButton->setFont( QFont( kFontName, kFontSize ) );
-        publishButton->setStyleSheet( kButtonsStyleSheet );
+        publishMenuButton = new QPushButton( this );
+        publishMenuButton->setText( " Publicare " );
+        publishMenuButton->setFont( QFont( kFontName, kFontSize ) );
+        publishMenuButton->setStyleSheet( kButtonsStyleSheet );
 
         changeBackgroundButton = new QPushButton( this );
         changeBackgroundButton->setText( " Schimba fundal " );
@@ -161,12 +161,18 @@ void MetroView::addSceneItems()
 
 #ifdef Q_OS_ANDROID
         weeksView->hide();
-        publishButton->hide();
+        publishMenuButton->hide();
 		changeBackgroundButton->hide();
 #else
 		photoButton->hide();
 #endif
     }
+	else
+	{
+// 		publishSelectionButton = new QPushButton( this );
+// 		publishSelectionButton->setIcon( QIcon( QPixmap( RESOURCES_ROOT"lock.png" ) ) );
+// 		publishSelectionButton->setStyleSheet( kButtonsStyleSheet );
+	}
 
 	userLabel = new QLabel( this );
 	userLabel->setText( Controller::getUser()->getUsername() );
@@ -268,7 +274,7 @@ void MetroView::addSceneItems()
 
 	if( adminMode )
 	{
-		connect( publishButton, SIGNAL( clicked( bool ) ), this, SLOT( publishPressed( bool ) ) );
+		connect( publishMenuButton, SIGNAL( clicked( bool ) ), this, SLOT( publishPressed( bool ) ) );
         connect( photoButton, SIGNAL( clicked( bool ) ), this, SLOT( uploadImagePressed( bool ) ) );
 	}
 }
@@ -501,8 +507,8 @@ void MetroView::alignControls()
 
 		if( adminMode )
 		{
-			publishButton->move( administrateButton->x() - ( publishButton->width() - administrateButton->width() ) / 2, administrateButton->y() + administrateButton->height() * kButtonsYSpacingRatio );
-			changeBackgroundButton->move( weekPrefixLabel->x(), publishButton->y() );
+			publishMenuButton->move( administrateButton->x() - ( publishMenuButton->width() - administrateButton->width() ) / 2, administrateButton->y() + administrateButton->height() * kButtonsYSpacingRatio );
+			changeBackgroundButton->move( weekPrefixLabel->x(), publishMenuButton->y() );
 
             photoButton->move( ( this->width() - Style::getDayWidth() - photoButton->width() ) / 2.f, ( this->height() - photoButton->height() ) / 2.f );
 		}

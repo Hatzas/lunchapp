@@ -62,8 +62,8 @@ void AllWeeksView::init()
 	else
 	{
 		// Request data
-		QDate startDate = QDate(2016, 4, 11);
-		QDate endDate = QDate(2016, 4, 15);
+		QDate startDate = QDate(2016, 4, 18);
+		QDate endDate = QDate(2016, 4, 22);
         emit ((MetroView*)this->parent())->requestWeek( startDate, endDate );		// current week
 
 		showLoadingAnim( true, eHere );

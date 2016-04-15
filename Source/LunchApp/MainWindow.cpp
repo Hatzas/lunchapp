@@ -138,7 +138,7 @@ void MainWindow::resizeEvent( QResizeEvent* /*event*/ )
 {
 }
 
-void MainWindow::onTrayActivation(QSystemTrayIcon::ActivationReason reason)
+void MainWindow::onTrayActivation( QSystemTrayIcon::ActivationReason reason )
 {
 	if( reason == QSystemTrayIcon::Context )
 	{
@@ -156,7 +156,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 	event->ignore();
 
-	showNotification( tr("Aplicatia nu e moarta, se transforma (in tray)") );
+	showNotification( tr("Aplicatia va ramane activa in tray") );
 
 	this->hide();
 #endif

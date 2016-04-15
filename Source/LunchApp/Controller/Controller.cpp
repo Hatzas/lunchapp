@@ -321,16 +321,16 @@ std::vector<Dish> Controller::getAllDishes()
 		QPixmap(RESOURCES_ROOT"supa1.png"), 1 ) );
 	dishesVect.push_back( Dish( "Aripioare de pui cu crusta de porumb",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap(RESOURCES_ROOT"mancare2.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare2.png"), 3 ) );
 	dishesVect.push_back( Dish( "Pastrav pane cu spanac",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap(RESOURCES_ROOT"mancare3.png"), 2 ) );
+		QPixmap(RESOURCES_ROOT"mancare3.png"), 3 ) );
 	dishesVect.push_back( Dish( "Salata din gradina bunicii",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap(RESOURCES_ROOT"salata3.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata3.png"), 4 ) );
 	dishesVect.push_back( Dish( "Salata din gradina ursului",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
-		QPixmap(RESOURCES_ROOT"salata4.png"), 3 ) );
+		QPixmap(RESOURCES_ROOT"salata4.png"), 4 ) );
 	dishesVect.push_back( Dish( "Supa de ceva fara ceva",
 		"tortilla  piept de pui  cascaval  ardei gras  ceapa  patrunjel  ulei  boia  usturoi  oregano  sare",
 		QPixmap(RESOURCES_ROOT"supa2.png"), 1 ) );

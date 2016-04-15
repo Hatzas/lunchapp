@@ -14,7 +14,7 @@
 #	define RESOURCES_ROOT		"Resources/"
 #endif
 
-static const QString	kAppName						= "Lunch App";
+static const QString	kAppName						= "SmartMeal";
 static const QString	kAppIconPath					= RESOURCES_ROOT"icon.png";
 
 static const int		kBaseScreenWidth				= 1920;		// pixels
