@@ -96,10 +96,9 @@ void Controller::requestAllDishes()
 	emit allDishesArrived( Day( "Toate", getAllDishes() ) );
 }
 
-void Controller::selectionChangedOn( const Dish& /* dish */ )
+void Controller::selectionChangedOn( Week& week )
 {
-	// Store selection in database
-	// TO DO
+	dataTransfer->publishUserMenu( week );
 }
 
 void Controller::publishWeek( const Week& /* week */ )

@@ -15,8 +15,7 @@ public:
 
 	void		getMenu(const QDate& startDate, const QDate& endDate);
 	void		getUserMenu(const QDate& startDate, const QDate& endDate);
-	void		getDish();
-	void		getDishCategory();
+	void		publishUserMenu(Week& week);
 	
 signals:
 	void		menuFinished(Week& week);

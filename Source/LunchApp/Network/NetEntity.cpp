@@ -19,7 +19,12 @@ NetEntity::~NetEntity()
 
 QString NetEntity::getJsonRequest() const
 {
-	return QString(); // TODO make json from request params
+	return jsonBody;
+}
+
+void NetEntity::setPostBody(const QString& json)
+{
+	jsonBody = json;
 }
 
 void NetEntity::addRequestParam(const QString& key, const QString& value)

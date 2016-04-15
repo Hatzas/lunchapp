@@ -34,6 +34,8 @@ public:
         void				setMethodUrl(const QString& url) { methodUrl = url; }
 
 		QString				getJsonRequest() const;
+		void				setPostBody(const QString& json);
+
 		QList<QueryPair>	getRequestParams() const { return requestParams; }
         void				addRequestParam(const QString& key, const QString& value);
 		void				addRequestParam(const QueryPair& queryPair);
@@ -50,6 +52,7 @@ private:
 	MethodType				methodType;			// method request type
 	QString					methodUrl;			// e.g. "meal/get"
 	QList<QueryPair>		requestParams;
+	QString					jsonBody;
 	QString					result;
 	QString					error;
 	QDate					requestStartDate;

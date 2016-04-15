@@ -44,6 +44,9 @@ public:
 	QString			getIdentifier()										{ return identifier; }
 	void			setIdentifier( QString identifier )					{ this->identifier = identifier; }
 
+	QString			getId()												{ return id; }
+	void			setId( QString id )									{ this->id = id; }
+
 	int				getNumWows()										{ return numWows; }
 	void			setNumWows( int numLikes )							{ this->numWows = numLikes; }
 
@@ -80,6 +83,7 @@ private:
 	int					courseNum;			// 1 == Course 1, 2 == Course 2, etc.
 	QString				type;				// Dish type (salad, soup...)
 	QString				identifier;
+	QString				id;
 
 	int					numWows;
 	int					numHappies;

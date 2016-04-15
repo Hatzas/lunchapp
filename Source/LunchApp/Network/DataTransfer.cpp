@@ -39,27 +39,42 @@ void DataTransfer::getUserMenu(const QDate& startDate, const QDate& endDate)
 {
 	NetEntity entity;
 	entity.setMethodType(eGetMethod);
-	entity.setMethodUrl( "menu"/*"usermenu"*/);
+	entity.setMethodUrl("menu"/*"usermenu"*/);
 	entity.setDates(startDate, endDate);
 	
 	restClient->pushRequest(entity);
 }
 
-void DataTransfer::getDish()
+void DataTransfer::publishUserMenu(Week& week)
 {
 	NetEntity entity;
-	entity.setMethodType(eGetMethod);
-	entity.setMethodUrl("dish");
+	entity.setMethodType(ePostMethod);
+	entity.setMethodUrl("usermenu");
+	
+	QJsonArray daysArray;
+	std::vector<Day> days = week.getDays();
+	
+	for(size_t dayIt = 0; dayIt < days.size(); ++dayIt)
+	{
+		std::vector<Dish> dishes = days[dayIt].getDishes();
 
-	restClient->pushRequest(entity);
-}
+		for(size_t dishIt = 0; dishIt < dishes.size(); ++dishIt)
+		{
+			if(dishes[dishIt].getUserSelected())
+			{
+				QJsonObject dayObject;
+				dayObject["DishId"] = dishes[dishIt].getId();
+				dayObject["DishCategoryId"] = QString::number(dishes[dishIt].getCourseNum());
+				dayObject["Serial"] = dishes[dishIt].getIdentifier();
+				dayObject["Date"] = "2016-04-05";
 
-void DataTransfer::getDishCategory()
-{
-	NetEntity entity;
-	entity.setMethodType(eGetMethod);
-	entity.setMethodUrl("dishcategory");
+				daysArray.push_back(dayObject);
+			}
+		}
+	}
 
+	QJsonValue dayValue(daysArray);
+	entity.setPostBody(dayValue.toString());
 	restClient->pushRequest(entity);
 }
 
@@ -129,6 +144,7 @@ void DataTransfer::extractDays(const QJsonArray& json, std::vector<Day>& days)
 			// statistics
 			Dish dish(name, description, pixmap, 0);
 
+			dish.setId(QString::number(dishObject["Id"].toInt()));
 			dish.setCourseNum(dishObject["Category"].toString().toInt());
 			dish.setIdentifier(dishObject["Serial"].toString());
 			QJsonArray statsArray = dishObject["DishStatistics"].toArray();

@@ -32,7 +32,7 @@ public slots:
 			void				requestWeek( QDate startDate, QDate endDate );
 			void				requestAllDishes();
 
-			void				selectionChangedOn( const Dish& dish );
+			void				selectionChangedOn( Week& week );
 
 			void				publishWeek( const Week& week );
 
