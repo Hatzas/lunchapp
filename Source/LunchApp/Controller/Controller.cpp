@@ -180,7 +180,14 @@ void Controller::notifyDayMenu()
 
 	// ! Only for debug purposes !
 	currentDay.getDishes()[0].setUserSelected( true );
-	currentDay.getDishes()[1].setUserSelected( true );
+	for( size_t i = 1 ; i < currentDay.getDishes().size() ; i++ )
+	{
+		if( currentDay.getDishes()[i].getCourseNum() != currentDay.getDishes()[0].getCourseNum() )
+		{	
+			currentDay.getDishes()[i].setUserSelected( true );
+			break;
+		}
+	}
 
 	for( size_t i = 0 ; i < currentDay.getDishes().size() ; i++ )
 	{

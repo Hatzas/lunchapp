@@ -38,7 +38,7 @@ MainWindow::MainWindow( QWidget *parent )
 
 	// Tray
 	setupTray();
-	showNotification( "Sunt si eu aici" );
+//	showNotification( "Sunt si eu aici" );
 
 	// Init members
 	regularMetroView->init();
