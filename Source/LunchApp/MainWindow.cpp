@@ -49,6 +49,9 @@ MainWindow::MainWindow( QWidget *parent )
 	this->adjustSize();
 
 	//controller->sendDummyWeek( QDate(2016, 3, 21), QDate(2016, 3, 25) );
+
+	// Start hidden for presentation
+	this->showMinimized();
 }
 
 MainWindow::~MainWindow()

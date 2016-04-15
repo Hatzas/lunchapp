@@ -8,9 +8,11 @@
 static const int kBorderSize = 1;	// pixels
 
 #ifdef Q_OS_ANDROID
-static const int			kCounterFontSize		= 4;
+static const int			kCounterFontSize			= 4;
+static const float			kImagesScale				= 2.5f;
 #else
-static const int			kCounterFontSize		= 7;
+static const int			kCounterFontSize			= 7;
+static const float			kImagesScale				= 1.0f;
 #endif
 
 
@@ -32,13 +34,15 @@ void DishRatingView::init()
     this->setAttribute( Qt::WA_NoSystemBackground, true );
 
 	// Add buttons
+	float imageScale = Style::getWindowScale() * ( Style::getWindowScale() < 1.0f ? 1.3f : 1.0f ) * kImagesScale;
+
 	QPixmap wowPixmap = QPixmap( RESOURCES_ROOT"wow.png" );
 	wowButton = new QPushButton( this );
 	wowButton->setCheckable( true );
 	wowButton->setAutoExclusive( true );
 	wowButton->setStyleSheet( kButtonsStyleSheet );
 	wowButton->setIcon( wowPixmap );
-	wowButton->setIconSize( wowPixmap.size() * Style::getWindowScale() * 1.3 );
+	wowButton->setIconSize( wowPixmap.size() * imageScale );
 	wowButton->adjustSize();
 
 	QPixmap happyPixmap = QPixmap( RESOURCES_ROOT"happy.png" );
@@ -47,7 +51,7 @@ void DishRatingView::init()
 	happyButton->setAutoExclusive( true );
 	happyButton->setStyleSheet( kButtonsStyleSheet );
 	happyButton->setIcon( happyPixmap );
-	happyButton->setIconSize( happyPixmap.size() * Style::getWindowScale() * 1.3 );
+	happyButton->setIconSize( happyPixmap.size() * imageScale );
 	happyButton->adjustSize();
 
 	QPixmap meahPixmap = QPixmap( RESOURCES_ROOT"meah.png" );
@@ -56,7 +60,7 @@ void DishRatingView::init()
 	meahButton->setAutoExclusive( true );
 	meahButton->setStyleSheet( kButtonsStyleSheet );
 	meahButton->setIcon( meahPixmap );
-	meahButton->setIconSize( meahPixmap.size() * Style::getWindowScale() * 1.3 );
+	meahButton->setIconSize( meahPixmap.size() * imageScale );
 	meahButton->adjustSize();
 
 // 	QPixmap yuckPixmap = QPixmap( RESOURCES_ROOT"yuck.png" );		// disabled so no negative feedback
