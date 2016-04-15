@@ -38,7 +38,7 @@ void DishRatingView::init()
 	wowButton->setAutoExclusive( true );
 	wowButton->setStyleSheet( kButtonsStyleSheet );
 	wowButton->setIcon( wowPixmap );
-	wowButton->setIconSize( wowPixmap.size() );
+	wowButton->setIconSize( wowPixmap.size() * Style::getWindowScale() * 1.3 );
 	wowButton->adjustSize();
 
 	QPixmap happyPixmap = QPixmap( RESOURCES_ROOT"happy.png" );
@@ -47,7 +47,7 @@ void DishRatingView::init()
 	happyButton->setAutoExclusive( true );
 	happyButton->setStyleSheet( kButtonsStyleSheet );
 	happyButton->setIcon( happyPixmap );
-	happyButton->setIconSize( happyPixmap.size() );
+	happyButton->setIconSize( happyPixmap.size() * Style::getWindowScale() * 1.3 );
 	happyButton->adjustSize();
 
 	QPixmap meahPixmap = QPixmap( RESOURCES_ROOT"meah.png" );
@@ -56,7 +56,7 @@ void DishRatingView::init()
 	meahButton->setAutoExclusive( true );
 	meahButton->setStyleSheet( kButtonsStyleSheet );
 	meahButton->setIcon( meahPixmap );
-	meahButton->setIconSize( meahPixmap.size() );
+	meahButton->setIconSize( meahPixmap.size() * Style::getWindowScale() * 1.3 );
 	meahButton->adjustSize();
 
 // 	QPixmap yuckPixmap = QPixmap( RESOURCES_ROOT"yuck.png" );		// disabled so no negative feedback

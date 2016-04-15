@@ -82,7 +82,7 @@ void AllWeeksView::wheelEvent( QWheelEvent* wheelEvent )
 
 void AllWeeksView::mainWindowResized( QSize size )
 {
-	windowWidth = qMax<int>( (int)(Style::getWeekWidth() * Style::getWindowScale()), size.width() );
+	windowWidth = qMax<int>( (int)Style::getWeekWidth(), size.width() );
 	centerWeekViews();
 
     for( size_t i = 0 ; i < weekViewsVect.size() ; i++ )
@@ -146,10 +146,6 @@ void AllWeeksView::addWeek( const Week& week )
 
 	weekView->show();
 
-	this->adjustSize();
-
-	centerWeekViews();
-
 	if( weekViewsVect.size() == 1 )
 	{
 		increaseSize( eRightDirection );
@@ -168,6 +164,10 @@ void AllWeeksView::addWeek( const Week& week )
 		QDate prevWeekEndDate = weekViewsVect.front()->getWeek().getEndDate().addDays( -7 );
 		emit ((MetroView*)this->parent())->requestWeek( prevWeekStartDate, prevWeekEndDate );			// previous week
 	}
+
+	this->adjustSize();
+
+	centerWeekViews();
 }
 
 void AllWeeksView::addEmptyWeek()

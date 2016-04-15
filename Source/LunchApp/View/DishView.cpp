@@ -158,7 +158,7 @@ void DishView::init()
 
 	/* Move objects */
 	identifierLabel->move( identifierLabel->width() / 5, 0 );
-	ratingView->move( this->width(), this->height() - kBriefDetailsOffset - ratingView->height() - 2 );
+	ratingView->move( this->width(), this->height() - detailsLabel->font().pointSize() * kPointToPixel - ratingView->height() - 2 );
 
 	if( editMode )
 		detailsLabel->move( 0, this->height() - detailsLabel->font().pointSize() * kPointToPixel );
@@ -290,7 +290,7 @@ void DishView::leaveEvent( QEvent* /*event*/ )
 
 	detailsAnimation->setStartValue( detailsLabel->pos() );
 
-	if( editMode )
+	if( editMode || dish.getUserSelected() )
 		detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() - detailsLabel->font().pointSize() * kPointToPixel ) );
 	else
 		detailsAnimation->setEndValue( QPointF( detailsLabel->pos().x(), this->height() ) );

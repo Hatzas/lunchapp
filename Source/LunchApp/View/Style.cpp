@@ -6,7 +6,7 @@
 
 		float	Style::windowScale			= 1.0f;
 
-const	int		Style::kBaseWindowHeight	= 850;		// pixels
+const	int		Style::kBaseWindowHeight	= 900;		// pixels
 
 #ifdef Q_OS_ANDROID
 const	float	Style::kDishWidth			= 360;		// pixels
