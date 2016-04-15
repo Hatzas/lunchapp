@@ -196,6 +196,8 @@ void NotificationWindow::moveOut()
 
 void NotificationWindow::showApp()
 {
+	mainWindow->showNormal();
+
 	if( mainWindow->isHidden() )
 	{
 		mainWindow->show();
