@@ -41,6 +41,5 @@
         <file>QML/test.qml</file>
         <file>Resources/icon.png</file>
         <file>Resources/close.png</file>
-        <file>Resources/ribbon4.png</file>
     </qresource>
 </RCC>
